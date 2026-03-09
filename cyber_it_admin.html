@@ -53,6 +53,10 @@ input,select,textarea{font-family:inherit;}
 .sidebar-bottom{margin-top:auto;padding:16px;border-top:1px solid var(--border);}
 .logout-btn{width:100%;background:transparent;border:1px solid var(--border2);color:var(--text3);padding:8px;border-radius:8px;font-size:12px;display:flex;align-items:center;justify-content:center;gap:6px;transition:.2s;}
 .logout-btn:hover{border-color:var(--red);color:var(--red);}
+[data-theme="light"]{--bg1:#f0f4fb;--bg2:#e4ecf7;--bg3:#d8e6f3;--bg4:#c8d8ed;--cyan:#0077cc;--orange:#e05a00;--green:#00a854;--red:#cc0000;--yellow:#b38600;--text:#0d1b2e;--text2:#2a4a6e;--text3:#5a7a94;--border:#b0c8e0;--border2:#90aec8;--card:#fff;}
+.theme-toggle{display:flex;gap:4px;align-items:center;}
+.tbtn{background:var(--bg3);border:1px solid var(--border2);color:var(--text2);padding:4px 10px;border-radius:16px;font-size:11px;cursor:pointer;transition:.2s;}
+.tbtn.active{background:var(--cyan);color:#fff;border-color:var(--cyan);}
 
 /* ── MAIN ── */
 .main{flex:1;overflow-y:auto;}
@@ -178,6 +182,10 @@ select.form-input option{background:var(--bg3);}
     <div class="fb-dot loading" id="fbDot"></div>
     <span id="fbMsg">Connecting to Firebase...</span>
     <div class="fb-bar-actions">
+      <div class="theme-toggle">
+        <button class="tbtn active" id="darkBtn" onclick="setTheme('dark')"><i class="fas fa-moon"></i> Dark</button>
+        <button class="tbtn" id="lightBtn" onclick="setTheme('light')"><i class="fas fa-sun"></i> Light</button>
+      </div>
       <button class="btn-top save" onclick="saveToFirebase()"><i class="fas fa-cloud-upload-alt"></i> Save to Cloud</button>
     </div>
   </div>
@@ -391,7 +399,33 @@ select.form-input option{background:var(--bg3);}
     </div>
     <div class="form-row">
       <div class="form-group"><label>Stock</label><input class="form-input" id="pm-stock" type="number"></div>
-      <div class="form-group"><label>Image URL</label><input class="form-input" id="pm-image" type="text"></div>
+      <div class="form-group">
+        <label>Product Image</label>
+        <div style="display:flex;gap:6px;margin-bottom:6px;">
+          <button type="button" class="tbtn active" id="imgTabUrl" onclick="switchImgTab('url')"><i class="fas fa-link"></i> URL</button>
+          <button type="button" class="tbtn" id="imgTabUpload" onclick="switchImgTab('upload')"><i class="fas fa-upload"></i> Upload</button>
+          <button type="button" class="tbtn" id="imgTabImgur" onclick="switchImgTab('imgur')"><i class="fas fa-cloud-upload-alt"></i> Imgur</button>
+        </div>
+        <div id="imgPanelUrl">
+          <input class="form-input" id="pm-image" type="text" placeholder="https://example.com/image.jpg" oninput="previewImg(this.value)">
+        </div>
+        <div id="imgPanelUpload" style="display:none;">
+          <input type="file" id="pm-image-file" accept="image/*" class="form-input" style="padding:6px;" onchange="handleImgUpload(this)">
+          <div style="font-size:11px;color:var(--text3);margin-top:4px;">Image will be converted to a data URL and stored in Firebase.</div>
+        </div>
+        <div id="imgPanelImgur" style="display:none;">
+          <div style="background:var(--bg4);border-radius:8px;padding:12px;font-size:12px;color:var(--text2);line-height:1.8;">
+            <b style="color:var(--cyan)">Free permanent image hosting:</b><br>
+            1. Go to <a href="https://imgur.com/upload" target="_blank" style="color:var(--cyan)">imgur.com/upload</a><br>
+            2. Upload your product image<br>
+            3. Right-click the image → Copy image address<br>
+            4. Switch to URL tab and paste it
+          </div>
+        </div>
+        <div id="imgPreviewWrap" style="margin-top:8px;display:none;">
+          <img id="imgPreview" style="max-height:80px;max-width:120px;object-fit:contain;background:var(--bg3);border-radius:6px;border:1px solid var(--border);" src="" alt="Preview">
+        </div>
+      </div>
     </div>
     <div class="form-group" style="margin-bottom:12px;">
       <label>Description</label>
@@ -452,10 +486,25 @@ select.form-input option{background:var(--bg3);}
     <div class="form-group" style="margin-bottom:10px;"><label>Description</label><textarea class="form-input" id="bm-desc" rows="2"></textarea></div>
     <div style="font-family:'Orbitron',monospace;font-size:11px;color:var(--cyan);margin-bottom:8px;">BUNDLE ITEMS</div>
     <div id="bundleItemsList"></div>
-    <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
-      <input class="form-input" id="bm-search" placeholder="Search product to add…" style="flex:1;" oninput="searchBundleProd()">
+    <div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap;align-items:flex-end;">
+      <div style="flex:1;min-width:180px;">
+        <label style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px;">Browse by Category</label>
+        <select class="form-input" id="bm-cat-filter" onchange="filterBundleDropdown()">
+          <option value="">All Categories</option>
+        </select>
+      </div>
+      <div style="flex:2;min-width:200px;">
+        <label style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px;">Select Product</label>
+        <select class="form-input" id="bm-prod-dropdown" onchange="addBundleFromDropdown(this.value);this.value=''">
+          <option value="">— pick a product to add —</option>
+        </select>
+      </div>
     </div>
-    <div id="bmSearchResults" style="max-height:160px;overflow-y:auto;"></div>
+    <div style="margin-bottom:8px;">
+      <label style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px;">Or Search by Name</label>
+      <input class="form-input" id="bm-search" placeholder="Type to search…" style="width:100%;" oninput="searchBundleProd()">
+    </div>
+    <div id="bmSearchResults" style="max-height:140px;overflow-y:auto;border-radius:8px;border:1px solid var(--border);"></div>
     <div style="margin-top:10px;padding:10px;background:var(--bg4);border-radius:8px;font-size:13px;color:var(--text2);">
       Bundle Total: <span id="bmTotal" style="color:var(--cyan);font-family:'Orbitron',monospace;">R 0.00</span>
     </div>
@@ -1045,6 +1094,8 @@ function openAddProduct() {
   editingProdId = null;
   document.getElementById('prodModalTitle').textContent = 'Add New Product';
   ['pm-name','pm-code','pm-image','pm-desc'].forEach(id => document.getElementById(id).value = '');
+  if(document.getElementById('imgPreviewWrap')) document.getElementById('imgPreviewWrap').style.display='none';
+  if(typeof switchImgTab==='function') switchImgTab('url');
   ['pm-price','pm-stock'].forEach(id => document.getElementById(id).value = 0);
   ['pm-sale','pm-combo'].forEach(id => document.getElementById(id).value = '');
   ['pm-saleOn','pm-comboOn','pm-isNew'].forEach(id => document.getElementById(id).checked = false);
@@ -1220,6 +1271,7 @@ function renderBundles() {
 function openAddBundle() {
   editingBundleIdx = null;
   bundleItems = [];
+  setTimeout(populateBundleDropdown, 80);
   document.getElementById('bm-name').value = '';
   document.getElementById('bm-code').value = '';
   document.getElementById('bm-disc').value = '0';
@@ -1230,6 +1282,7 @@ function openAddBundle() {
 }
 function openEditBundle(idx) {
   editingBundleIdx = idx;
+  setTimeout(populateBundleDropdown, 80);
   const b = bundles[idx];
   document.getElementById('bm-name').value = b.name || '';
   document.getElementById('bm-code').value = b.code || '';
@@ -1462,8 +1515,99 @@ function toast(msg, type='') {
 // SETTINGS PRE-FILL
 // ══════════════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', () => {
+  loadTheme();
   document.getElementById('setUser').value = ADMIN_USER;
 });
+
+
+// ═══════════════════════════════════════════════
+// THEME TOGGLE
+// ═══════════════════════════════════════════════
+function setTheme(t) {
+  document.documentElement.setAttribute('data-theme', t);
+  const db = document.getElementById('darkBtn');
+  const lb = document.getElementById('lightBtn');
+  if (db) db.classList.toggle('active', t === 'dark');
+  if (lb) lb.classList.toggle('active', t === 'light');
+  try { localStorage.setItem('citm_admin_theme', t); } catch(e) {}
+}
+function loadTheme() {
+  const t = localStorage.getItem('citm_admin_theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', t);
+  setTimeout(() => {
+    const db = document.getElementById('darkBtn');
+    const lb = document.getElementById('lightBtn');
+    if (db) db.classList.toggle('active', t === 'dark');
+    if (lb) lb.classList.toggle('active', t === 'light');
+  }, 50);
+}
+
+// ═══════════════════════════════════════════════
+// BUNDLE PRODUCT DROPDOWN
+// ═══════════════════════════════════════════════
+function populateBundleDropdown() {
+  const catSel  = document.getElementById('bm-cat-filter');
+  const prodSel = document.getElementById('bm-prod-dropdown');
+  if (!catSel || !prodSel) return;
+  const cats = [...new Set(allProducts.map(p => p.category))].sort();
+  catSel.innerHTML = '<option value="">All Categories</option>' +
+    cats.map(c => `<option value="${c}">${c}</option>`).join('');
+  filterBundleDropdown();
+}
+function filterBundleDropdown() {
+  const cat     = document.getElementById('bm-cat-filter').value;
+  const prodSel = document.getElementById('bm-prod-dropdown');
+  if (!prodSel) return;
+  const filtered = (cat ? allProducts.filter(p => p.category === cat) : allProducts)
+    .slice().sort((a, b) => a.name.localeCompare(b.name));
+  prodSel.innerHTML = '<option value="">— select a product to add —</option>' +
+    filtered.map(p => {
+      const pr = (prices[p.id] && prices[p.id].normal != null) ? prices[p.id].normal : p.price;
+      return `<option value="${p.id}">${p.name}  —  R${Number(pr).toFixed(2)}</option>`;
+    }).join('');
+}
+function addBundleFromDropdown(val) {
+  if (!val) return;
+  const id = isNaN(val) ? val : Number(val);
+  const p  = allProducts.find(x => x.id === id || String(x.id) === String(val));
+  if (p) addBundleItem(p.id);
+}
+
+// ═══════════════════════════════════════════════
+// PRODUCT IMAGE — URL / UPLOAD / IMGUR
+// ═══════════════════════════════════════════════
+function switchImgTab(tab) {
+  ['Url','Upload','Imgur'].forEach(t => {
+    const panel = document.getElementById('imgPanel' + t);
+    const btn   = document.getElementById('imgTab'   + t);
+    if (panel) panel.style.display = (t.toLowerCase() === tab) ? 'block' : 'none';
+    if (btn)   btn.classList.toggle('active', t.toLowerCase() === tab);
+  });
+}
+function previewImg(url) {
+  const wrap = document.getElementById('imgPreviewWrap');
+  const img  = document.getElementById('imgPreview');
+  if (!wrap || !img) return;
+  if (url) { img.src = url; wrap.style.display = 'block'; }
+  else       wrap.style.display = 'none';
+}
+function handleImgUpload(input) {
+  const file = input.files[0];
+  if (!file) return;
+  if (file.size > 2 * 1024 * 1024) {
+    toast('Image too large — max 2MB. Use Imgur tab for bigger images.', 'err');
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const urlField = document.getElementById('pm-image');
+    if (urlField) urlField.value = e.target.result;
+    previewImg(e.target.result);
+    toast('Image loaded ✓ — will be saved with product', 'ok');
+  };
+  reader.readAsDataURL(file);
+}
+
 </script>
 </body>
 </html>
