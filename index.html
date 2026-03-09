@@ -377,7 +377,7 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:30px 16p
           <div style="font-size:13px;color:#25d366;">073 733 5518</div>
           <div style="font-size:11px;color:var(--text3);margin-top:4px;">Orders &amp; Enquiries</div>
         </a>
-        <a href="mailto:info@mbulahenigroup.co.za" style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;text-align:center;text-decoration:none;transition:.2s;display:block;" onmouseover="this.style.borderColor='var(--cyan)'" onmouseout="this.style.borderColor='var(--border)'">
+        <a href="/cdn-cgi/l/email-protection#5e373038311e333c2b323f363b3037392c312b2e703d3170243f" style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;text-align:center;text-decoration:none;transition:.2s;display:block;" onmouseover="this.style.borderColor='var(--cyan)'" onmouseout="this.style.borderColor='var(--border)'">
           <i class="fas fa-envelope" style="font-size:28px;color:var(--cyan);margin-bottom:10px;display:block;"></i>
           <div style="font-weight:600;color:var(--text);margin-bottom:4px;">Email</div>
           <div style="font-size:13px;color:var(--cyan);"><span class="__cf_email__" data-cfemail="d6bfb8b0b996bbb4a3bab7beb3b8bfb1a4b9a3a6f8b5b9f8acb7">[email&#160;protected]</span></div>
@@ -666,7 +666,7 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:30px 16p
 <!-- WA FAB -->
 <a href="https://wa.me/27737335518" target="_blank" class="wa-fab"><i class="fab fa-whatsapp"></i></a>
 <div class="toast" id="toast"></div>
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // ═══════════════════════════════════════════
 // FIREBASE
 // ═══════════════════════════════════════════
@@ -1309,11 +1309,7 @@ function renderCart() {
       </div>
       <button class="cart-remove" onclick="removeFromCart(${JSON.stringify(x.id)})"><i class="fas fa-trash"></i></button>
     </div>`).join("");
-  const total = fmt(cart.reduce((s,x) => s+x.price*x.qty, 0));
-  const lines = cart.map(x => `• ${x.name} x${x.qty} @ ${fmt(x.price)}`).join("\n");
-  document.getElementById("checkoutBtn").onclick = () => window.open(
-    `https://wa.me/${WA}?text=${encodeURIComponent(`Hi! I'd like to place an order:\n\n${lines}\n\nTotal: ${total}\n\nPlease confirm availability and arrange delivery.`)}`, "_blank"
-  );
+  document.getElementById("cartTotal").textContent = fmt(cart.reduce((s,x) => s+x.price*x.qty, 0));
 }
 
 // ═══════════════════════════════════════════
