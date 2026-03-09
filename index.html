@@ -1242,7 +1242,7 @@ function openProdModal(id) {
     bc.innerHTML = `<div style="background:var(--bg3);border-radius:8px;padding:12px;margin-top:12px;"><div style="font-size:11px;color:var(--cyan);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px"><i class="fas fa-cubes"></i> Bundle Includes</div><ul style="list-style:none;">${lines.join("")}</ul></div>`;
   } else bc.innerHTML = "";
   const msg = encodeURIComponent(`Hi! I'd like to order:\n\nProduct: ${p.name}\nSKU: ${p.code||"N/A"}\nPrice: ${fmt(eff.price)}\n\nPlease confirm availability.`);
-  document.getElementById("mWaBtn").onclick = () => window.open(`https://wa.me/${WA}?text=${msg}`, "_blank");
+  document.getElementById("mWaBtn").onclick = function() { orderSingleViaCheckout(p.id); };
   document.getElementById("wishBtn").classList.toggle("active", wishlist.includes(String(id)));
   document.getElementById("prodModal").classList.add("open");
   document.body.style.overflow = "hidden";
@@ -1364,6 +1364,204 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("mobMenuBtn").innerHTML = isOpen ? '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
   });
 });
+
+
+// ═══════════════════════════════════════════
+// CHECKOUT FLOW
+// ═══════════════════════════════════════════
+let coDeliveryType = 'delivery';
+
+function openCheckout() {
+  if (!cart.length) { showToast('Your cart is empty'); return; }
+  closeCart();
+  coDeliveryType = 'delivery';
+  showCoStep(1);
+  selectDelivery('delivery');
+  ['coStreet','coSuburb','coCity','coPostal','coFirstName','coLastName','coPhone','coEmail','coNotes']
+    .forEach(function(id) { var el = document.getElementById(id); if (el) el.value = ''; });
+  var prov = document.getElementById('coProvince');
+  if (prov) prov.value = '';
+  document.querySelectorAll('.err-msg').forEach(function(e) { e.style.display = 'none'; });
+  document.querySelectorAll('.co-input').forEach(function(e) { e.classList.remove('err'); });
+  document.getElementById('checkoutModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeCheckout() {
+  document.getElementById('checkoutModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function selectDelivery(type) {
+  coDeliveryType = type;
+  document.getElementById('dcDelivery').classList.toggle('selected', type === 'delivery');
+  document.getElementById('dcCollection').classList.toggle('selected', type === 'collection');
+  document.getElementById('deliveryAddressBlock').style.display = type === 'delivery' ? 'block' : 'none';
+  document.getElementById('collectionInfoBlock').style.display = type === 'collection' ? 'block' : 'none';
+}
+
+function showCoStep(n) {
+  [1,2,3].forEach(function(i) {
+    document.getElementById('coStep'+i).classList.toggle('active', i === n);
+    var dot = document.getElementById('sdot'+i);
+    dot.classList.remove('active','done');
+    if (i < n)  dot.classList.add('done');
+    if (i === n) dot.classList.add('active');
+    if (i < 3) document.getElementById('sline'+i).classList.toggle('done', i < n);
+  });
+}
+
+function showFieldErr(id, errId, show) {
+  var el = document.getElementById(id);
+  var er = document.getElementById(errId);
+  if (el) el.classList.toggle('err', show);
+  if (er) er.style.display = show ? 'block' : 'none';
+}
+
+function coNext(step) {
+  if (step === 1) {
+    if (coDeliveryType === 'delivery') {
+      var street   = document.getElementById('coStreet').value.trim();
+      var suburb   = document.getElementById('coSuburb').value.trim();
+      var city     = document.getElementById('coCity').value.trim();
+      var province = document.getElementById('coProvince').value;
+      showFieldErr('coStreet',   'errStreet',   !street);
+      showFieldErr('coSuburb',   'errSuburb',   !suburb);
+      showFieldErr('coCity',     'errCity',     !city);
+      showFieldErr('coProvince', 'errProvince', !province);
+      if (!street || !suburb || !city || !province) return;
+    }
+    showCoStep(2);
+  } else if (step === 2) {
+    var first = document.getElementById('coFirstName').value.trim();
+    var last  = document.getElementById('coLastName').value.trim();
+    var phone = document.getElementById('coPhone').value.trim();
+    showFieldErr('coFirstName', 'errFirstName', !first);
+    showFieldErr('coLastName',  'errLastName',  !last);
+    var phoneOk = phone.replace(/\D/g,'').length >= 9;
+    showFieldErr('coPhone', 'errPhone', !phoneOk);
+    if (!first || !last || !phoneOk) return;
+    buildReviewStep();
+    showCoStep(3);
+  }
+}
+
+function coBack(step) {
+  showCoStep(step - 1);
+}
+
+function buildReviewStep() {
+  var lines = cart.map(function(x) {
+    return '<div class="co-order-item"><span>' + x.name.substring(0,38) + (x.name.length>38?'...':'') + ' x' + x.qty + '</span><span>' + fmt(x.price * x.qty) + '</span></div>';
+  }).join('');
+  document.getElementById('coOrderSummary').innerHTML = lines;
+  var total = cart.reduce(function(s,x) { return s + x.price*x.qty; }, 0);
+  document.getElementById('coTotalDisplay').textContent = fmt(total);
+
+  var first    = document.getElementById('coFirstName').value.trim();
+  var last     = document.getElementById('coLastName').value.trim();
+  var phone    = document.getElementById('coPhone').value.trim();
+  var email    = document.getElementById('coEmail').value.trim();
+  var notes    = document.getElementById('coNotes').value.trim();
+
+  var addrHtml = '';
+  if (coDeliveryType === 'delivery') {
+    var street   = document.getElementById('coStreet').value.trim();
+    var suburb   = document.getElementById('coSuburb').value.trim();
+    var city     = document.getElementById('coCity').value.trim();
+    var province = document.getElementById('coProvince').value;
+    var postal   = document.getElementById('coPostal').value.trim();
+    addrHtml = '<i class="fas fa-truck" style="color:var(--cyan);margin-right:6px;width:16px;"></i><b>Delivery</b><br>' +
+               '<i class="fas fa-map-marker-alt" style="color:var(--text3);margin-right:6px;width:16px;"></i>' +
+               street + ', ' + suburb + ', ' + city + ', ' + province + (postal ? ' ' + postal : '') + '<br>';
+  } else {
+    addrHtml = '<i class="fas fa-store" style="color:var(--cyan);margin-right:6px;width:16px;"></i><b>Collection</b> — Polokwane<br>';
+  }
+
+  document.getElementById('coReviewDetails').innerHTML =
+    '<i class="fas fa-user" style="color:var(--cyan);margin-right:6px;width:16px;"></i>' + first + ' ' + last + '<br>' +
+    '<i class="fas fa-phone" style="color:var(--cyan);margin-right:6px;width:16px;"></i>' + phone + '<br>' +
+    (email ? '<i class="fas fa-envelope" style="color:var(--cyan);margin-right:6px;width:16px;"></i>' + email + '<br>' : '') +
+    addrHtml;
+
+  if (notes) {
+    document.getElementById('coNotesReview').style.display = 'block';
+    document.getElementById('coNotesText').textContent = notes;
+  } else {
+    document.getElementById('coNotesReview').style.display = 'none';
+  }
+
+  var ref = (first + last.charAt(0) + (Math.floor(1000 + Math.random()*9000))).toUpperCase();
+  document.getElementById('coRef').textContent = ref;
+  document.getElementById('coAccNum').textContent = 'Confirmed via WhatsApp';
+  document.getElementById('coBranch').textContent = '250655';
+}
+
+function sendOrderToWA() {
+  var first    = document.getElementById('coFirstName').value.trim();
+  var last     = document.getElementById('coLastName').value.trim();
+  var phone    = document.getElementById('coPhone').value.trim();
+  var email    = document.getElementById('coEmail').value.trim();
+  var notes    = document.getElementById('coNotes').value.trim();
+  var ref      = document.getElementById('coRef').textContent;
+  var total    = fmt(cart.reduce(function(s,x) { return s + x.price*x.qty; }, 0));
+
+  var orderLines = cart.map(function(x) {
+    return '  \u2022 ' + x.name + ' x' + x.qty + ' \u2014 ' + fmt(x.price * x.qty);
+  }).join('\n');
+
+  var deliveryBlock = '';
+  if (coDeliveryType === 'delivery') {
+    var street   = document.getElementById('coStreet').value.trim();
+    var suburb   = document.getElementById('coSuburb').value.trim();
+    var city     = document.getElementById('coCity').value.trim();
+    var province = document.getElementById('coProvince').value;
+    var postal   = document.getElementById('coPostal').value.trim();
+    deliveryBlock = '\uD83D\uDCE6 DELIVERY TYPE: Delivery\n\uD83D\uDCCD ADDRESS: ' + street + ', ' + suburb + ', ' + city + ', ' + province + (postal ? ' ' + postal : '');
+  } else {
+    deliveryBlock = '\uD83D\uDCE6 DELIVERY TYPE: Collection (Polokwane)';
+  }
+
+  var msg = 'Hi Cyber I.T Masters! I\'d like to place an order:\n\n' +
+    '\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n' +
+    '\uD83D\uDED2 ORDER DETAILS\n' +
+    '\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n' +
+    orderLines + '\n\n' +
+    '\uD83D\uDCB0 TOTAL: ' + total + '\n\n' +
+    '\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n' +
+    '\uD83D\uDC64 CUSTOMER DETAILS\n' +
+    '\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n' +
+    '\uD83D\uDCDB NAME: ' + first + ' ' + last + '\n' +
+    '\uD83D\uDCF1 PHONE: ' + phone + '\n' +
+    (email ? '\uD83D\uDCE7 EMAIL: ' + email + '\n' : '') +
+    deliveryBlock + '\n' +
+    '\uD83D\uDD16 PAYMENT REF: ' + ref + '\n\n' +
+    '\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n' +
+    '\uD83D\uDCB3 PAYMENT: EFT / Bank Transfer\n' +
+    '\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n' +
+    (notes ? '\uD83D\uDCDD NOTES: ' + notes + '\n\n' : '\n') +
+    'Please confirm stock availability and send banking details. Thank you!';
+
+  window.open('https://wa.me/' + WA + '?text=' + encodeURIComponent(msg), '_blank');
+  closeCheckout();
+  cart = [];
+  updateCartUI();
+  showToast('Order sent! We will confirm via WhatsApp shortly.');
+}
+
+// "Order via WhatsApp" on product modal — route through checkout
+function orderSingleViaCheckout(id) {
+  var p = PRODUCTS.find(function(x) { return x.id === id || String(x.id) === String(id); });
+  if (!p) return;
+  // Add to cart if not already there, then open checkout
+  var ex = cart.find(function(x) { return String(x.id) === String(id); });
+  if (!ex) {
+    addToCart(id);
+  }
+  closeProdModal(null, true);
+  setTimeout(openCheckout, 100);
+}
+
 </script>
 </body>
 </html>
