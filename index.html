@@ -491,17 +491,29 @@
             font-size: clamp(2rem, 5vw, 3.5rem);
             font-weight: 800;
             line-height: 1.1;
-            margin-bottom: 1rem;
-            background: linear-gradient(135deg, var(--text-primary), var(--primary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+        
+        .hero-title span {
+            color: var(--primary);
+            display: block;
+            font-size: clamp(1.5rem, 3vw, 2.5rem);
+            font-weight: 600;
+            margin-top: 0.25rem;
         }
         
         .hero-subtitle {
             font-size: clamp(1rem, 2vw, 1.25rem);
             color: var(--text-secondary);
             max-width: 600px;
-            margin-bottom: 2rem;
+            margin-bottom: 1rem;
+        }
+        
+        .hero-tagline {
+            color: var(--text-tertiary);
+            font-size: 0.875rem;
+            margin-bottom: 1.5rem;
         }
         
         .hero-stats {
@@ -968,8 +980,8 @@
         /* ===== PACKAGES SECTION ===== */
         .packages-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-            gap: 1rem;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
             margin-bottom: 2rem;
         }
         
@@ -1004,20 +1016,20 @@
         .package-title {
             font-family: var(--font-display);
             font-weight: 700;
-            font-size: 0.9375rem;
+            font-size: 1rem;
             color: var(--text-primary);
             margin-bottom: 1rem;
         }
         
         .package-items {
             list-style: none;
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
         }
         
         .package-item {
-            font-size: 0.75rem;
+            font-size: 0.8125rem;
             color: var(--text-secondary);
-            padding: 0.375rem 0;
+            padding: 0.5rem 0;
             display: flex;
             align-items: center;
             gap: 0.5rem;
@@ -1044,9 +1056,9 @@
             background: transparent;
             border: 1px solid var(--border);
             color: var(--text-secondary);
-            padding: 0.625rem;
+            padding: 0.75rem;
             border-radius: var(--radius);
-            font-size: 0.75rem;
+            font-size: 0.8125rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
@@ -1062,48 +1074,36 @@
             color: white;
         }
 
-        /* ===== TRUST SECTION ===== */
-        .trust-section {
-            background: var(--bg-surface);
+        /* ===== REFURBISHED SECTION ===== */
+        .refurbished-section {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
             border-radius: var(--radius-xl);
             padding: 2rem;
             margin: 2rem 0;
         }
         
-        .trust-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-        }
-        
-        .trust-card {
-            text-align: center;
-        }
-        
-        .trust-icon {
-            width: 3rem;
-            height: 3rem;
-            background: rgba(59, 130, 246, 0.1);
-            border-radius: var(--radius);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 1rem;
-            color: var(--primary);
-            font-size: 1.25rem;
-        }
-        
-        .trust-title {
-            font-size: 0.8125rem;
+        .grading-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.6875rem;
             font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 0.5rem;
+            margin-right: 0.5rem;
         }
         
-        .trust-desc {
-            font-size: 0.75rem;
-            color: var(--text-tertiary);
-            line-height: 1.6;
+        .grade-a {
+            background: #10b981;
+            color: white;
+        }
+        
+        .grade-b {
+            background: #f59e0b;
+            color: white;
+        }
+        
+        .grade-c {
+            background: #ef4444;
+            color: white;
         }
 
         /* ===== MODAL ===== */
@@ -1177,6 +1177,249 @@
         
         .modal-body {
             padding: 1.5rem;
+        }
+
+        /* ===== CHECKOUT MODAL ===== */
+        .checkout-steps {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            padding: 0 1rem;
+        }
+        
+        .step {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            position: relative;
+        }
+        
+        .step-number {
+            width: 2rem;
+            height: 2rem;
+            background: var(--bg-inset);
+            border: 1px solid var(--border);
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .step.active .step-number {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+        
+        .step.done .step-number {
+            background: var(--success);
+            border-color: var(--success);
+            color: white;
+        }
+        
+        .step-label {
+            font-size: 0.625rem;
+            color: var(--text-tertiary);
+        }
+        
+        .step-line {
+            position: absolute;
+            top: 1rem;
+            right: -50%;
+            width: 100%;
+            height: 1px;
+            background: var(--border);
+            z-index: 1;
+        }
+        
+        .step:last-child .step-line {
+            display: none;
+        }
+        
+        .step.done + .step .step-line {
+            background: var(--success);
+        }
+        
+        .delivery-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .delivery-option {
+            background: var(--bg-inset);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .delivery-option:hover {
+            border-color: var(--primary);
+        }
+        
+        .delivery-option.selected {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: var(--primary);
+        }
+        
+        .delivery-option i {
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .delivery-option span {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .delivery-option small {
+            font-size: 0.6875rem;
+            color: var(--text-tertiary);
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 0.6875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-tertiary);
+            margin-bottom: 0.25rem;
+        }
+        
+        .form-input {
+            width: 100%;
+            background: var(--bg-inset);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 0.625rem;
+            border-radius: var(--radius);
+            font-size: 0.8125rem;
+            transition: all 0.2s;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .form-input.error {
+            border-color: var(--danger);
+        }
+        
+        .error-message {
+            font-size: 0.625rem;
+            color: var(--danger);
+            margin-top: 0.25rem;
+            display: none;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+        }
+        
+        .bank-details {
+            background: var(--bg-inset);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1rem;
+            font-size: 0.8125rem;
+            margin-bottom: 1rem;
+        }
+        
+        .bank-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.375rem 0;
+            border-bottom: 1px solid var(--border-light);
+        }
+        
+        .bank-row:last-child {
+            border-bottom: none;
+        }
+        
+        .bank-row span:first-child {
+            color: var(--text-tertiary);
+        }
+        
+        .bank-row span:last-child {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+        
+        .order-summary {
+            background: var(--bg-inset);
+            border-radius: var(--radius);
+            padding: 1rem;
+            margin-bottom: 1rem;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            padding: 0.375rem 0;
+            border-bottom: 1px solid var(--border-light);
+        }
+        
+        .order-total {
+            display: flex;
+            justify-content: space-between;
+            font-size: 1rem;
+            font-weight: 700;
+            margin-top: 1rem;
+            padding-top: 0.5rem;
+            border-top: 2px solid var(--border);
+        }
+        
+        .order-total span:last-child {
+            color: var(--primary);
+        }
+        
+        .co-step {
+            display: none;
+        }
+        
+        .co-step.active {
+            display: block;
+        }
+        
+        .quote-request {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: var(--radius);
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .quote-request p {
+            color: var(--text-secondary);
+            font-size: 0.8125rem;
         }
 
         /* ===== CART DRAWER ===== */
@@ -1326,6 +1569,52 @@
             color: var(--text-tertiary);
         }
 
+        /* ===== BUTTONS ===== */
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.625rem 1.25rem;
+            border-radius: var(--radius);
+            font-size: 0.8125rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        
+        .btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+        
+        .btn-secondary:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: rgba(59, 130, 246, 0.05);
+        }
+        
+        .btn-success {
+            background: var(--success);
+        }
+        
+        .btn-success:hover {
+            background: #0d9488;
+        }
+        
+        .btn-block {
+            width: 100%;
+        }
+
         /* ===== FOOTER ===== */
         footer {
             background: var(--bg-surface);
@@ -1354,7 +1643,7 @@
             margin-bottom: 1rem;
         }
         
-        .footer-col a {
+        .footer-col a, .footer-col span {
             display: block;
             font-size: 0.75rem;
             color: var(--text-secondary);
@@ -1503,6 +1792,10 @@
             .nav-container {
                 top: 65px;
             }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
         }
         
         @media (max-width: 640px) {
@@ -1555,44 +1848,6 @@
         }
 
         /* ===== UTILITY CLASSES ===== */
-        .text-gradient {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        
-        .btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: var(--radius);
-            font-size: 0.8125rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
-        .btn:hover {
-            background: var(--primary-dark);
-            transform: translateY(-1px);
-        }
-        
-        .btn-secondary {
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--text-secondary);
-        }
-        
-        .btn-secondary:hover {
-            border-color: var(--primary);
-            color: var(--primary);
-            background: rgba(59, 130, 246, 0.05);
-        }
-        
         .empty-state {
             text-align: center;
             padding: 3rem 1rem;
@@ -1714,8 +1969,12 @@
             Authorized Technology Supplier
         </div>
         
-        <h1 class="hero-title">Professional IT Solutions</h1>
-        <p class="hero-subtitle">Hardware • Networking • Security • Business Technology</p>
+        <h1 class="hero-title">
+            CYBER I.T MASTERS
+            <span>Tech Store</span>
+        </h1>
+        
+        <p class="hero-tagline">Professional IT Hardware & Business Technology Solutions</p>
         
         <div class="hero-stats">
             <div class="hero-stat">
@@ -1755,14 +2014,15 @@
     </div>
 </div>
 
-<!-- DEALS SECTION -->
-<div class="layout">
+<!-- DEALS SECTION - ONLY SHOWS IF MARKED IN ADMIN -->
+<div class="layout" id="dealsSection" style="display: none;">
     <div class="section-header">
         <div>
             <h2 class="section-title">
                 <i class="fas fa-fire"></i>
-                Hot Deals This Week
+                🔥 Hot Deals This Week
             </h2>
+            <p style="color: var(--text-tertiary); font-size: 0.75rem; margin-top: 0.25rem;">Special limited-time offers</p>
         </div>
         
         <div class="deals-timer">
@@ -1815,15 +2075,182 @@
     </div>
 </div>
 
-<!-- BUSINESS PACKAGES SECTION -->
+<!-- BUSINESS SOLUTION PACKAGES -->
 <div class="layout">
-    <h2 class="section-title" style="margin-bottom: 1.5rem;">
+    <h2 class="section-title" style="margin-bottom: 1rem;">
         <i class="fas fa-briefcase"></i>
         Business Solution Packages
     </h2>
+    <p style="color: var(--text-tertiary); font-size: 0.875rem; margin-bottom: 1.5rem;">Complete, pre-configured solutions for your business — request a quote</p>
     
-    <div class="packages-grid" id="packagesGrid">
-        <!-- Populated by JavaScript -->
+    <div class="packages-grid">
+        <!-- CCTV -->
+        <div class="package-card">
+            <div class="package-icon"><i class="fas fa-video"></i></div>
+            <h3 class="package-title">CCTV Security</h3>
+            <ul class="package-items">
+                <li class="package-item"><i class="fas fa-circle"></i> 4 Camera CCTV Kit <span class="package-tag">Home</span></li>
+                <li class="package-item"><i class="fas fa-circle"></i> 8 Camera Business Security Kit <span class="package-tag">Popular</span></li>
+                <li class="package-item"><i class="fas fa-circle"></i> 16 Camera Warehouse Package <span class="package-tag">Enterprise</span></li>
+                <li class="package-item"><i class="fas fa-circle"></i> NVR + IP Camera Bundle</li>
+            </ul>
+            <button class="package-btn" onclick="openQuoteRequest('CCTV Security Package')">
+                <i class="fab fa-whatsapp"></i> Request Quote
+            </button>
+        </div>
+
+        <!-- Networking -->
+        <div class="package-card">
+            <div class="package-icon"><i class="fas fa-network-wired"></i></div>
+            <h3 class="package-title">Office Networking</h3>
+            <ul class="package-items">
+                <li class="package-item"><i class="fas fa-circle"></i> Small Office WiFi Setup <span class="package-tag">5-10 users</span></li>
+                <li class="package-item"><i class="fas fa-circle"></i> Router + Switch Kit <span class="package-tag">Popular</span></li>
+                <li class="package-item"><i class="fas fa-circle"></i> Enterprise Network Package</li>
+                <li class="package-item"><i class="fas fa-circle"></i> Fibre + Cabinet Setup</li>
+            </ul>
+            <button class="package-btn" onclick="openQuoteRequest('Office Networking Package')">
+                <i class="fab fa-whatsapp"></i> Request Quote
+            </button>
+        </div>
+
+        <!-- Office Computers -->
+        <div class="package-card">
+            <div class="package-icon"><i class="fas fa-desktop"></i></div>
+            <h3 class="package-title">Office Computers</h3>
+            <ul class="package-items">
+                <li class="package-item"><i class="fas fa-circle"></i> Work From Home Setup</li>
+                <li class="package-item"><i class="fas fa-circle"></i> Small Office PC Package x5 <span class="package-tag">Popular</span></li>
+                <li class="package-item"><i class="fas fa-circle"></i> Business Workstation Setup</li>
+                <li class="package-item"><i class="fas fa-circle"></i> Server + 10 Workstations</li>
+            </ul>
+            <button class="package-btn" onclick="openQuoteRequest('Office Computer Package')">
+                <i class="fab fa-whatsapp"></i> Request Quote
+            </button>
+        </div>
+
+        <!-- Server & Storage -->
+        <div class="package-card">
+            <div class="package-icon"><i class="fas fa-server"></i></div>
+            <h3 class="package-title">Server & Storage</h3>
+            <ul class="package-items">
+                <li class="package-item"><i class="fas fa-circle"></i> NAS Storage Server</li>
+                <li class="package-item"><i class="fas fa-circle"></i> Business File Server <span class="package-tag">Popular</span></li>
+                <li class="package-item"><i class="fas fa-circle"></i> Rack Server + UPS Package</li>
+                <li class="package-item"><i class="fas fa-circle"></i> Cloud + Local Backup</li>
+            </ul>
+            <button class="package-btn" onclick="openQuoteRequest('Server & Storage Package')">
+                <i class="fab fa-whatsapp"></i> Request Quote
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- REFURBISHED TECH DEVICES -->
+<div class="refurbished-section">
+    <h2 class="section-title" style="margin-bottom: 1rem;">
+        <i class="fas fa-recycle"></i>
+        Refurbished Tech Devices
+    </h2>
+    <p style="color: var(--text-tertiary); font-size: 0.875rem; margin-bottom: 1.5rem;">Quality tested, graded, and guaranteed — great value for budget-conscious businesses</p>
+    
+    <div class="packages-grid">
+        <!-- Refurbished Laptops -->
+        <div class="package-card">
+            <div class="package-icon"><i class="fas fa-laptop"></i></div>
+            <h3 class="package-title">Refurbished Laptops</h3>
+            <ul class="package-items">
+                <li class="package-item">
+                    <i class="fas fa-circle"></i> 
+                    Grade A Laptop Bundle 
+                    <span class="grading-badge grade-a">A</span>
+                    <span class="package-tag">Like New</span>
+                </li>
+                <li class="package-item">
+                    <i class="fas fa-circle"></i> 
+                    Grade B Laptop Bundle 
+                    <span class="grading-badge grade-b">B</span>
+                    <span class="package-tag">Good</span>
+                </li>
+                <li class="package-item">
+                    <i class="fas fa-circle"></i> 
+                    Grade C Laptop Bundle 
+                    <span class="grading-badge grade-c">C</span>
+                    <span class="package-tag">Functional</span>
+                </li>
+            </ul>
+            <button class="package-btn" onclick="openQuoteRequest('Refurbished Laptops')">
+                <i class="fab fa-whatsapp"></i> Request Quote
+            </button>
+        </div>
+
+        <!-- Refurbished Desktops -->
+        <div class="package-card">
+            <div class="package-icon"><i class="fas fa-desktop"></i></div>
+            <h3 class="package-title">Refurbished Desktops</h3>
+            <ul class="package-items">
+                <li class="package-item">
+                    <i class="fas fa-circle"></i> 
+                    Grade A Desktop Bundle 
+                    <span class="grading-badge grade-a">A</span>
+                </li>
+                <li class="package-item">
+                    <i class="fas fa-circle"></i> 
+                    Grade B Desktop Bundle 
+                    <span class="grading-badge grade-b">B</span>
+                </li>
+                <li class="package-item">
+                    <i class="fas fa-circle"></i> 
+                    Grade C Desktop Bundle 
+                    <span class="grading-badge grade-c">C</span>
+                </li>
+            </ul>
+            <button class="package-btn" onclick="openQuoteRequest('Refurbished Desktops')">
+                <i class="fab fa-whatsapp"></i> Request Quote
+            </button>
+        </div>
+
+        <!-- Refurbished Tablets -->
+        <div class="package-card">
+            <div class="package-icon"><i class="fas fa-tablet-alt"></i></div>
+            <h3 class="package-title">Refurbished Tablets</h3>
+            <ul class="package-items">
+                <li class="package-item">
+                    <i class="fas fa-circle"></i> 
+                    Grade A Tablet Bundle 
+                    <span class="grading-badge grade-a">A</span>
+                </li>
+                <li class="package-item">
+                    <i class="fas fa-circle"></i> 
+                    Grade B Tablet Bundle 
+                    <span class="grading-badge grade-b">B</span>
+                </li>
+            </ul>
+            <button class="package-btn" onclick="openQuoteRequest('Refurbished Tablets')">
+                <i class="fab fa-whatsapp"></i> Request Quote
+            </button>
+        </div>
+
+        <!-- Refurbished Printers -->
+        <div class="package-card">
+            <div class="package-icon"><i class="fas fa-print"></i></div>
+            <h3 class="package-title">Refurbished Printers</h3>
+            <ul class="package-items">
+                <li class="package-item">
+                    <i class="fas fa-circle"></i> 
+                    Grade A Printer Bundle 
+                    <span class="grading-badge grade-a">A</span>
+                </li>
+                <li class="package-item">
+                    <i class="fas fa-circle"></i> 
+                    Grade B Printer Bundle 
+                    <span class="grading-badge grade-b">B</span>
+                </li>
+            </ul>
+            <button class="package-btn" onclick="openQuoteRequest('Refurbished Printers')">
+                <i class="fab fa-whatsapp"></i> Request Quote
+            </button>
+        </div>
     </div>
 </div>
 
@@ -1883,18 +2310,18 @@
             
             <div class="footer-col">
                 <h4>Services</h4>
-                <a href="#">IT Support</a>
-                <a href="#">Network Setup</a>
-                <a href="#">Security Systems</a>
-                <a href="#">Business Quotes</a>
+                <span>IT Support</span>
+                <span>Network Setup</span>
+                <span>Security Systems</span>
+                <span>Business Quotes</span>
             </div>
             
             <div class="footer-col">
                 <h4>Company</h4>
                 <a href="https://mbulahenigroup.co.za" target="_blank">Mbulaheni Group</a>
-                <a href="#">About Us</a>
-                <a href="#">Terms</a>
-                <a href="#">Privacy</a>
+                <span>About Us</span>
+                <span>Terms</span>
+                <span>Privacy</span>
             </div>
         </div>
         
@@ -1939,8 +2366,180 @@
                 </button>
                 <button class="btn btn-secondary" id="mWaBtn" style="flex: 1;">
                     <i class="fab fa-whatsapp" style="color: var(--success);"></i>
-                    WhatsApp Order
+                    Order via WhatsApp
                 </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- QUOTE REQUEST MODAL (3-Step Checkout) -->
+<div class="modal-overlay" id="quoteModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 class="modal-title">Request Quote</h3>
+            <button class="modal-close" onclick="closeQuoteModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="modal-body">
+            <!-- Progress Steps -->
+            <div class="checkout-steps">
+                <div class="step active" id="step1">
+                    <div class="step-number">1</div>
+                    <span class="step-label">Delivery</span>
+                    <div class="step-line"></div>
+                </div>
+                <div class="step" id="step2">
+                    <div class="step-number">2</div>
+                    <span class="step-label">Details</span>
+                    <div class="step-line"></div>
+                </div>
+                <div class="step" id="step3">
+                    <div class="step-number">3</div>
+                    <span class="step-label">Review</span>
+                </div>
+            </div>
+            
+            <!-- Step 1: Delivery Method -->
+            <div class="co-step active" id="coStep1">
+                <div class="delivery-options">
+                    <div class="delivery-option selected" id="optDelivery" onclick="selectDeliveryMethod('delivery')">
+                        <i class="fas fa-truck"></i>
+                        <span>Delivery</span>
+                        <small>We deliver to you</small>
+                    </div>
+                    <div class="delivery-option" id="optCollection" onclick="selectDeliveryMethod('collection')">
+                        <i class="fas fa-store"></i>
+                        <span>Collection</span>
+                        <small>Pick up in Polokwane</small>
+                    </div>
+                </div>
+                
+                <div id="deliveryAddressBlock">
+                    <div class="form-group">
+                        <label class="form-label">Street Address *</label>
+                        <input class="form-input" id="coStreet" type="text" placeholder="e.g. 12 Main Street">
+                        <div class="error-message" id="errStreet">Please enter your street address</div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Suburb *</label>
+                            <input class="form-input" id="coSuburb" type="text" placeholder="e.g. Seshego">
+                            <div class="error-message" id="errSuburb">Please enter your suburb</div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">City *</label>
+                            <input class="form-input" id="coCity" type="text" placeholder="e.g. Polokwane">
+                            <div class="error-message" id="errCity">Please enter your city</div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Province *</label>
+                            <select class="form-input" id="coProvince">
+                                <option value="">Select Province</option>
+                                <option>Limpopo</option>
+                                <option>Gauteng</option>
+                                <option>North West</option>
+                                <option>Mpumalanga</option>
+                                <option>KwaZulu-Natal</option>
+                                <option>Eastern Cape</option>
+                                <option>Western Cape</option>
+                                <option>Northern Cape</option>
+                                <option>Free State</option>
+                            </select>
+                            <div class="error-message" id="errProvince">Please select your province</div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Postal Code</label>
+                            <input class="form-input" id="coPostal" type="text" placeholder="e.g. 0699">
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="collectionInfoBlock" style="display: none;">
+                    <div class="quote-request">
+                        <p><i class="fas fa-map-marker-alt" style="color: var(--primary); margin-right: 0.5rem;"></i> Polokwane, Limpopo</p>
+                        <p><i class="fas fa-clock" style="color: var(--primary); margin-right: 0.5rem;"></i> Mon–Fri: 08:00–17:00</p>
+                        <p><i class="fab fa-whatsapp" style="color: var(--success); margin-right: 0.5rem;"></i> We'll confirm collection time via WhatsApp</p>
+                    </div>
+                </div>
+                
+                <div style="display: flex; justify-content: space-between; margin-top: 1.5rem;">
+                    <button class="btn btn-secondary" onclick="closeQuoteModal()">Cancel</button>
+                    <button class="btn" onclick="nextStep(1)">Next →</button>
+                </div>
+            </div>
+            
+            <!-- Step 2: Customer Details -->
+            <div class="co-step" id="coStep2">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">First Name *</label>
+                        <input class="form-input" id="coFirstName" type="text" placeholder="e.g. Thabo">
+                        <div class="error-message" id="errFirstName">Please enter your first name</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Last Name *</label>
+                        <input class="form-input" id="coLastName" type="text" placeholder="e.g. Nkosi">
+                        <div class="error-message" id="errLastName">Please enter your last name</div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Phone Number *</label>
+                    <input class="form-input" id="coPhone" type="tel" placeholder="e.g. 073 123 4567">
+                    <div class="error-message" id="errPhone">Please enter a valid phone number</div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Email Address <span style="color: var(--text-tertiary); font-weight: normal;">(optional)</span></label>
+                    <input class="form-input" id="coEmail" type="email" placeholder="e.g. you@email.com">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Order Notes <span style="color: var(--text-tertiary); font-weight: normal;">(optional)</span></label>
+                    <textarea class="form-input" id="coNotes" rows="3" placeholder="Special instructions, specific preferences..."></textarea>
+                </div>
+                
+                <div style="display: flex; justify-content: space-between; margin-top: 1.5rem;">
+                    <button class="btn btn-secondary" onclick="prevStep(2)">← Back</button>
+                    <button class="btn" onclick="nextStep(2)">Next →</button>
+                </div>
+            </div>
+            
+            <!-- Step 3: Review & Send -->
+            <div class="co-step" id="coStep3">
+                <div class="order-summary" id="coOrderSummary"></div>
+                
+                <div class="bank-details">
+                    <div class="bank-row">
+                        <span>Bank</span>
+                        <span>FNB</span>
+                    </div>
+                    <div class="bank-row">
+                        <span>Account Name</span>
+                        <span>Mbulaheni Group</span>
+                    </div>
+                    <div class="bank-row">
+                        <span>Reference</span>
+                        <span id="coRef" style="color: var(--primary);">—</span>
+                    </div>
+                </div>
+                
+                <div id="coReviewDetails" style="font-size: 0.8125rem; color: var(--text-secondary); line-height: 1.8; margin-bottom: 1rem;"></div>
+                
+                <div style="display: flex; justify-content: space-between; gap: 1rem; margin-top: 1.5rem;">
+                    <button class="btn btn-secondary" onclick="prevStep(3)">← Back</button>
+                    <button class="btn btn-success" onclick="sendQuoteRequest()" style="flex: 1;">
+                        <i class="fab fa-whatsapp"></i>
+                        Send Quote Request
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -1962,7 +2561,7 @@
             <span>Total</span>
             <span id="cartTotal">R 0.00</span>
         </div>
-        <button class="btn" onclick="openCheckout()" style="width: 100%;">
+        <button class="btn btn-block" onclick="checkoutFromCart()">
             <i class="fab fa-whatsapp"></i>
             Checkout via WhatsApp
         </button>
@@ -1992,9 +2591,9 @@
         </div>
         
         <div class="modal-body">
-            <input type="text" id="adminUser" placeholder="Username" style="width: 100%; background: var(--bg-inset); border: 1px solid var(--border); color: var(--text-primary); padding: 0.625rem; border-radius: var(--radius); margin-bottom: 0.5rem;">
-            <input type="password" id="adminPass" placeholder="Password" style="width: 100%; background: var(--bg-inset); border: 1px solid var(--border); color: var(--text-primary); padding: 0.625rem; border-radius: var(--radius); margin-bottom: 1rem;">
-            <button class="btn" onclick="doAdminLogin()" style="width: 100%;">Login</button>
+            <input type="text" id="adminUser" placeholder="Username" class="form-input" style="margin-bottom: 0.5rem;">
+            <input type="password" id="adminPass" placeholder="Password" class="form-input" style="margin-bottom: 1rem;">
+            <button class="btn btn-block" onclick="doAdminLogin()">Login</button>
             <div id="adminLoginErr" style="color: var(--danger); font-size: 0.75rem; margin-top: 0.5rem;"></div>
         </div>
     </div>
@@ -2039,7 +2638,7 @@
         {id:8,name:`Intellinet Yellow CAT6 S-FTP 0.5m Patch Cable`,code:`735261`,category:`Networking Cables-Cat6`,price:19.0,stock:10,image:`https://www.xyz.co.za/ProdImg/Big_736084-01.jpg`,description:`Intellinet CAT6 S/FTP Patch Cable CU - RJ45 Male / RJ45 Male, 0.5m - Yellow, Retail Box, No Warranty`},
         {id:9,name:`Intellinet Grey CAT6 S-FTP 0.25m Patch Cable`,code:`739788`,category:`Networking Cables-Cat6`,price:19.0,stock:13,image:`https://www.xyz.co.za/ProdImg/Big_733328-01.jpg`,description:`Intellinet CAT6 S/FTP Patch Cable (0.25m) in grey ensures fast and reliable network connections. Featuring RJ45 male connectors on both ends, it's perfect for linking devices in home or office setups. Its durable design minimizes interference, while the compact length keeps your workspace tidy. Comes in a retail box with no warranty`},
         {id:10,name:`Intellinet CAT5E F-UTP Grey Patch Cable`,code:`737319`,category:`Networking Cables-Cat5`,price:19.0,stock:5,image:`https://www.xyz.co.za/ProdImg/Big_737364-01.jpg`,description:`Intellinet CAT5E F/UTP Patch Cable (0.25m) in grey offers a reliable connection for network devices. Featuring RJ45 male connectors on both ends, it ensures stable data transmission. Ideal for short-distance networking, it comes in a convenient retail box. Note: this product has no warranty. Perfect for home or office use.`}
-        // ... (rest of your 276 products - keep the same array)
+        // ... (rest of your 276 products would go here)
     ];
 
     // =========================================================================
@@ -2083,15 +2682,19 @@
     let bundles = [];
     let PRODUCTS = [];
     let cart = [];
-    let wishlist = [];
     let currentCat = "All Products";
     let specialFilter = "all";
     let currentPage = 1;
     let subCatFilter = null;
     let priceLimit = 50000;
     let currentModalId = null;
+    let currentQuotePackage = "";
     const PER_PAGE = 24;
     const WA = "27737335518";
+    
+    // Checkout state
+    let coDeliveryType = 'delivery';
+    let coCurrentStep = 1;
 
     // =========================================================================
     // SYNC STATUS
@@ -2576,7 +3179,6 @@
             bundleEl.innerHTML = "";
         }
         
-        const msg = encodeURIComponent(`Hi! I'd like to order:\n\nProduct: ${p.name}\nSKU: ${p.code || "N/A"}\nPrice: ${fmt(eff.price)}\n\nPlease confirm availability.`);
         document.getElementById("mWaBtn").onclick = function() { orderSingleViaCheckout(p.id); };
         
         document.getElementById("prodModal").classList.add("open");
@@ -2688,6 +3290,218 @@
         `).join("");
     }
 
+    function checkoutFromCart() {
+        if (!cart.length) {
+            showToast('Your cart is empty');
+            return;
+        }
+        
+        closeCart();
+        
+        const orderLines = cart.map(x => `  • ${x.name} x${x.qty} — ${fmt(x.price * x.qty)}`).join('\n');
+        const total = fmt(cart.reduce((s, x) => s + x.price * x.qty, 0));
+        
+        const orderMsg = `Hi Cyber I.T Masters! I'd like to place an order:\n\n━━━━━━━━━━━━━━━━━━━\n🛒 ORDER DETAILS\n━━━━━━━━━━━━━━━━━━━\n${orderLines}\n\n💰 TOTAL: ${total}\n\n━━━━━━━━━━━━━━━━━━━\n👤 CUSTOMER INFO\n━━━━━━━━━━━━━━━━━━━\n📛 NAME: (Please provide)\n📱 PHONE: (Please provide)\n\nPlease confirm availability and send banking details. Thank you!`;
+        
+        window.open('https://wa.me/' + WA + '?text=' + encodeURIComponent(orderMsg), '_blank');
+        
+        showToast('Opening WhatsApp...');
+    }
+
+    function orderSingleViaCheckout(id) {
+        const p = PRODUCTS.find(x => x.id === id || String(x.id) === String(id));
+        if (!p) return;
+        
+        const ex = cart.find(x => String(x.id) === String(id));
+        if (!ex) addToCart(id);
+        
+        closeProdModal();
+        setTimeout(openCart, 100);
+    }
+
+    // =========================================================================
+    // QUOTE REQUEST FUNCTIONS
+    // =========================================================================
+    function openQuoteRequest(packageName) {
+        currentQuotePackage = packageName;
+        
+        // Reset form
+        coDeliveryType = 'delivery';
+        coCurrentStep = 1;
+        
+        // Clear inputs
+        ['coStreet','coSuburb','coCity','coPostal','coFirstName','coLastName','coPhone','coEmail','coNotes'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.value = '';
+        });
+        
+        const province = document.getElementById('coProvince');
+        if (province) province.value = '';
+        
+        // Reset UI
+        document.querySelectorAll('.error-message').forEach(e => e.style.display = 'none');
+        document.querySelectorAll('.form-input').forEach(e => e.classList.remove('error'));
+        
+        // Reset steps
+        selectDeliveryMethod('delivery');
+        showQuoteStep(1);
+        
+        document.getElementById('quoteModal').classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeQuoteModal() {
+        document.getElementById('quoteModal').classList.remove('open');
+        document.body.style.overflow = '';
+    }
+
+    function selectDeliveryMethod(type) {
+        coDeliveryType = type;
+        
+        document.getElementById('optDelivery').classList.toggle('selected', type === 'delivery');
+        document.getElementById('optCollection').classList.toggle('selected', type === 'collection');
+        document.getElementById('deliveryAddressBlock').style.display = type === 'delivery' ? 'block' : 'none';
+        document.getElementById('collectionInfoBlock').style.display = type === 'collection' ? 'block' : 'none';
+    }
+
+    function showQuoteStep(n) {
+        coCurrentStep = n;
+        
+        // Update steps
+        [1,2,3].forEach(i => {
+            const step = document.getElementById(`step${i}`);
+            const coStep = document.getElementById(`coStep${i}`);
+            
+            if (i < n) {
+                step.classList.add('done');
+                step.classList.remove('active');
+            } else if (i === n) {
+                step.classList.add('active');
+                step.classList.remove('done');
+                coStep.classList.add('active');
+            } else {
+                step.classList.remove('active', 'done');
+                coStep.classList.remove('active');
+            }
+        });
+    }
+
+    function showFieldErr(id, errId, show) {
+        const el = document.getElementById(id);
+        const er = document.getElementById(errId);
+        if (el) el.classList.toggle('error', show);
+        if (er) er.style.display = show ? 'block' : 'none';
+    }
+
+    function nextStep(step) {
+        if (step === 1) {
+            if (coDeliveryType === 'delivery') {
+                const street = document.getElementById('coStreet').value.trim();
+                const suburb = document.getElementById('coSuburb').value.trim();
+                const city = document.getElementById('coCity').value.trim();
+                const province = document.getElementById('coProvince').value;
+                
+                showFieldErr('coStreet', 'errStreet', !street);
+                showFieldErr('coSuburb', 'errSuburb', !suburb);
+                showFieldErr('coCity', 'errCity', !city);
+                showFieldErr('coProvince', 'errProvince', !province);
+                
+                if (!street || !suburb || !city || !province) return;
+            }
+            showQuoteStep(2);
+        } else if (step === 2) {
+            const first = document.getElementById('coFirstName').value.trim();
+            const last = document.getElementById('coLastName').value.trim();
+            const phone = document.getElementById('coPhone').value.trim();
+            
+            showFieldErr('coFirstName', 'errFirstName', !first);
+            showFieldErr('coLastName', 'errLastName', !last);
+            
+            const phoneOk = phone.replace(/\D/g, '').length >= 9;
+            showFieldErr('coPhone', 'errPhone', !phoneOk);
+            
+            if (!first || !last || !phoneOk) return;
+            
+            buildQuoteReview();
+            showQuoteStep(3);
+        }
+    }
+
+    function prevStep(step) {
+        showQuoteStep(step - 1);
+    }
+
+    function buildQuoteReview() {
+        const first = document.getElementById('coFirstName').value.trim();
+        const last = document.getElementById('coLastName').value.trim();
+        const phone = document.getElementById('coPhone').value.trim();
+        const email = document.getElementById('coEmail').value.trim();
+        const notes = document.getElementById('coNotes').value.trim();
+        
+        // Generate reference
+        const ref = (first + last.charAt(0) + Math.floor(1000 + Math.random() * 9000)).toUpperCase();
+        document.getElementById('coRef').textContent = ref;
+        
+        // Build order summary
+        const orderSummary = document.getElementById('coOrderSummary');
+        orderSummary.innerHTML = `
+            <div class="order-item">
+                <span>Quote Request</span>
+                <span style="color: var(--primary);">${currentQuotePackage}</span>
+            </div>
+        `;
+        
+        // Build review details
+        let addrHtml = '';
+        if (coDeliveryType === 'delivery') {
+            const street = document.getElementById('coStreet').value.trim();
+            const suburb = document.getElementById('coSuburb').value.trim();
+            const city = document.getElementById('coCity').value.trim();
+            const province = document.getElementById('coProvince').value;
+            const postal = document.getElementById('coPostal').value.trim();
+            
+            addrHtml = `📍 ADDRESS: ${street}, ${suburb}, ${city}, ${province}${postal ? ' ' + postal : ''}`;
+        } else {
+            addrHtml = '📍 COLLECTION: Polokwane';
+        }
+        
+        document.getElementById('coReviewDetails').innerHTML = `
+            📛 NAME: ${first} ${last}<br>
+            📱 PHONE: ${phone}<br>
+            ${email ? `📧 EMAIL: ${email}<br>` : ''}
+            ${addrHtml}<br>
+            ${notes ? `📝 NOTES: ${notes}` : ''}
+        `;
+    }
+
+    function sendQuoteRequest() {
+        const first = document.getElementById('coFirstName').value.trim();
+        const last = document.getElementById('coLastName').value.trim();
+        const phone = document.getElementById('coPhone').value.trim();
+        const email = document.getElementById('coEmail').value.trim();
+        const notes = document.getElementById('coNotes').value.trim();
+        const ref = document.getElementById('coRef').textContent;
+        
+        let deliveryBlock = '';
+        if (coDeliveryType === 'delivery') {
+            const street = document.getElementById('coStreet').value.trim();
+            const suburb = document.getElementById('coSuburb').value.trim();
+            const city = document.getElementById('coCity').value.trim();
+            const province = document.getElementById('coProvince').value;
+            const postal = document.getElementById('coPostal').value.trim();
+            deliveryBlock = `📦 DELIVERY TYPE: Delivery\n📍 ADDRESS: ${street}, ${suburb}, ${city}, ${province}${postal ? ' ' + postal : ''}`;
+        } else {
+            deliveryBlock = `📦 DELIVERY TYPE: Collection (Polokwane)`;
+        }
+        
+        const msg = `Hi Cyber I.T Masters! I'd like to request a quote:\n\n━━━━━━━━━━━━━━━━━━━\n📋 QUOTE REQUEST\n━━━━━━━━━━━━━━━━━━━\n  • Package: ${currentQuotePackage}\n\n━━━━━━━━━━━━━━━━━━━\n👤 CUSTOMER DETAILS\n━━━━━━━━━━━━━━━━━━━\n📛 NAME: ${first} ${last}\n📱 PHONE: ${phone}\n${email ? `📧 EMAIL: ${email}\n` : ''}${deliveryBlock}\n🔖 REFERENCE: ${ref}\n${notes ? `\n📝 NOTES: ${notes}` : ''}\n\nPlease provide pricing and availability. Thank you!`;
+        
+        window.open('https://wa.me/' + WA + '?text=' + encodeURIComponent(msg), '_blank');
+        
+        closeQuoteModal();
+        showToast('Quote request sent! We will respond via WhatsApp shortly.');
+    }
+
     // =========================================================================
     // HOMEPAGE FUNCTIONS
     // =========================================================================
@@ -2720,29 +3534,29 @@
 
     function buildDealsSection() {
         const grid = document.getElementById('dealsGrid');
+        const section = document.getElementById('dealsSection');
+        
         if (!grid || !PRODUCTS || !PRODUCTS.length) return;
         
+        // Only show deals if there are products marked as on sale
         let deals = PRODUCTS.filter(p => {
             const pr = prices[p.id] || {};
             return pr.saleOn && pr.sale;
-        }).slice(0, 8);
+        });
         
-        if (deals.length < 4) {
-            const withImg = PRODUCTS.filter(p => p.image && deals.indexOf(p) === -1);
-            withImg.sort(() => Math.random() - 0.5);
-            deals = deals.concat(withImg.slice(0, 8 - deals.length));
-        }
-        
-        if (!deals.length) {
-            grid.closest('.layout').style.display = 'none';
+        if (deals.length === 0) {
+            section.style.display = 'none';
             return;
         }
+        
+        section.style.display = 'block';
+        deals = deals.slice(0, 8);
         
         const FALLBACK = 'https://placehold.co/220x130/0a1628/00d4ff?text=Product';
         
         grid.innerHTML = deals.map(p => {
             const pr = prices[p.id] || {};
-            const salePrice = (pr.saleOn && pr.sale) ? pr.sale : null;
+            const salePrice = pr.sale;
             const basePrice = pr.normal || p.price || 0;
             const showPrice = salePrice || basePrice;
             const discount = salePrice ? Math.round((1 - salePrice / basePrice) * 100) : null;
@@ -2778,108 +3592,9 @@
         }).join('');
     }
 
-    function buildPackagesSection() {
-        const grid = document.getElementById('packagesGrid');
-        
-        grid.innerHTML = `
-            <div class="package-card">
-                <div class="package-icon"><i class="fas fa-video"></i></div>
-                <h3 class="package-title">CCTV Security</h3>
-                <ul class="package-items">
-                    <li class="package-item"><i class="fas fa-circle"></i> 4 Camera Kit <span class="package-tag">Home</span></li>
-                    <li class="package-item"><i class="fas fa-circle"></i> 8 Camera Business Kit <span class="package-tag">Popular</span></li>
-                    <li class="package-item"><i class="fas fa-circle"></i> 16 Camera Warehouse Package</li>
-                </ul>
-                <button class="package-btn" onclick="pkgQuote('CCTV Security Package')">
-                    <i class="fab fa-whatsapp"></i> Get Quote
-                </button>
-            </div>
-            
-            <div class="package-card">
-                <div class="package-icon"><i class="fas fa-network-wired"></i></div>
-                <h3 class="package-title">Office Networking</h3>
-                <ul class="package-items">
-                    <li class="package-item"><i class="fas fa-circle"></i> Small Office WiFi Setup</li>
-                    <li class="package-item"><i class="fas fa-circle"></i> Router + Switch Kit</li>
-                    <li class="package-item"><i class="fas fa-circle"></i> Enterprise Network Package</li>
-                </ul>
-                <button class="package-btn" onclick="pkgQuote('Office Networking Package')">
-                    <i class="fab fa-whatsapp"></i> Get Quote
-                </button>
-            </div>
-            
-            <div class="package-card">
-                <div class="package-icon"><i class="fas fa-desktop"></i></div>
-                <h3 class="package-title">Office Computers</h3>
-                <ul class="package-items">
-                    <li class="package-item"><i class="fas fa-circle"></i> Work From Home Setup</li>
-                    <li class="package-item"><i class="fas fa-circle"></i> Small Office PC Package</li>
-                    <li class="package-item"><i class="fas fa-circle"></i> Server + Workstation Bundle</li>
-                </ul>
-                <button class="package-btn" onclick="pkgQuote('Office Computer Package')">
-                    <i class="fab fa-whatsapp"></i> Get Quote
-                </button>
-            </div>
-            
-            <div class="package-card">
-                <div class="package-icon"><i class="fas fa-server"></i></div>
-                <h3 class="package-title">Server & Storage</h3>
-                <ul class="package-items">
-                    <li class="package-item"><i class="fas fa-circle"></i> NAS Storage Server</li>
-                    <li class="package-item"><i class="fas fa-circle"></i> Business File Server</li>
-                    <li class="package-item"><i class="fas fa-circle"></i> Rack Server + UPS Package</li>
-                </ul>
-                <button class="package-btn" onclick="pkgQuote('Server & Storage Package')">
-                    <i class="fab fa-whatsapp"></i> Get Quote
-                </button>
-            </div>
-        `;
-    }
-
-    function pkgQuote(packageName) {
-        const msg = 'Hi Cyber I.T Masters! I\'m interested in a quote for:\n\n\uD83D\uDCE6 ' + packageName + '\n\nPlease send me pricing and availability. Thank you!';
-        window.open('https://wa.me/' + WA + '?text=' + encodeURIComponent(msg), '_blank');
-    }
-
     function initHomepage() {
         startDealsCountdown();
         buildDealsSection();
-        buildPackagesSection();
-    }
-
-    // =========================================================================
-    // CHECKOUT FUNCTIONS
-    // =========================================================================
-    function openCheckout() {
-        if (!cart.length) {
-            showToast('Your cart is empty');
-            return;
-        }
-        
-        closeCart();
-        
-        const msg = cart.map(x => `  • ${x.name} x${x.qty} — ${fmt(x.price * x.qty)}`).join('\n');
-        const total = fmt(cart.reduce((s, x) => s + x.price * x.qty, 0));
-        
-        const orderMsg = `Hi Cyber I.T Masters! I'd like to place an order:\n\nORDER DETAILS\n${msg}\n\nTOTAL: ${total}\n\nPlease confirm availability and send banking details. Thank you!`;
-        
-        window.open('https://wa.me/' + WA + '?text=' + encodeURIComponent(orderMsg), '_blank');
-        
-        cart = [];
-        updateCartUI();
-        renderCart();
-        showToast('Order sent! We will confirm via WhatsApp shortly.');
-    }
-
-    function orderSingleViaCheckout(id) {
-        const p = PRODUCTS.find(x => x.id === id || String(x.id) === String(id));
-        if (!p) return;
-        
-        const ex = cart.find(x => String(x.id) === String(id));
-        if (!ex) addToCart(id);
-        
-        closeProdModal();
-        setTimeout(openCheckout, 100);
     }
 
     // =========================================================================
