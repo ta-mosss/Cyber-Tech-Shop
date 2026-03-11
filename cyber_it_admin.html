@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Cyber I.T Masters – Admin Portal</title>
+<title>Cyber I.T Masters – Admin Portal v2.1</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <!-- Firebase SDK (compat for simple HTML use) -->
@@ -158,6 +158,19 @@ select.form-input option{background:var(--bg3);}
   .form-row{flex-direction:column;}
   .modal{max-width:100%;}
 }
+
+.deal-search-item:hover { background: rgba(0,212,255,.08) !important; }
+
+
+/* ── MODAL MOBILE ── */
+@media(max-width:600px){
+  .overlay{padding:0;align-items:flex-end;}
+  .modal{max-height:92vh;border-radius:14px 14px 0 0;padding:18px 14px 20px;}
+  .modal-footer{position:sticky;bottom:0;background:var(--bg3);padding:10px 0 2px;border-top:1px solid var(--border);margin-top:12px;}
+  .form-row{flex-direction:column;}
+  .form-group{min-width:unset;width:100%;}
+}
+
 </style>
 </head>
 <body>
@@ -203,9 +216,11 @@ select.form-input option{background:var(--bg3);}
       <div class="nav-link active" data-sec="dashboard" onclick="showSection('dashboard',this)"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></div>
       <div class="nav-link" data-sec="products" onclick="showSection('products',this)"><i class="fas fa-box"></i><span>Products</span></div>
       <div class="nav-link" data-sec="prices" onclick="showSection('prices',this)"><i class="fas fa-tags"></i><span>Price Manager</span></div>
+      <div class="nav-link" data-sec="deals" onclick="showSection('deals',this)"><i class="fas fa-fire" style="color:#ff6b00"></i><span>Tech Deals</span></div>
       <div class="nav-link" data-sec="bundles" onclick="showSection('bundles',this)"><i class="fas fa-cubes"></i><span>Bundles</span></div>
       <div class="nav-link" data-sec="categories" onclick="showSection('categories',this)"><i class="fas fa-folder"></i><span>Categories</span></div>
       <div class="nav-link" data-sec="import" onclick="showSection('import',this)"><i class="fas fa-file-import"></i><span>Import</span></div>
+      <div class="nav-link" data-sec="esquire" onclick="showSection('esquire',this)"><i class="fas fa-sync-alt"></i><span>Esquire Sync</span></div>
       <div class="nav-link" data-sec="settings" onclick="showSection('settings',this)"><i class="fas fa-cog"></i><span>Settings</span></div>
     </nav>
     <div class="sidebar-bottom">
@@ -219,6 +234,7 @@ select.form-input option{background:var(--bg3);}
     <!-- ── DASHBOARD ── -->
     <div class="section active" id="sec-dashboard">
       <div class="topbar"><h1><i class="fas fa-tachometer-alt"></i> Dashboard</h1>
+        <button class="btn-top" onclick="showSection('esquire',document.querySelector('[data-sec=esquire]'))" style="background:var(--orange);color:#fff;border-color:var(--orange);"><i class="fas fa-sync-alt"></i> Esquire Sync</button>
         <button class="btn-top save" onclick="saveToFirebase()"><i class="fas fa-cloud-upload-alt"></i> Save &amp; Sync Now</button>
       </div>
       <div style="padding:24px">
@@ -304,6 +320,71 @@ select.form-input option{background:var(--bg3);}
       </div>
     </div>
 
+    <!-- ── TECH DEALS THIS WEEK ── -->
+    <div class="section" id="sec-deals">
+      <div class="topbar">
+        <h1><i class="fas fa-fire" style="color:#ff6b00"></i> Tech Deals This Week</h1>
+        <button class="btn-top save" onclick="saveToFirebase()"><i class="fas fa-cloud-upload-alt"></i> Save to Cloud</button>
+      </div>
+      <div style="padding:24px">
+
+        <div style="background:rgba(255,107,0,.08);border:1px solid rgba(255,107,0,.3);border-radius:12px;padding:16px 20px;margin-bottom:20px;">
+          <div style="font-family:'Orbitron',monospace;font-size:11px;color:#ff6b00;margin-bottom:8px;letter-spacing:1px;">🔥 HOW TECH DEALS WORKS</div>
+          <p style="font-size:13px;color:var(--text2);line-height:1.6;margin:0">
+            Products shown here appear in the <strong>"🔥 Tech Deals This Week"</strong> strip on the shop homepage with a countdown timer and discount badge. Set a <strong>Sale Price</strong> lower than the normal price, then toggle <strong>Active</strong> to feature it. Up to <strong>8 deals</strong> show at once.
+          </p>
+        </div>
+
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:16px;">
+          <div style="font-family:'Orbitron',monospace;font-size:11px;color:var(--cyan);margin-bottom:12px;letter-spacing:1px;">ADD PRODUCT TO DEALS</div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;">
+            <div style="flex:1;min-width:180px;">
+              <label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px;">Search Product</label>
+              <input id="dealSearchInput" class="form-input" placeholder="Type product name..." oninput="filterDealSearch()" style="width:100%">
+            </div>
+            <div style="min-width:120px;">
+              <label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px;">Sale Price (R)</label>
+              <input id="dealSalePriceInput" type="number" class="form-input" placeholder="e.g. 649" style="width:100%">
+            </div>
+            <button onclick="addDealFromSearch()" style="background:var(--orange);color:#fff;border:none;padding:9px 18px;border-radius:8px;font-weight:700;cursor:pointer;font-size:13px;white-space:nowrap;"><i class="fas fa-plus"></i> Add Deal</button>
+          </div>
+          <div id="dealSearchResults" style="display:none;margin-top:8px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;max-height:200px;overflow-y:auto;"></div>
+        </div>
+
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:16px;">
+          <div style="padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+            <div style="font-family:'Orbitron',monospace;font-size:11px;color:var(--cyan);letter-spacing:1px;">ACTIVE DEALS (<span id="dealsCount">0</span>/8 slots)</div>
+            <button onclick="clearAllDeals()" style="background:rgba(255,71,87,.12);color:#ff4757;border:1px solid rgba(255,71,87,.3);padding:5px 12px;border-radius:6px;font-size:12px;cursor:pointer;font-weight:600;">🗑 Clear All</button>
+          </div>
+          <div id="dealsAdminTable" style="padding:8px 0;min-height:80px;">
+            <div style="text-align:center;color:var(--text3);padding:30px;font-size:13px;"><i class="fas fa-fire" style="font-size:24px;display:block;margin-bottom:8px;opacity:.3"></i>No deals active. Search and add products above.</div>
+          </div>
+        </div>
+
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+          <div style="padding:14px 18px;border-bottom:1px solid var(--border);">
+            <div style="font-family:'Orbitron',monospace;font-size:11px;color:var(--cyan);letter-spacing:1px;margin-bottom:4px;">ALL PRODUCTS — QUICK TOGGLE</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;">
+              <input id="dealAllSearch" class="form-input" placeholder="Filter by name..." oninput="renderDealsAllTable()" style="flex:1;min-width:150px;">
+              <select id="dealCatFilter" class="form-input" onchange="renderDealsAllTable()" style="min-width:140px;"></select>
+            </div>
+          </div>
+          <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;">
+            <table class="data-table" style="width:100%;min-width:500px">
+              <thead><tr>
+                <th>Product</th>
+                <th>Normal</th>
+                <th>Sale Price</th>
+                <th>Discount</th>
+                <th style="text-align:center">🔥 Active</th>
+              </tr></thead>
+              <tbody id="dealsAllTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- ── BUNDLES ── -->
     <div class="section" id="sec-bundles">
       <div class="topbar"><h1><i class="fas fa-cubes"></i> Bundle Deals</h1>
@@ -315,13 +396,121 @@ select.form-input option{background:var(--bg3);}
 
     <!-- ── CATEGORIES ── -->
     <div class="section" id="sec-categories">
-      <div class="topbar"><h1><i class="fas fa-folder"></i> Category Groups</h1>
+      <div class="topbar">
+        <h1><i class="fas fa-folder"></i> Category Manager</h1>
+        <button class="btn-top" onclick="openAddGroupModal()"><i class="fas fa-plus"></i> New Group</button>
         <button class="btn-top save" onclick="saveToFirebase()"><i class="fas fa-cloud-upload-alt"></i> Save to Cloud</button>
       </div>
-      <div style="padding:24px;" id="catGroupsContainer"></div>
+      <div style="padding:24px;">
+        <div style="background:rgba(0,212,255,.06);border:1px solid rgba(0,212,255,.2);border-radius:10px;padding:14px;margin-bottom:18px;font-size:13px;color:var(--text2);line-height:1.8;">
+          <i class="fas fa-info-circle" style="color:var(--cyan);margin-right:6px;"></i>
+          <b style="color:var(--cyan)">How categories work:</b>
+          Groups = <b>top navigation tabs</b>. Sub-categories = <b>left sidebar filters</b>.<br>
+          <span style="color:#ff6b00">⚠️ Key:</span> Sub-category names must <b>exactly match</b> a product's Category field.
+          When editing a group, use <b>"pick from existing product categories"</b> to link them correctly.
+          You can also type a custom name and assign it to products via Add/Edit Product.
+        </div>
+        <div id="catGroupsContainer"></div>
+        <button class="btn-top" onclick="openAddGroupModal()" style="margin-top:8px;"><i class="fas fa-plus"></i> Add New Group</button>
+      </div>
     </div>
 
-    <!-- ── IMPORT ── -->
+    <!-- ── ESQUIRE SYNC ── -->
+    <div class="section" id="sec-esquire">
+      <div class="topbar">
+        <h1><i class="fas fa-sync-alt" style="color:var(--orange)"></i> Esquire Live Sync</h1>
+        <button class="btn-top" style="background:var(--orange);color:#fff;border-color:var(--orange);" onclick="fetchEsquireFeed()"><i class="fas fa-download"></i> Fetch Latest from Esquire</button>
+      </div>
+      <div style="padding:24px;">
+
+        <!-- CREDENTIALS -->
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px;">
+          <div style="font-family:'Orbitron',monospace;font-size:11px;color:var(--cyan);margin-bottom:14px;letter-spacing:1px;">ESQUIRE API CREDENTIALS</div>
+          <div style="display:flex;gap:12px;flex-wrap:wrap;">
+            <div class="form-group" style="flex:1;min-width:180px;">
+              <label>Username / Email</label>
+              <input class="form-input" id="esqUser" type="text" value="mbulahenimoses@hotmail.com">
+            </div>
+            <div class="form-group" style="flex:1;min-width:180px;">
+              <label>Password</label>
+              <input class="form-input" id="esqPass" type="password" value="Ronewa@132">
+            </div>
+            <div class="form-group" style="flex:0 0 160px;">
+              <label>Min Price (R)</label>
+              <input class="form-input" id="esqMinPrice" type="number" value="0" min="0">
+            </div>
+          </div>
+        </div>
+
+        <!-- SYNC OPTIONS -->
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px;">
+          <div style="font-family:'Orbitron',monospace;font-size:11px;color:var(--cyan);margin-bottom:14px;letter-spacing:1px;">SYNC OPTIONS</div>
+          <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:14px;">
+            <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;">
+              <input type="checkbox" id="esqOptPrices" checked style="accent-color:var(--cyan);width:16px;height:16px;">
+              Update prices from Esquire
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;">
+              <input type="checkbox" id="esqOptStock" checked style="accent-color:var(--cyan);width:16px;height:16px;">
+              Update stock levels
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;">
+              <input type="checkbox" id="esqOptNew" checked style="accent-color:var(--cyan);width:16px;height:16px;">
+              Add new products not in shop
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;">
+              <input type="checkbox" id="esqOptMarkup" checked style="accent-color:var(--cyan);width:16px;height:16px;">
+              Apply markup % after sync
+            </label>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+            <div class="form-group" style="flex:0 0 140px;">
+              <label>Markup % to apply</label>
+              <input class="form-input" id="esqMarkupPct" type="number" value="20" min="0" max="500" placeholder="e.g. 20">
+            </div>
+            <div style="font-size:12px;color:var(--text3);margin-top:16px;">Only applies if "Apply markup" is checked above</div>
+          </div>
+        </div>
+
+        <!-- STATUS + LOG -->
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px;">
+          <div style="font-family:'Orbitron',monospace;font-size:11px;color:var(--cyan);margin-bottom:12px;letter-spacing:1px;">SYNC STATUS</div>
+          <div id="esqStatusBar" style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+            <div id="esqDot" style="width:10px;height:10px;border-radius:50%;background:var(--text3);flex-shrink:0;"></div>
+            <span id="esqStatusMsg" style="font-size:13px;color:var(--text2);">Ready — click "Fetch Latest from Esquire" to start</span>
+          </div>
+          <div id="esqProgressWrap" style="display:none;margin-bottom:12px;">
+            <div style="background:var(--bg4);border-radius:20px;height:8px;overflow:hidden;">
+              <div id="esqProgressBar" style="height:100%;background:var(--orange);border-radius:20px;width:0%;transition:width .3s;"></div>
+            </div>
+          </div>
+          <div id="esqLog" style="font-size:12px;color:var(--text2);line-height:2;max-height:200px;overflow-y:auto;font-family:monospace;background:var(--bg4);border-radius:8px;padding:10px;display:none;"></div>
+        </div>
+
+        <!-- PREVIEW TABLE -->
+        <div id="esqPreviewWrap" style="display:none;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:10px;">
+            <div style="font-family:'Orbitron',monospace;font-size:11px;color:var(--cyan);letter-spacing:1px;">PREVIEW — <span id="esqPreviewCount">0</span> PRODUCTS</div>
+            <div style="display:flex;gap:8px;">
+              <button class="btn-top save" onclick="applyEsquireSync()"><i class="fas fa-check"></i> Apply Sync &amp; Save to Firebase</button>
+              <button class="btn-top danger" onclick="cancelEsquireSync()"><i class="fas fa-times"></i> Cancel</button>
+            </div>
+          </div>
+          <div class="table-wrap" style="max-height:320px;overflow-y:auto;">
+            <table>
+              <thead><tr>
+                <th>Image</th><th>Product</th><th>Code</th><th>Category</th>
+                <th>Esquire Price</th><th>Your Price (after markup)</th><th>Stock</th><th>Status</th>
+              </tr></thead>
+              <tbody id="esqPreviewBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+<!-- ── IMPORT ── -->
     <div class="section" id="sec-import">
       <div class="topbar"><h1><i class="fas fa-file-import"></i> Import Products</h1></div>
       <div style="padding:24px">
@@ -384,6 +573,80 @@ select.form-input option{background:var(--bg3);}
   </div><!-- /layout flex -->
 </div><!-- /app -->
 
+<!-- CATEGORY GROUP MODAL -->
+<div class="overlay hidden" id="catGroupModal">
+  <div class="modal" style="max-width:600px;max-height:92vh;overflow-y:auto;display:flex;flex-direction:column;">
+    <button class="modal-close" onclick="closeCatModal()"><i class="fas fa-times"></i></button>
+    <h3 id="cgModalTitle" style="margin-bottom:18px;">Category Group</h3>
+
+    <div class="form-row">
+      <div class="form-group" style="flex:2;">
+        <label>Group Name *</label>
+        <input class="form-input" id="cgName" type="text" placeholder="e.g. Refurbished Devices">
+      </div>
+      <div class="form-group" style="flex:1;">
+        <label>Icon</label>
+        <select class="form-input" id="cgIcon">
+          <option value="fas fa-folder">Folder</option>
+          <option value="fas fa-laptop">Laptop</option>
+          <option value="fas fa-desktop">Desktop</option>
+          <option value="fas fa-mobile-alt">Mobile</option>
+          <option value="fas fa-server">Server</option>
+          <option value="fas fa-recycle">Refurbished</option>
+          <option value="fas fa-tools">Tools/Repair</option>
+          <option value="fas fa-print">Printer</option>
+          <option value="fas fa-network-wired">Network</option>
+          <option value="fas fa-hdd">Storage</option>
+          <option value="fas fa-shield-alt">Security</option>
+          <option value="fas fa-gamepad">Gaming</option>
+          <option value="fas fa-headphones">Audio</option>
+          <option value="fas fa-plug">Cables</option>
+          <option value="fas fa-bolt">Power</option>
+          <option value="fas fa-tag">Deals</option>
+          <option value="fas fa-cubes">Bundles</option>
+        </select>
+      </div>
+    </div>
+
+    <div style="border-top:1px solid var(--border);padding-top:16px;margin-top:4px;flex:1;overflow-y:auto;">
+      <div style="font-family:'Orbitron',monospace;font-size:11px;color:var(--cyan);letter-spacing:1px;margin-bottom:12px;">
+        <i class="fas fa-layer-group"></i> SUB-CATEGORIES
+      </div>
+
+      <div style="display:flex;gap:8px;margin-bottom:8px;">
+        <input class="form-input" id="cgNewSubName" type="text" placeholder="Type any name e.g. Laptops, Servers, Refurbished Grade A..." style="flex:1;"
+          onkeydown="if(event.key==='Enter'){cgAddCustomSub();event.preventDefault();}">
+        <button class="btn-top" onclick="cgAddCustomSub()"><i class="fas fa-plus"></i> Add</button>
+      </div>
+
+      <div style="display:flex;gap:8px;margin-bottom:8px;">
+        <select class="form-input" id="cgProdCatPick" style="flex:1;">
+          <option value="">— pick from existing product categories —</option>
+        </select>
+        <button class="btn-top" style="background:var(--cyan);color:#000;" onclick="cgAddProdCat()"><i class="fas fa-link"></i> Link</button>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:14px;">
+        <select class="form-input" id="cgEsqPick" style="flex:1;">
+          <option value="">— or pick from Esquire categories —</option>
+        </select>
+        <button class="btn-top" onclick="cgAddEsqSub()"><i class="fas fa-plus"></i> Add</button>
+      </div>
+
+      <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">
+        Current Sub-Categories <span id="cgSubCount" style="color:var(--cyan);">(0)</span>
+      </div>
+      <div id="cgSubList" style="display:flex;flex-wrap:wrap;gap:6px;min-height:60px;background:var(--bg4);border-radius:8px;padding:10px;border:1px solid var(--cyan);box-shadow:0 0 0 1px rgba(0,212,255,.2);">
+        <span id="cgSubEmpty" style="color:var(--text3);font-size:12px;">None added yet</span>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-top danger" onclick="closeCatModal()"><i class="fas fa-times"></i> Cancel</button>
+      <button class="btn-top save" onclick="cgSave()"><i class="fas fa-save"></i> Save Group</button>
+    </div>
+  </div>
+</div>
+
 <!-- PRODUCT MODAL -->
 <div class="overlay hidden" id="prodModal">
   <div class="modal">
@@ -394,7 +657,13 @@ select.form-input option{background:var(--bg3);}
       <div class="form-group"><label>SKU/Code</label><input class="form-input" id="pm-code" type="text"></div>
     </div>
     <div class="form-row">
-      <div class="form-group"><label>Category</label><select class="form-input" id="pm-cat"></select></div>
+      <div class="form-group">
+        <label>Category <span style="font-size:10px;color:var(--text3)">(pick or type new)</span></label>
+        <div style="display:flex;gap:6px;align-items:center;">
+          <input class="form-input" id="pm-cat" list="pm-cat-list" placeholder="Select or type category..." style="flex:1">
+          <datalist id="pm-cat-list"></datalist>
+        </div>
+      </div>
       <div class="form-group"><label>Price (R)</label><input class="form-input" id="pm-price" type="number" step="0.01"></div>
     </div>
     <div class="form-row">
@@ -837,6 +1106,7 @@ let CAT_GROUPS = {
 };
 let prices = {};
 let basePrices = {};
+let CAT_ICONS = {};
 let customProducts = [];
 let bundles = [];
 let allProducts = [];
@@ -871,10 +1141,19 @@ function loadFromFirebase() {
     .then(doc => {
       if (doc.exists) {
         const d = doc.data();
-        if (d.prices)         prices         = d.prices;
+        if (d.prices) {
+          // Normalize price keys — Firebase stores them as strings, products use numbers
+          prices = {};
+          Object.keys(d.prices).forEach(k => {
+            const numK = isNaN(k) ? k : Number(k);
+            prices[numK] = d.prices[k];
+            prices[k]    = d.prices[k]; // keep string key too for safety
+          });
+        }
         if (d.customProducts) customProducts = d.customProducts;
         if (d.bundles)        bundles        = d.bundles;
         if (d.CAT_GROUPS)     Object.assign(CAT_GROUPS, d.CAT_GROUPS);
+        if (d.CAT_ICONS)      Object.assign(CAT_ICONS,  d.CAT_ICONS);
         if (d.ADMIN_USER)     ADMIN_USER     = d.ADMIN_USER;
         if (d.ADMIN_PASS)     ADMIN_PASS     = d.ADMIN_PASS;
         setFbStatus('ok', 'Connected — data loaded from cloud');
@@ -902,6 +1181,7 @@ function saveToFirebase() {
     customProducts,
     bundles,
     CAT_GROUPS,
+    CAT_ICONS,
     ADMIN_USER,
     ADMIN_PASS,
     lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
@@ -924,10 +1204,18 @@ function saveToFirebase() {
 // FINISH INIT after Firebase load
 // ══════════════════════════════════════════════════════
 function finishInit() {
-  allProducts = [...RAW_PRODUCTS, ...customProducts];
+  // De-duplicate: exclude RAW_PRODUCTS entries that have a customProducts override
+  const _overriddenIds = new Set(customProducts.filter(p => p.isRawOverride).map(p => String(p.id)));
+  allProducts = [...RAW_PRODUCTS.filter(p => !_overriddenIds.has(String(p.id))), ...customProducts];
   allProducts.forEach(p => {
-    if (!prices[p.id]) prices[p.id] = { normal: p.price, sale: null, saleOn: false, combo: null, comboOn: false };
-    if (!basePrices[p.id]) basePrices[p.id] = p.price;
+    // Ensure price entry exists — use existing Firebase value or fall back to cost
+    if (!prices[p.id] && !prices[String(p.id)]) {
+      prices[p.id] = { normal: p.price, sale: null, saleOn: false, combo: null, comboOn: false };
+    } else if (!prices[p.id] && prices[String(p.id)]) {
+      prices[p.id] = prices[String(p.id)]; // copy string-keyed entry to numeric key
+    }
+    // basePrices ALWAYS = original cost price from RAW_PRODUCTS (never marked-up value)
+    basePrices[p.id] = p.price;
   });
   populateCatDropdowns();
   renderDashboard();
@@ -935,6 +1223,9 @@ function finishInit() {
   renderPriceTable();
   renderCatGroups();
   renderBundles();
+  populateDealCatFilter();
+  renderDealsAdmin();
+  renderDealsAllTable();
 }
 
 function logChange(msg) {
@@ -988,6 +1279,7 @@ function showSection(id, el) {
   document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
   document.getElementById('sec-' + id).classList.add('active');
   if (el) el.classList.add('active');
+  if (id === 'deals') { renderDealsAdmin(); renderDealsAllTable(); }
 }
 
 // ══════════════════════════════════════════════════════
@@ -995,16 +1287,21 @@ function showSection(id, el) {
 // ══════════════════════════════════════════════════════
 function fmt(n) { return 'R ' + Number(n || 0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
 function getAllCategories() {
-  const cats = new Set(allProducts.map(p => p.category));
+  const cats = new Set(allProducts.map(p => p.category).filter(Boolean));
+  // Also include sub-cats from custom CAT_GROUPS (may not have products yet)
+  Object.values(CAT_GROUPS).forEach(subs => subs.forEach(s => cats.add(s)));
   return [...cats].sort();
 }
 function populateCatDropdowns() {
   const cats = getAllCategories();
-  ['pm-cat','prodCatFilter','markupCat','markupCat'].forEach(id => {
+  // Fill the pm-cat datalist (combobox)
+  const dl = document.getElementById('pm-cat-list');
+  if (dl) dl.innerHTML = cats.map(c => `<option value="${c}">`).join('');
+  // Fill other standard dropdowns
+  ['prodCatFilter','markupCat'].forEach(id => {
     const el = document.getElementById(id);
     if (!el) return;
-    const hasAll = id === 'prodCatFilter' || id === 'markupCat';
-    el.innerHTML = (hasAll ? '<option value="">All</option>' : '') + cats.map(c => `<option value="${c}">${c}</option>`).join('');
+    el.innerHTML = '<option value="">All</option>' + cats.map(c => `<option value="${c}">${c}</option>`).join('');
   });
 }
 
@@ -1054,7 +1351,7 @@ function renderProductsTable() {
       <td style="font-size:12px;color:${p.stock===0?'var(--red)':p.stock<=5?'var(--orange)':'var(--green)'}">${p.stock}</td>
       <td style="display:flex;gap:5px;flex-wrap:wrap;">
         <button class="action-btn" onclick="openEditProduct(${JSON.stringify(p.id)})"><i class="fas fa-edit"></i></button>
-        ${p.isCustom?`<button class="action-btn del" onclick="deleteProduct(${JSON.stringify(p.id)})"><i class="fas fa-trash"></i></button>`:''}
+        ${(p.isCustom || p.isRawOverride) ? `<button class="action-btn del" title="${p.isRawOverride?'Revert to original':'Delete product'}" onclick="deleteProduct(${JSON.stringify(p.id)})"><i class="fas fa-${p.isRawOverride?'undo':'trash'}"></i></button>` : ''}
         <button class="action-btn ${pr.saleOn?'sale-on':''}" onclick="quickToggle(${JSON.stringify(p.id)},'sale')">${pr.saleOn?'Sale ON':'Sale'}</button>
         <button class="action-btn ${pr.comboOn?'combo-on':''}" onclick="quickToggle(${JSON.stringify(p.id)},'combo')">${pr.comboOn?'Combo ON':'Combo'}</button>
       </td></tr>`;
@@ -1077,9 +1374,14 @@ function quickToggle(id, type) {
 }
 
 function deleteProduct(id) {
-  if (!confirm('Delete this custom product?')) return;
+  const isOverride = customProducts.some(p => String(p.id) === String(id) && p.isRawOverride);
+  const msg = isOverride
+    ? 'Remove your edits to this product? It will revert to the original Esquire data.'
+    : 'Delete this custom product? This cannot be undone.';
+  if (!confirm(msg)) return;
   customProducts = customProducts.filter(p => String(p.id) !== String(id));
-  allProducts = [...RAW_PRODUCTS, ...customProducts];
+  const _delOverrides = new Set(customProducts.filter(p => p.isRawOverride).map(p => String(p.id)));
+  allProducts = [...RAW_PRODUCTS.filter(p => !_delOverrides.has(String(p.id))), ...customProducts];
   delete prices[id];
   logChange('Deleted product ' + id);
   renderProductsTable();
@@ -1095,6 +1397,7 @@ function openAddProduct() {
   document.getElementById('prodModalTitle').textContent = 'Add New Product';
   ['pm-name','pm-code','pm-image','pm-desc'].forEach(id => document.getElementById(id).value = '');
   if(document.getElementById('imgPreviewWrap')) document.getElementById('imgPreviewWrap').style.display='none';
+  if(document.getElementById('pm-cat')) document.getElementById('pm-cat').value = '';
   if(typeof switchImgTab==='function') switchImgTab('url');
   ['pm-price','pm-stock'].forEach(id => document.getElementById(id).value = 0);
   ['pm-sale','pm-combo'].forEach(id => document.getElementById(id).value = '');
@@ -1121,6 +1424,11 @@ function openEditProduct(id) {
   document.getElementById('pm-isNew').checked   = !!p.isNew;
   populateCatDropdowns();
   document.getElementById('pm-cat').value = p.category || '';
+  // Show image preview if product has an image
+  if (p.image) {
+    if (typeof switchImgTab === 'function') switchImgTab('url');
+    previewImg(p.image);
+  }
   document.getElementById('prodModal').classList.remove('hidden');
 }
 function saveProdModal() {
@@ -1140,13 +1448,21 @@ function saveProdModal() {
 
   if (editingProdId != null) {
     // Update existing
-    const idx = customProducts.findIndex(p => String(p.id) === String(editingProdId));
+    const idx    = customProducts.findIndex(p => String(p.id) === String(editingProdId));
     const rawIdx = RAW_PRODUCTS.findIndex(p => p.id === editingProdId || String(p.id) === String(editingProdId));
     if (idx >= 0) {
+      // Update existing custom product entry
       customProducts[idx] = { ...customProducts[idx], name, code, category: cat, price, stock, image, description: desc, isNew, isCustom: true };
+    } else if (rawIdx >= 0) {
+      // RAW_PRODUCT: add an override entry into customProducts so edits persist to Firebase
+      // Use same id so it overrides the raw entry in allProducts (allProducts = [...RAW, ...custom])
+      // We filter out the raw entry when building allProducts to avoid duplicates
+      customProducts.push({ id: editingProdId, name, code, category: cat, price, stock, image, description: desc, isNew, isCustom: true, isRawOverride: true });
     }
-    prices[editingProdId] = { normal: price, sale, saleOn, combo, comboOn };
-    if (rawIdx >= 0) prices[RAW_PRODUCTS[rawIdx].id] = { normal: price, sale, saleOn, combo, comboOn };
+    // Always update prices for both numeric and string keys
+    prices[editingProdId]         = { normal: price, sale, saleOn, combo, comboOn };
+    prices[String(editingProdId)] = { normal: price, sale, saleOn, combo, comboOn };
+    basePrices[editingProdId]     = price;
     logChange('Updated product: ' + name);
   } else {
     // New custom product
@@ -1154,9 +1470,27 @@ function saveProdModal() {
     customProducts.push({ id: newId, name, code, category: cat, price, stock, image, description: desc, isNew, isCustom: true });
     prices[newId] = { normal: price, sale, saleOn, combo, comboOn };
     basePrices[newId] = price;
+    // Auto-add category to a group if it's not already in any group
+    if (cat) {
+      const inGroup = Object.values(CAT_GROUPS).some(subs => subs.includes(cat));
+      if (!inGroup) {
+        // Find a matching group or add to "Custom Products"
+        let targetGroup = Object.keys(CAT_GROUPS).find(g => g !== 'All Products' &&
+          g.toLowerCase().split(/[\s&]/)[0] && cat.toLowerCase().includes(g.toLowerCase().split(/[\s&]/)[0]));
+        if (!targetGroup) {
+          if (!CAT_GROUPS['Custom Products']) CAT_GROUPS['Custom Products'] = [];
+          if (!CAT_GROUPS['Custom Products'].includes(cat)) CAT_GROUPS['Custom Products'].push(cat);
+        } else {
+          if (!CAT_GROUPS[targetGroup].includes(cat)) CAT_GROUPS[targetGroup].push(cat);
+        }
+        renderCatGroups();
+      }
+    }
     logChange('Added product: ' + name);
   }
-  allProducts = [...RAW_PRODUCTS, ...customProducts];
+  // De-duplicate: exclude RAW_PRODUCTS entries that have a customProducts override
+  const overriddenIds = new Set(customProducts.filter(p => p.isRawOverride).map(p => String(p.id)));
+  allProducts = [...RAW_PRODUCTS.filter(p => !overriddenIds.has(String(p.id))), ...customProducts];
   closeModal('prodModal');
   renderProductsTable();
   renderPriceTable();
@@ -1195,11 +1529,20 @@ function renderPriceTable() {
 }
 
 function updatePrice(id, field, val) {
-  if (!prices[id]) prices[id] = { normal: allProducts.find(p=>p.id===id)?.price||0, sale:null, saleOn:false, combo:null, comboOn:false };
-  if (field === 'saleOn' || field === 'comboOn') prices[id][field] = val;
-  else if (val === '' || val === null) prices[id][field] = null;
-  else prices[id][field] = parseFloat(val);
-  logChange(`Price updated: ${field} for ${id}`);
+  const strId = String(id);
+  const numId = isNaN(id) ? id : Number(id);
+  // Ensure entry exists for both key types
+  const base = allProducts.find(p => p.id === numId || p.id === id)?.price || 0;
+  if (!prices[numId]) prices[numId] = { normal: base, sale:null, saleOn:false, combo:null, comboOn:false };
+  if (!prices[strId]) prices[strId] = { normal: base, sale:null, saleOn:false, combo:null, comboOn:false };
+  // Apply to both
+  [numId, strId].forEach(k => {
+    if (!prices[k]) return;
+    if (field === 'saleOn' || field === 'comboOn') prices[k][field] = val;
+    else if (val === '' || val === null) prices[k][field] = null;
+    else prices[k][field] = parseFloat(val);
+  });
+  logChange('Price updated: ' + field + ' for ' + id);
   renderDashboard();
 }
 
@@ -1212,9 +1555,11 @@ function applyMarkup() {
   let count = 0;
   allProducts.forEach(p => {
     if (cat && p.category !== cat) return;
-    const base = basePrices[p.id] || p.price;
+    const base = basePrices[p.id] || basePrices[String(p.id)] || p.price;
     if (!prices[p.id]) prices[p.id] = { normal: base, sale: null, saleOn: false, combo: null, comboOn: false };
-    prices[p.id].normal = +(base * (1 + pct / 100)).toFixed(2);
+    const marked = +(base * (1 + pct / 100)).toFixed(2);
+    prices[p.id].normal = marked;
+    if (prices[String(p.id)]) prices[String(p.id)].normal = marked; // sync string key too
     count++;
   });
   logChange(`Markup ${pct}% applied to ${count} products`);
@@ -1226,7 +1571,9 @@ function applyMarkup() {
 function resetMarkup() {
   if (!confirm('Reset all prices to cost price?')) return;
   allProducts.forEach(p => {
-    if (prices[p.id]) prices[p.id].normal = basePrices[p.id] || p.price;
+    const cost = basePrices[p.id] || p.price;
+    if (prices[p.id])        prices[p.id].normal        = cost;
+    if (prices[String(p.id)]) prices[String(p.id)].normal = cost;
   });
   logChange('All prices reset to cost');
   renderPriceTable();
@@ -1361,32 +1708,237 @@ function saveBundleModal() {
   toast('Bundle saved ✓', 'ok');
 }
 
-// ══════════════════════════════════════════════════════
-// CATEGORY GROUPS
-// ══════════════════════════════════════════════════════
+
+// ═══════════════════════════════════════════
+// CATEGORY MANAGER — full rebuild
+// ═══════════════════════════════════════════
+
+let editingGroupName = null;   // null = new group, string = editing existing
+let cgCurrentSubs   = [];      // sub-categories being built in modal
+
+// ── RENDER GROUPS LIST ──────────────────────────────────────────────────────
+
+// ═══════════════════════════════════════════
+// CATEGORY MANAGER
+// ═══════════════════════════════════════════
+var _cgGroupKeys  = [];
+var _cgEditName   = null;   // null = new, string = editing
+var _cgSubs       = [];     // working list of sub-categories in modal
+
 function renderCatGroups() {
-  const allCats = getAllCategories();
-  document.getElementById('catGroupsContainer').innerHTML = Object.keys(CAT_GROUPS).map(group => `
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:12px;">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
-        <input class="form-input" style="flex:1" value="${group}" onchange="renameGroup('${group}',this.value)">
-        <button class="action-btn del" onclick="deleteGroup('${group}')"><i class="fas fa-trash"></i></button>
-      </div>
-      <div style="display:flex;flex-wrap:wrap;gap:6px;">
-        ${(CAT_GROUPS[group]||[]).map(c => `<span style="background:var(--bg4);border:1px solid var(--border2);padding:3px 10px;border-radius:12px;font-size:11px;display:flex;align-items:center;gap:5px;">${c} <button style="background:none;border:none;color:var(--red);cursor:pointer;font-size:11px;" onclick="removeCatFromGroup('${group}','${c}')">×</button></span>`).join('')}
-        <select class="form-input" style="height:28px;padding:2px 8px;font-size:11px;width:auto;" onchange="addCatToGroup('${group}',this.value);this.value=''">
-          <option value="">+ Add sub-category</option>
-          ${allCats.map(c => `<option value="${c}">${c}</option>`).join('')}
-        </select>
-      </div>
-    </div>`
-  ).join('') + `<button class="btn-top" onclick="addGroup()" style="margin-top:8px;"><i class="fas fa-plus"></i> Add Group</button>`;
+  var container = document.getElementById('catGroupsContainer');
+  var groups    = Object.keys(CAT_GROUPS);
+  _cgGroupKeys  = groups;
+
+  if (!groups.length) {
+    container.innerHTML = '<div style="color:var(--text3);text-align:center;padding:40px;">No groups yet — click New Group to add one.</div>';
+    return;
+  }
+
+  var html = groups.map(function(group, gi) {
+    var subs     = CAT_GROUPS[group] || [];
+    var icon     = (CAT_ICONS && CAT_ICONS[group]) || 'fas fa-folder';
+    var prodCnt  = allProducts.filter(function(p){ return !subs.length || subs.indexOf(p.category) > -1; }).length;
+    var hasUnlinkedSubs = subs.length > 0 && prodCnt === 0;
+    var unlinkedWarn = hasUnlinkedSubs ? ' <span style="color:#ff6b00;font-size:11px;">⚠ No products linked</span>' : '';
+    var subHtml  = subs.length
+      ? subs.map(function(s, si){
+          return '<span style="background:var(--bg3);border:1px solid var(--border2);padding:4px 10px;border-radius:20px;font-size:11px;display:inline-flex;align-items:center;gap:5px;">'
+            + s.replace(/&/g,'&amp;')
+            + ' <button class="cg-rem" data-gi="'+gi+'" data-si="'+si+'" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:14px;line-height:1;padding:0;font-weight:bold;">×</button></span>';
+        }).join('')
+      : '<span style="color:var(--text3);font-size:12px;font-style:italic;">No sub-categories</span>';
+
+    return '<div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px;">'
+      + '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap;">'
+      + '<i class="'+icon+'" style="color:var(--cyan);font-size:16px;width:20px;text-align:center;flex-shrink:0;"></i>'
+      + '<span style="font-weight:600;font-size:14px;flex:1;">'+group.replace(/&/g,'&amp;')+'</span>'
+      + '<span style="font-size:11px;color:var(--text3);background:var(--bg4);padding:2px 10px;border-radius:10px;">'+subs.length+' sub-cats</span>'
+      + '<span style="font-size:11px;color:var(--text3);background:var(--bg4);padding:2px 10px;border-radius:10px;">'+prodCnt+' products</span>' + unlinkedWarn
+      + '<button class="action-btn cg-edit" data-gi="'+gi+'"><i class="fas fa-edit"></i> Edit</button>'
+      + '<button class="action-btn del cg-del" data-gi="'+gi+'"><i class="fas fa-trash"></i></button>'
+      + '</div>'
+      + '<div style="display:flex;flex-wrap:wrap;gap:6px;">'+subHtml+'</div>'
+      + '</div>';
+  }).join('');
+
+  container.innerHTML = html;
+
+  container.onclick = function(e) {
+    var btn = e.target.closest('button[data-gi]');
+    if (!btn) return;
+    var gi    = parseInt(btn.getAttribute('data-gi'));
+    var group = _cgGroupKeys[gi];
+    if (!group && group !== '') return;
+    if (btn.classList.contains('cg-edit')) {
+      cgOpenEdit(group);
+    } else if (btn.classList.contains('cg-del')) {
+      if (!confirm('Delete group "'+group+'"?')) return;
+      delete CAT_GROUPS[group];
+      delete CAT_ICONS[group];
+      logChange('Deleted group: '+group);
+      renderCatGroups();
+      toast('Deleted: '+group, 'ok');
+    } else if (btn.classList.contains('cg-rem')) {
+      var si = parseInt(btn.getAttribute('data-si'));
+      CAT_GROUPS[group].splice(si, 1);
+      logChange('Removed sub from '+group);
+      renderCatGroups();
+    }
+  };
 }
-function renameGroup(old, nw) { if (nw && nw !== old) { CAT_GROUPS[nw] = CAT_GROUPS[old]; delete CAT_GROUPS[old]; logChange('Renamed category group: ' + old + ' → ' + nw); renderCatGroups(); } }
-function deleteGroup(g) { if (confirm('Delete group "' + g + '"?')) { delete CAT_GROUPS[g]; logChange('Deleted group: ' + g); renderCatGroups(); } }
-function addCatToGroup(group, cat) { if (!cat || CAT_GROUPS[group].includes(cat)) return; CAT_GROUPS[group].push(cat); logChange('Added ' + cat + ' to ' + group); renderCatGroups(); }
-function removeCatFromGroup(group, cat) { CAT_GROUPS[group] = CAT_GROUPS[group].filter(c => c !== cat); renderCatGroups(); }
-function addGroup() { const n = prompt('New group name:'); if (n) { CAT_GROUPS[n] = []; renderCatGroups(); } }
+
+function openAddGroupModal() {
+  _cgEditName = null;
+  _cgSubs     = [];
+  document.getElementById('cgModalTitle').textContent = 'New Category Group';
+  document.getElementById('cgName').value = '';
+  document.getElementById('cgIcon').selectedIndex = 0;
+  document.getElementById('cgNewSubName').value = '';
+  cgPopulateEsqDrop();
+  populateCgProdCatPicker();
+  cgRenderSubList();
+  document.getElementById('catGroupModal').classList.remove('hidden');
+}
+
+function cgOpenEdit(groupName) {
+  _cgEditName = groupName;
+  _cgSubs     = (CAT_GROUPS[groupName] || []).slice(); // copy
+  toast('Editing: ' + groupName + ' — ' + _cgSubs.length + ' subs loaded', 'ok');
+  document.getElementById('cgModalTitle').textContent = 'Edit: ' + groupName;
+  document.getElementById('cgName').value = groupName;
+  var icon = (CAT_ICONS && CAT_ICONS[groupName]) || 'fas fa-folder';
+  var sel = document.getElementById('cgIcon');
+  sel.selectedIndex = 0;
+  for (var i = 0; i < sel.options.length; i++) {
+    if (sel.options[i].value === icon) { sel.selectedIndex = i; break; }
+  }
+  document.getElementById('cgNewSubName').value = '';
+  cgPopulateEsqDrop();
+  cgRenderSubList();
+  document.getElementById('catGroupModal').classList.remove('hidden');
+}
+
+function closeCatModal() {
+  document.getElementById('catGroupModal').classList.add('hidden');
+}
+
+function cgPopulateEsqDrop() {
+  var sel  = document.getElementById('cgEsqPick');
+  var cats = getAllCategories().sort();
+  sel.innerHTML = '<option value="">— or pick from Esquire categories —</option>'
+    + cats.map(function(c){ return '<option value="'+c.replace(/"/g,'&quot;')+'">'+c.replace(/&/g,'&amp;')+'</option>'; }).join('');
+}
+
+function cgRenderSubList() {
+  var list = document.getElementById('cgSubList');
+  if (!list) { console.error('cgSubList element NOT FOUND'); return; }
+  var countEl = document.getElementById('cgSubCount');
+  if (countEl) countEl.textContent = '(' + _cgSubs.length + ')';
+  console.log('cgRenderSubList called, _cgSubs=', _cgSubs);
+
+  if (!_cgSubs.length) {
+    list.innerHTML = '<span id="cgSubEmpty" style="color:var(--text3);font-size:12px;">None added yet — type a name above and click Add</span>';
+    return;
+  }
+  list.innerHTML = _cgSubs.map(function(s, i) {
+    return '<span style="background:rgba(0,212,255,.12);border:1px solid var(--cyan);color:var(--text);padding:5px 12px;border-radius:20px;font-size:12px;display:inline-flex;align-items:center;gap:8px;">'
+      + s.replace(/&/g,'&amp;')
+      + '<button onclick="cgRemSub('+i+')" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:15px;line-height:1;padding:0;font-weight:bold;">×</button>'
+      + '</span>';
+  }).join('');
+}
+
+function cgAddCustomSub() {
+  var input = document.getElementById('cgNewSubName');
+  var name  = input.value.trim();
+  if (!name) { toast('Enter a sub-category name', 'err'); return; }
+  if (_cgSubs.indexOf(name) > -1) { toast('"'+name+'" already added', 'err'); return; }
+  _cgSubs.push(name);
+  input.value = '';
+  cgRenderSubList();
+  input.focus();
+}
+
+function cgAddProdCat() {
+  var sel = document.getElementById('cgProdCatPick');
+  var val = sel ? sel.value : '';
+  if (!val) { toast('Pick a product category first', 'err'); return; }
+  if (_cgSubs.indexOf(val) > -1) { toast('"'+val+'" already added', 'err'); sel.value=''; return; }
+  _cgSubs.push(val);
+  sel.value = '';
+  cgRenderSubList();
+}
+
+function populateCgProdCatPicker() {
+  var sel = document.getElementById('cgProdCatPick');
+  if (!sel) return;
+  var prods = (allProducts && allProducts.length) ? allProducts : (window.RAW_PRODUCTS || []);
+  var cats = [...new Set(prods.map(function(p){ return p.category||''; }).filter(Boolean))].sort();
+  sel.innerHTML = '<option value="">— pick from existing product categories —</option>'
+    + cats.map(function(c){ return '<option value="'+c+'">'+c+'</option>'; }).join('');
+}
+
+function cgAddEsqSub() {
+  var sel = document.getElementById('cgEsqPick');
+  var val = sel.value;
+  if (!val) return;
+  if (_cgSubs.indexOf(val) > -1) { toast('"'+val+'" already added', 'err'); sel.value = ''; return; }
+  _cgSubs.push(val);
+  sel.value = '';
+  cgRenderSubList();
+}
+
+function cgRemSub(i) {
+  _cgSubs.splice(i, 1);
+  cgRenderSubList();
+}
+
+function cgSave() {
+  var name = document.getElementById('cgName').value.trim();
+  var icon = document.getElementById('cgIcon').value;
+  if (!name) { toast('Group name is required', 'err'); document.getElementById('cgName').focus(); return; }
+
+  if (_cgEditName && _cgEditName !== name) {
+    // Renamed
+    CAT_GROUPS[name] = _cgSubs.slice();
+    delete CAT_GROUPS[_cgEditName];
+    CAT_ICONS[name]  = icon;
+    delete CAT_ICONS[_cgEditName];
+  } else {
+    CAT_GROUPS[name] = _cgSubs.slice();
+    CAT_ICONS[name]  = icon;
+  }
+
+  logChange((_cgEditName ? 'Updated' : 'Created') + ' group: ' + name + ' (' + _cgSubs.length + ' sub-cats)');
+  closeCatModal();
+  renderCatGroups();
+  renderDashboard();
+  toast((_cgEditName ? 'Updated' : 'Created') + ': ' + name, 'ok');
+}
+
+// legacy compat
+function addGroup() { openAddGroupModal(); }
+function addCatToGroup(group, cat) {
+  if (!cat || !CAT_GROUPS[group]) return;
+  if (CAT_GROUPS[group].indexOf(cat) === -1) { CAT_GROUPS[group].push(cat); renderCatGroups(); }
+}
+function deleteGroup(g) {
+  if (!confirm('Delete group "'+g+'"?')) return;
+  delete CAT_GROUPS[g];
+  delete CAT_ICONS[g];
+  logChange('Deleted: '+g);
+  renderCatGroups();
+  toast('Deleted: '+g, 'ok');
+}
+function renameGroup(o, n) {
+  if (!n || n === o) return;
+  CAT_GROUPS[n] = CAT_GROUPS[o]; delete CAT_GROUPS[o];
+  if (CAT_ICONS[o]) { CAT_ICONS[n] = CAT_ICONS[o]; delete CAT_ICONS[o]; }
+  renderCatGroups();
+}
+
+
 
 // ══════════════════════════════════════════════════════
 // IMPORT
@@ -1514,6 +2066,256 @@ function toast(msg, type='') {
 // ══════════════════════════════════════════════════════
 // SETTINGS PRE-FILL
 // ══════════════════════════════════════════════════════
+
+// ═══════════════════════════════════════════
+// ESQUIRE LIVE SYNC
+// ═══════════════════════════════════════════
+let esqFetchedProducts = [];
+
+function esqLog(msg, type) {
+  const log = document.getElementById('esqLog');
+  log.style.display = 'block';
+  const color = type === 'ok' ? 'var(--green)' : type === 'err' ? 'var(--red)' : type === 'warn' ? 'var(--orange)' : 'var(--text2)';
+  const time = new Date().toLocaleTimeString();
+  log.innerHTML += '<span style="color:var(--text3)">[' + time + ']</span> <span style="color:' + color + '">' + msg + '</span><br>';
+  log.scrollTop = log.scrollHeight;
+}
+
+function esqSetStatus(state, msg) {
+  const dot = document.getElementById('esqDot');
+  const txt = document.getElementById('esqStatusMsg');
+  const colors = { idle: 'var(--text3)', loading: 'var(--orange)', ok: 'var(--green)', err: 'var(--red)' };
+  dot.style.background = colors[state] || 'var(--text3)';
+  if (state === 'loading') dot.style.animation = 'blink .8s infinite';
+  else dot.style.animation = '';
+  txt.textContent = msg;
+}
+
+function esqSetProgress(pct) {
+  document.getElementById('esqProgressWrap').style.display = 'block';
+  document.getElementById('esqProgressBar').style.width = pct + '%';
+}
+
+function parseEsquirePrice(val) {
+  if (val === null || val === undefined) return 0;
+  return parseFloat(String(val).replace(/[^0-9.]/g, '')) || 0;
+}
+
+function fetchEsquireFeed() {
+  const user   = document.getElementById('esqUser').value.trim();
+  const pass   = document.getElementById('esqPass').value.trim();
+  const minP   = document.getElementById('esqMinPrice').value || '0';
+
+  if (!user || !pass) { toast('Enter Esquire credentials', 'err'); return; }
+
+  esqFetchedProducts = [];
+  document.getElementById('esqLog').innerHTML = '';
+  document.getElementById('esqPreviewWrap').style.display = 'none';
+  esqSetStatus('loading', 'Connecting to Esquire API...');
+  esqSetProgress(10);
+  esqLog('Connecting to Esquire API...', 'info');
+
+  const url = 'https://api.esquire.co.za/api/DataFeed?u=' +
+    encodeURIComponent(user) + '&p=' + encodeURIComponent(pass) +
+    '&t=json&m=0&o=ascending&r=RoundNearest&rm=0&min=' + minP;
+
+  // Use a CORS proxy since browser blocks direct cross-origin requests
+  const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(url);
+
+  esqLog('Fetching live datafeed (this may take 10-30 seconds)...', 'info');
+  esqSetProgress(20);
+
+  fetch(proxyUrl)
+    .then(function(res) {
+      esqSetProgress(50);
+      if (!res.ok) throw new Error('HTTP ' + res.status + ' — check credentials');
+      return res.text();
+    })
+    .then(function(text) {
+      esqSetProgress(70);
+      esqLog('Data received — parsing...', 'info');
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch(e) {
+        // Try stripping any wrapper
+        const m = text.match(/\[[\s\S]*\]/);
+        if (m) data = JSON.parse(m[0]);
+        else throw new Error('Could not parse response as JSON');
+      }
+      // Handle array or wrapped object
+      const products = Array.isArray(data) ? data : (data.Products || data.products || data.items || data.data || []);
+      if (!products.length) throw new Error('No products found in response');
+      esqLog('Parsed ' + products.length + ' products from Esquire', 'ok');
+      esqSetProgress(85);
+      processEsquireProducts(products);
+    })
+    .catch(function(err) {
+      esqSetStatus('err', 'Fetch failed: ' + err.message);
+      esqLog('ERROR: ' + err.message, 'err');
+      esqLog('Tip: If you see a CORS error, try the CSV import in the Import tab instead.', 'warn');
+      esqSetProgress(0);
+      document.getElementById('esqProgressWrap').style.display = 'none';
+    });
+}
+
+function processEsquireProducts(raw) {
+  const optPrices = document.getElementById('esqOptPrices').checked;
+  const optStock  = document.getElementById('esqOptStock').checked;
+  const optNew    = document.getElementById('esqOptNew').checked;
+  const optMarkup = document.getElementById('esqOptMarkup').checked;
+  const markupPct = parseFloat(document.getElementById('esqMarkupPct').value) || 0;
+
+  let updated = 0, added = 0, unchanged = 0;
+  esqFetchedProducts = [];
+
+  raw.forEach(function(item) {
+    // Map Esquire JSON fields — handles both JSON and CSV-mapped field names
+    const name     = item.ProductName  || item.Name  || item.name  || '';
+    const code     = item.ProductCode  || item.Code  || item.code  || item.SKU || '';
+    const category = item.Category     || item.category || 'Uncategorized';
+    const desc     = item.ProductSummary || item.Description || item.description || '';
+    const image    = item.Image        || item.ImageUrl || item.image || '';
+    const rawPrice = parseEsquirePrice(item.Price || item.price || 0);
+    const stock    = parseInt(item.AvailableQty || item.Stock || item.stock || 0);
+
+    if (!name) return;
+
+    const sellPrice = optMarkup && markupPct > 0
+      ? parseFloat((rawPrice * (1 + markupPct / 100)).toFixed(2))
+      : rawPrice;
+
+    // Find existing product by code
+    const existing = allProducts.find(function(p) {
+      return p.code && code && (String(p.code).trim() === String(code).trim());
+    });
+
+    const entry = {
+      name: name, code: code, category: category,
+      description: desc, image: image,
+      esquirePrice: rawPrice, sellPrice: sellPrice, stock: stock,
+      status: 'unchanged'
+    };
+
+    if (existing) {
+      const pr = prices[existing.id] || {};
+      const priceChanged = optPrices && Math.abs((pr.normal || 0) - sellPrice) > 0.01;
+      const stockChanged = optStock  && existing.stock !== stock;
+      if (priceChanged || stockChanged) {
+        entry.status = 'updated';
+        entry.existingId = existing.id;
+        entry.oldPrice = pr.normal || existing.price;
+        entry.oldStock = existing.stock;
+        updated++;
+      } else {
+        unchanged++;
+      }
+    } else if (optNew) {
+      entry.status = 'new';
+      added++;
+    }
+
+    esqFetchedProducts.push(entry);
+  });
+
+  esqSetProgress(100);
+  esqSetStatus('ok', 'Ready — ' + updated + ' to update, ' + added + ' new, ' + unchanged + ' unchanged');
+  esqLog('Results: ' + updated + ' price/stock updates, ' + added + ' new products, ' + unchanged + ' unchanged', 'ok');
+
+  renderEsquirePreview();
+  document.getElementById('esqPreviewWrap').style.display = 'block';
+  document.getElementById('esqPreviewCount').textContent = esqFetchedProducts.filter(function(p) { return p.status !== 'unchanged'; }).length;
+}
+
+function renderEsquirePreview() {
+  const markup = parseFloat(document.getElementById('esqMarkupPct').value) || 0;
+  const optMarkup = document.getElementById('esqOptMarkup').checked;
+  const toShow = esqFetchedProducts.filter(function(p) { return p.status !== 'unchanged'; });
+  const tbody = document.getElementById('esqPreviewBody');
+
+  if (!toShow.length) {
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:30px;color:var(--text3);">All products are already up to date</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = toShow.map(function(p) {
+    const statusBadge = p.status === 'new'
+      ? '<span class="badge-on" style="background:rgba(0,212,255,.15);color:var(--cyan);border-color:var(--cyan);">NEW</span>'
+      : '<span class="badge-on">UPDATE</span>';
+    const priceHtml = p.status === 'updated' && p.oldPrice
+      ? '<span style="text-decoration:line-through;color:var(--text3);font-size:11px;">R' + p.oldPrice.toFixed(2) + '</span> → <span style="color:var(--orange)">R' + p.sellPrice.toFixed(2) + '</span>'
+      : '<span style="color:var(--cyan)">R' + p.sellPrice.toFixed(2) + '</span>';
+    const stockHtml = p.status === 'updated' && p.oldStock !== undefined
+      ? (p.oldStock !== p.stock ? '<span style="color:var(--text3);font-size:11px;">' + p.oldStock + '</span> → <span style="color:var(--green)">' + p.stock + '</span>' : p.stock)
+      : p.stock;
+    return '<tr>' +
+      '<td><img style="width:48px;height:40px;object-fit:contain;background:var(--bg3);border-radius:6px;" src="' + (p.image || '') + '" onerror="this.src=\'https://placehold.co/48x40/0a1628/00d4ff?text=?\'" alt=""></td>' +
+      '<td class="td-name">' + p.name + '</td>' +
+      '<td style="font-size:11px;color:var(--text3)">' + (p.code || '') + '</td>' +
+      '<td style="font-size:11px">' + p.category + '</td>' +
+      '<td style="font-size:12px;color:var(--text3)">R' + p.esquirePrice.toFixed(2) + (optMarkup && markup > 0 ? '<br><span style="font-size:10px;color:var(--text3)">+' + markup + '% markup</span>' : '') + '</td>' +
+      '<td>' + priceHtml + '</td>' +
+      '<td>' + stockHtml + '</td>' +
+      '<td>' + statusBadge + '</td>' +
+      '</tr>';
+  }).join('');
+}
+
+function applyEsquireSync() {
+  let updated = 0, added = 0;
+
+  esqFetchedProducts.forEach(function(p) {
+    if (p.status === 'updated' && p.existingId != null) {
+      // Update price
+      if (document.getElementById('esqOptPrices').checked) {
+        if (!prices[p.existingId]) prices[p.existingId] = { normal: p.sellPrice, sale: null, saleOn: false, combo: null, comboOn: false };
+        else prices[p.existingId].normal = p.sellPrice;
+      }
+      // Update stock
+      if (document.getElementById('esqOptStock').checked) {
+        const prod = allProducts.find(function(x) { return x.id === p.existingId; });
+        if (prod) prod.stock = p.stock;
+      }
+      updated++;
+    } else if (p.status === 'new' && document.getElementById('esqOptNew').checked) {
+      const newId = 'esq_' + (p.code || Date.now());
+      if (!allProducts.find(function(x) { return x.id === newId; })) {
+        const newProd = {
+          id: newId, isCustom: true,
+          name: p.name, code: p.code, category: p.category,
+          description: p.description, image: p.image,
+          price: p.sellPrice, stock: p.stock
+        };
+        customProducts.push(newProd);
+        allProducts.push(newProd);
+        prices[newId] = { normal: p.sellPrice, sale: null, saleOn: false, combo: null, comboOn: false };
+        basePrices[newId] = p.sellPrice;
+        added++;
+      }
+    }
+  });
+
+  logChange('Esquire sync: ' + updated + ' updated, ' + added + ' new products added');
+  esqLog('Applied: ' + updated + ' updated, ' + added + ' new products added', 'ok');
+  esqSetStatus('ok', 'Sync applied — saving to Firebase...');
+
+  saveToFirebase();
+  renderProductsTable();
+  renderPriceTable();
+  renderDashboard();
+  document.getElementById('esqPreviewWrap').style.display = 'none';
+  toast('Esquire sync complete — ' + updated + ' updated, ' + added + ' added', 'ok');
+}
+
+function cancelEsquireSync() {
+  esqFetchedProducts = [];
+  document.getElementById('esqPreviewWrap').style.display = 'none';
+  document.getElementById('esqLog').innerHTML = '';
+  document.getElementById('esqLog').style.display = 'none';
+  document.getElementById('esqProgressWrap').style.display = 'none';
+  esqSetStatus('idle', 'Cancelled — ready to sync again');
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   loadTheme();
   document.getElementById('setUser').value = ADMIN_USER;
@@ -1607,6 +2409,203 @@ function handleImgUpload(input) {
   };
   reader.readAsDataURL(file);
 }
+
+
+// ══════════════════════════════════════════════════════════
+//  TECH DEALS THIS WEEK — ADMIN FUNCTIONS
+// ══════════════════════════════════════════════════════════
+let dealSearchSelected = null; // currently selected product from search
+
+function getDealsProducts() {
+  return allProducts.filter(function(p) {
+    var pr = prices[p.id] || prices[String(p.id)] || {};
+    return pr.saleOn && pr.sale && pr.sale < (pr.normal || p.price);
+  }).slice(0, 8);
+}
+
+function renderDealsAdmin() {
+  var deals = getDealsProducts();
+  var tb = document.getElementById('dealsAdminTable');
+  var dc = document.getElementById('dealsCount');
+  if (!tb) return;
+  if (dc) dc.textContent = deals.length;
+  if (!deals.length) {
+    tb.innerHTML = '<div style="text-align:center;color:var(--text3);padding:30px;font-size:13px;"><i class="fas fa-fire" style="font-size:24px;display:block;margin-bottom:8px;opacity:.3"></i>No deals active. Add products using the search above.</div>';
+    return;
+  }
+  tb.innerHTML = '<div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table class="data-table" style="width:100%;min-width:480px"><thead><tr><th>Product</th><th>Normal</th><th>Deal Price</th><th>Saving</th><th style="text-align:center">Remove</th></tr></thead><tbody>'
+    + deals.map(function(p) {
+      var pr = prices[p.id] || prices[String(p.id)] || {};
+      var normal = pr.normal || p.price || 0;
+      var sale   = pr.sale || 0;
+      var pct    = normal > 0 ? Math.round((1 - sale/normal)*100) : 0;
+      return '<tr>'
+        + '<td style="font-size:13px;color:var(--text)">' + p.name.substring(0,50) + (p.name.length>50?'…':'') + '</td>'
+        + '<td style="color:var(--text3);text-decoration:line-through">R ' + normal.toFixed(2) + '</td>'
+        + '<td style="color:#ff6b00;font-weight:700">R ' + sale.toFixed(2) + '</td>'
+        + '<td><span style="background:rgba(255,107,0,.15);color:#ff6b00;padding:2px 8px;border-radius:10px;font-size:12px;font-weight:700">-' + pct + '%</span></td>'
+        + '<td style="text-align:center"><button onclick="removeDeal(' + JSON.stringify(p.id) + ')" style="background:rgba(255,71,87,.15);color:#ff4757;border:1px solid rgba(255,71,87,.3);padding:4px 12px;border-radius:6px;font-size:12px;cursor:pointer;font-weight:600;">Remove</button></td>'
+        + '</tr>';
+    }).join('')
+    + '</tbody></table></div>';
+}
+
+function removeDeal(pid) {
+  var pr = prices[pid] || prices[String(pid)];
+  if (!pr) return;
+  pr.saleOn = false;
+  if (prices[pid])        prices[pid].saleOn = false;
+  if (prices[String(pid)]) prices[String(pid)].saleOn = false;
+  renderDealsAdmin();
+  renderDealsAllTable();
+  renderPriceTable();
+  toast('Deal removed. Remember to Save to Cloud.', 'ok');
+}
+
+function clearAllDeals() {
+  if (!confirm('Remove ALL active deals?')) return;
+  allProducts.forEach(function(p) {
+    if (prices[p.id])         prices[p.id].saleOn = false;
+    if (prices[String(p.id)]) prices[String(p.id)].saleOn = false;
+  });
+  renderDealsAdmin();
+  renderDealsAllTable();
+  renderPriceTable();
+  toast('All deals cleared. Remember to Save to Cloud.', 'ok');
+}
+
+// ── Product search for adding deals ──
+function filterDealSearch() {
+  var q = (document.getElementById('dealSearchInput').value || '').toLowerCase().trim();
+  var res = document.getElementById('dealSearchResults');
+  dealSearchSelected = null;
+  if (!q || q.length < 2) { res.style.display = 'none'; return; }
+  var matches = allProducts.filter(function(p) {
+    return p.name.toLowerCase().includes(q) || (p.category||'').toLowerCase().includes(q);
+  }).slice(0, 12);
+  if (!matches.length) { res.style.display = 'none'; return; }
+  res.style.display = 'block';
+  res.innerHTML = matches.map(function(p) {
+    var pr = prices[p.id] || prices[String(p.id)] || {};
+    var normal = pr.normal || p.price || 0;
+    return '<div onclick="selectDealProduct(' + JSON.stringify(p.id) + ',' + JSON.stringify(p.name) + ',' + normal + ')" style="padding:9px 14px;cursor:pointer;border-bottom:1px solid var(--border);font-size:13px;color:var(--text);transition:.15s;" class="deal-search-item">'
+      + '<span style="font-weight:600">' + p.name.substring(0,55) + '</span> '
+      + '<span style="color:var(--text3);font-size:11px">– R ' + normal.toFixed(2) + '</span>'
+      + '</div>';
+  }).join('');
+}
+
+function selectDealProduct(pid, pname, normal) {
+  dealSearchSelected = { pid: pid, pname: pname, normal: normal };
+  document.getElementById('dealSearchInput').value = pname;
+  document.getElementById('dealSearchResults').style.display = 'none';
+  var si = document.getElementById('dealSalePriceInput');
+  if (si && !si.value) si.value = Math.round(normal * 0.8); // suggest 20% off
+  si.focus();
+}
+
+function addDealFromSearch() {
+  if (!dealSearchSelected) {
+    toast('Please search and select a product first', 'err'); return;
+  }
+  var saleVal = parseFloat(document.getElementById('dealSalePriceInput').value);
+  if (!saleVal || saleVal <= 0) {
+    toast('Enter a valid sale price', 'err'); return;
+  }
+  if (saleVal >= dealSearchSelected.normal) {
+    toast('Sale price must be lower than normal price (R ' + dealSearchSelected.normal.toFixed(2) + ')', 'err'); return;
+  }
+  var deals = getDealsProducts();
+  if (deals.length >= 8 && !deals.find(function(d){ return d.id == dealSearchSelected.pid; })) {
+    toast('Max 8 deals at once. Remove one first.', 'err'); return;
+  }
+  var pid = dealSearchSelected.pid;
+  if (!prices[pid])         prices[pid]         = { normal: dealSearchSelected.normal, sale: null, saleOn: false, combo: null, comboOn: false };
+  if (!prices[String(pid)]) prices[String(pid)] = prices[pid];
+  prices[pid].sale   = saleVal;
+  prices[pid].saleOn = true;
+  if (prices[String(pid)]) { prices[String(pid)].sale = saleVal; prices[String(pid)].saleOn = true; }
+  dealSearchSelected = null;
+  document.getElementById('dealSearchInput').value = '';
+  document.getElementById('dealSalePriceInput').value = '';
+  renderDealsAdmin();
+  renderDealsAllTable();
+  renderPriceTable();
+  toast('✅ Deal added! Save to Cloud to publish.', 'ok');
+}
+
+// ── All products table with inline deal toggle ──
+function renderDealsAllTable() {
+  // Ensure products are loaded - fallback to RAW_PRODUCTS if allProducts empty
+  if (!allProducts || !allProducts.length) allProducts = [...(window.RAW_PRODUCTS || [])];
+  var q      = (document.getElementById('dealAllSearch') ? document.getElementById('dealAllSearch').value : '').toLowerCase();
+  var catF   = document.getElementById('dealCatFilter') ? document.getElementById('dealCatFilter').value : '';
+  var tbody  = document.getElementById('dealsAllTableBody');
+  if (!tbody) return;
+  var prods = allProducts.filter(function(p) {
+    if (catF && p.category !== catF) return false;
+    if (q && !p.name.toLowerCase().includes(q)) return false;
+    return true;
+  }).slice(0, 60);
+  tbody.innerHTML = prods.map(function(p) {
+    var pr = prices[p.id] || prices[String(p.id)] || { normal: p.price, sale: null, saleOn: false };
+    var normal  = pr.normal || p.price || 0;
+    var sale    = pr.sale || 0;
+    var pct     = (sale > 0 && normal > 0) ? Math.round((1-sale/normal)*100) : 0;
+    var pid     = JSON.stringify(p.id);
+    return '<tr style="' + (pr.saleOn ? 'background:rgba(255,107,0,.05)' : '') + '">'
+      + '<td style="font-size:12px;color:var(--text)">' + p.name.substring(0,45) + (p.name.length>45?'…':'') + '</td>'
+      + '<td style="color:var(--text3)">R ' + normal.toFixed(2) + '</td>'
+      + '<td><input type="number" class="form-input" style="width:90px;padding:3px 6px;font-size:12px;" value="' + (sale||'') + '" placeholder="—" onchange="setDealSalePrice(' + pid + ',this.value)"></td>'
+      + '<td><span style="' + (pct>0?'color:#ff6b00;font-weight:700':'color:var(--text3)') + '">' + (pct>0?'-'+pct+'%':'—') + '</span></td>'
+      + '<td style="text-align:center"><label class="toggle"><input type="checkbox" ' + (pr.saleOn?'checked':'') + ' onchange="toggleDealActive(' + pid + ',this.checked)"><span class="toggle-slider"></span></label></td>'
+      + '</tr>';
+  }).join('') || '<tr><td colspan="5" style="text-align:center;color:var(--text3);padding:20px">No products found</td></tr>';
+}
+
+function setDealSalePrice(pid, val) {
+  var v = parseFloat(val);
+  if (!prices[pid])         prices[pid]         = { normal: (allProducts.find(function(p){return p.id==pid;})||{price:0}).price, sale: null, saleOn: false };
+  if (!prices[String(pid)]) prices[String(pid)] = prices[pid];
+  prices[pid].sale = (v > 0) ? v : null;
+  if (prices[String(pid)]) prices[String(pid)].sale = prices[pid].sale;
+  renderDealsAdmin();
+  renderDealsAllTable();
+}
+
+function toggleDealActive(pid, on) {
+  if (!prices[pid])         prices[pid]         = { normal: (allProducts.find(function(p){return p.id==pid;})||{price:0}).price, sale: null, saleOn: false };
+  if (!prices[String(pid)]) prices[String(pid)] = prices[pid];
+  var sale = prices[pid].sale;
+  var normal = prices[pid].normal || (allProducts.find(function(p){return p.id==pid;})||{price:0}).price;
+  if (on && (!sale || sale >= normal)) {
+    toast('Set a sale price lower than R ' + normal.toFixed(2) + ' first', 'err');
+    renderDealsAllTable(); return;
+  }
+  if (on) {
+    var deals = getDealsProducts();
+    if (deals.length >= 8 && !deals.find(function(d){return d.id==pid;})) {
+      toast('Max 8 deals. Remove one first.', 'err');
+      renderDealsAllTable(); return;
+    }
+  }
+  prices[pid].saleOn = on;
+  if (prices[String(pid)]) prices[String(pid)].saleOn = on;
+  renderDealsAdmin();
+  renderDealsAllTable();
+  renderPriceTable();
+  toast((on ? '🔥 Deal activated!' : 'Deal deactivated') + ' — Save to Cloud to publish.', 'ok');
+}
+
+function populateDealCatFilter() {
+  var sel = document.getElementById('dealCatFilter');
+  if (!sel) return;
+  var prods = (allProducts && allProducts.length) ? allProducts : (window.RAW_PRODUCTS || []);
+  var cats = new Set(prods.map(function(p){return p.category||'';}).filter(Boolean));
+  Object.values(CAT_GROUPS).forEach(function(subs){ subs.forEach(function(s){ if(s) cats.add(s); }); });
+  sel.innerHTML = '<option value="">All Categories</option>' + [...cats].sort().map(function(c){return '<option value="'+c+'">'+c+'</option>';}).join('');
+}
+
 
 </script>
 </body>
