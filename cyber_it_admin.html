@@ -221,6 +221,7 @@ select.form-input option{background:var(--bg3);}
       <div class="nav-link" data-sec="categories" onclick="showSection('categories',this)"><i class="fas fa-folder"></i><span>Categories</span></div>
       <div class="nav-link" data-sec="import" onclick="showSection('import',this)"><i class="fas fa-file-import"></i><span>Import</span></div>
       <div class="nav-link" data-sec="esquire" onclick="showSection('esquire',this)"><i class="fas fa-sync-alt"></i><span>Esquire Sync</span></div>
+      <div class="nav-link" data-sec="distributors" onclick="showSection('distributors',this)"><i class="fas fa-globe"></i><span>Distributors</span></div>
       <div class="nav-link" data-sec="settings" onclick="showSection('settings',this)"><i class="fas fa-cog"></i><span>Settings</span></div>
     </nav>
     <div class="sidebar-bottom">
@@ -534,6 +535,157 @@ select.form-input option{background:var(--bg3);}
             <button class="btn-top save" onclick="confirmImport()"><i class="fas fa-check"></i> Import</button>
             <button class="btn-top danger" onclick="document.getElementById('importPreview').style.display='none'"><i class="fas fa-times"></i> Cancel</button>
           </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ── DISTRIBUTORS ── -->
+    <div class="section" id="sec-distributors">
+      <div class="topbar">
+        <h1><i class="fas fa-globe" style="color:var(--cyan)"></i> Distributors</h1>
+        <button class="btn-top save" onclick="openAddDist()"><i class="fas fa-plus"></i> Add Distributor</button>
+      </div>
+      <div style="padding:24px">
+
+        <div style="background:rgba(0,212,255,.06);border:1px solid rgba(0,212,255,.2);border-radius:12px;padding:16px 20px;margin-bottom:22px;font-size:13px;color:var(--text2);line-height:1.7">
+          <div style="font-family:'Orbitron',monospace;font-size:10px;color:var(--cyan);letter-spacing:1px;margin-bottom:8px">🌐 MULTI-DISTRIBUTOR SYNC</div>
+          Connect multiple suppliers — Esquire, Rectron, Tarsus, Pinnacle or any custom JSON/CSV feed. Each distributor's products sync into your shop independently with individual markup and category settings. Products are tagged with their source so you can track and manage them separately.
+        </div>
+
+        <div id="distListWrap"></div>
+
+        <!-- PER-DIST SYNC LOG -->
+        <div id="distSyncPanel" style="display:none;background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-top:18px">
+          <div style="padding:13px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+            <span style="font-family:'Orbitron',monospace;font-size:10px;color:var(--cyan);letter-spacing:1px">SYNC — <span id="distSyncLabel"></span></span>
+            <button onclick="document.getElementById('distSyncPanel').style.display='none'" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:18px">✕</button>
+          </div>
+          <div style="padding:14px 18px">
+            <div style="background:var(--bg3);border-radius:6px;height:7px;overflow:hidden;margin-bottom:10px">
+              <div id="distProgBar" style="background:linear-gradient(90deg,var(--cyan),var(--orange));height:100%;width:0%;transition:width .35s"></div>
+            </div>
+            <div id="distProgStatus" style="font-size:12px;color:var(--text2);margin-bottom:10px"></div>
+            <div id="distLog" style="background:var(--bg1);border:1px solid var(--border);border-radius:8px;padding:10px 12px;max-height:160px;overflow-y:auto;font-family:monospace;font-size:11px;line-height:1.8"></div>
+          </div>
+          <div id="distPreviewWrap" style="display:none;padding:0 18px 18px">
+            <div style="border-top:1px solid var(--border);padding-top:14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:12px">
+              <div style="font-size:13px;color:var(--text2)"><b id="distPreviewCount">0</b> products ready to sync</div>
+              <div style="display:flex;gap:12px;flex-wrap:wrap">
+                <label style="font-size:12px;cursor:pointer;display:flex;align-items:center;gap:5px"><input type="checkbox" id="dOptPrices" checked style="accent-color:var(--cyan)"> Update prices</label>
+                <label style="font-size:12px;cursor:pointer;display:flex;align-items:center;gap:5px"><input type="checkbox" id="dOptStock" checked style="accent-color:var(--cyan)"> Update stock</label>
+                <label style="font-size:12px;cursor:pointer;display:flex;align-items:center;gap:5px"><input type="checkbox" id="dOptNew" checked style="accent-color:var(--cyan)"> Add new products</label>
+                <button onclick="applyDistSync()" style="background:var(--cyan);color:#000;border:none;padding:8px 20px;border-radius:8px;font-weight:700;cursor:pointer;font-size:13px"><i class="fas fa-check"></i> Apply Sync</button>
+              </div>
+            </div>
+            <div style="overflow-x:auto">
+              <table class="data-table" style="width:100%;min-width:560px">
+                <thead><tr><th>Product</th><th>Category</th><th>Cost</th><th>Your Price</th><th>Stock</th><th>Status</th></tr></thead>
+                <tbody id="distPreviewBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ADD/EDIT DISTRIBUTOR MODAL -->
+    <div class="overlay hidden" id="distModal">
+      <div class="modal" style="max-width:640px;max-height:90vh;overflow-y:auto">
+        <button class="modal-close" onclick="closeModal('distModal')"><i class="fas fa-times"></i></button>
+        <h3 id="distModalTitle">Add Distributor</h3>
+
+        <!-- QUICK TEMPLATES -->
+        <div style="margin-bottom:18px">
+          <div style="font-size:11px;color:var(--text3);margin-bottom:8px">Quick Templates</div>
+          <div style="display:flex;gap:7px;flex-wrap:wrap">
+            <button type="button" onclick="loadDistTemplate('esquire')" style="padding:6px 13px;border-radius:7px;border:1px solid var(--border);background:var(--bg4);color:var(--text2);font-size:12px;cursor:pointer"><i class="fas fa-plug" style="color:var(--orange)"></i> Esquire</button>
+            <button type="button" onclick="loadDistTemplate('rectron')" style="padding:6px 13px;border-radius:7px;border:1px solid var(--border);background:var(--bg4);color:var(--text2);font-size:12px;cursor:pointer"><i class="fas fa-box" style="color:#4fc3f7"></i> Rectron</button>
+            <button type="button" onclick="loadDistTemplate('tarsus')" style="padding:6px 13px;border-radius:7px;border:1px solid var(--border);background:var(--bg4);color:var(--text2);font-size:12px;cursor:pointer"><i class="fas fa-building" style="color:#81c784"></i> Tarsus</button>
+            <button type="button" onclick="loadDistTemplate('pinnacle')" style="padding:6px 13px;border-radius:7px;border:1px solid var(--border);background:var(--bg4);color:var(--text2);font-size:12px;cursor:pointer"><i class="fas fa-mountain" style="color:#ffb74d"></i> Pinnacle</button>
+            <button type="button" onclick="loadDistTemplate('json')" style="padding:6px 13px;border-radius:7px;border:1px solid rgba(0,212,255,.4);background:rgba(0,212,255,.07);color:var(--cyan);font-size:12px;cursor:pointer"><i class="fas fa-code"></i> Custom JSON</button>
+            <button type="button" onclick="loadDistTemplate('csv')" style="padding:6px 13px;border-radius:7px;border:1px solid var(--border);background:var(--bg4);color:var(--text2);font-size:12px;cursor:pointer"><i class="fas fa-file-csv" style="color:#a5d6a7"></i> CSV Upload</button>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Distributor Name *</label>
+            <input class="form-input" id="dName" placeholder="e.g. Rectron SA, Refurb Hub">
+          </div>
+          <div class="form-group">
+            <label>Type</label>
+            <select class="form-input" id="dType" onchange="onDistTypeChange()">
+              <option value="api">JSON API</option>
+              <option value="csv">CSV / Excel Upload</option>
+              <option value="manual">Manual Only</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="dApiFields">
+          <div class="form-group">
+            <label>API URL</label>
+            <input class="form-input" id="dUrl" placeholder="https://api.supplier.co.za/feed?format=json">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Username / Email</label>
+              <input class="form-input" id="dUser" placeholder="optional">
+            </div>
+            <div class="form-group">
+              <label>Password</label>
+              <input class="form-input" id="dPass" type="password" placeholder="optional">
+            </div>
+          </div>
+          <div style="background:rgba(255,107,0,.07);border:1px solid rgba(255,107,0,.2);border-radius:8px;padding:9px 13px;font-size:12px;color:var(--text2);margin-bottom:14px">
+            <i class="fas fa-lock" style="color:var(--orange)"></i> Credentials are stored in your browser only — never saved to Firebase.
+          </div>
+        </div>
+
+        <div id="dCsvFields" style="display:none">
+          <div class="form-group">
+            <label>Upload CSV / Excel</label>
+            <input type="file" class="form-input" id="dCsvFile" accept=".csv,.xlsx,.xls" style="padding:6px" onchange="previewDistCsv(this)">
+          </div>
+          <div id="dCsvInfo" style="display:none;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:9px 12px;font-size:12px;color:var(--text2);margin-bottom:12px"></div>
+        </div>
+
+        <!-- FIELD MAPPING -->
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:16px">
+          <div style="font-family:'Orbitron',monospace;font-size:10px;color:var(--cyan);letter-spacing:1px;margin-bottom:12px">FIELD MAPPING — which column in your feed maps to what</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div class="form-group" style="margin:0"><label style="font-size:11px">Name field</label><input class="form-input" id="fmName" placeholder="ProductName / Name / title" style="font-size:12px;padding:6px 8px"></div>
+            <div class="form-group" style="margin:0"><label style="font-size:11px">SKU / Code field</label><input class="form-input" id="fmCode" placeholder="ProductCode / SKU / sku" style="font-size:12px;padding:6px 8px"></div>
+            <div class="form-group" style="margin:0"><label style="font-size:11px">Category field</label><input class="form-input" id="fmCat" placeholder="Category / category" style="font-size:12px;padding:6px 8px"></div>
+            <div class="form-group" style="margin:0"><label style="font-size:11px">Price field</label><input class="form-input" id="fmPrice" placeholder="Price / SellPrice / price" style="font-size:12px;padding:6px 8px"></div>
+            <div class="form-group" style="margin:0"><label style="font-size:11px">Stock / Qty field</label><input class="form-input" id="fmStock" placeholder="AvailableQty / Stock / qty" style="font-size:12px;padding:6px 8px"></div>
+            <div class="form-group" style="margin:0"><label style="font-size:11px">Image URL field</label><input class="form-input" id="fmImage" placeholder="Image / ImageUrl / image" style="font-size:12px;padding:6px 8px"></div>
+            <div class="form-group" style="margin:0"><label style="font-size:11px">Description field</label><input class="form-input" id="fmDesc" placeholder="ProductSummary / description" style="font-size:12px;padding:6px 8px"></div>
+            <div class="form-group" style="margin:0"><label style="font-size:11px">Default Category <span style="color:var(--text3)">(fallback)</span></label><input class="form-input" id="fmCatDefault" placeholder="e.g. Refurbished Laptops" style="font-size:12px;padding:6px 8px"></div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Markup % <span style="font-size:10px;color:var(--text3)">(on top of supplier price)</span></label>
+            <input class="form-input" id="dMarkup" type="number" placeholder="15" min="0" max="500">
+          </div>
+          <div class="form-group">
+            <label>Min Price (R) <span style="font-size:10px;color:var(--text3)">(skip cheaper items)</span></label>
+            <input class="form-input" id="dMinPrice" type="number" placeholder="0" min="0">
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px">
+          <label class="toggle"><input type="checkbox" id="dActive" checked><span class="toggle-slider"></span></label>
+          <span style="font-size:13px;color:var(--text2)">Active (products visible in shop)</span>
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn-top danger" onclick="closeModal('distModal')">Cancel</button>
+          <button class="btn-top save" onclick="saveDist()"><i class="fas fa-save"></i> Save</button>
         </div>
       </div>
     </div>
@@ -1121,6 +1273,7 @@ let changeLog = [];
 // ══════════════════════════════════════════════════════
 // FIREBASE STATUS
 // ══════════════════════════════════════════════════════
+function safeId(id){return typeof id==='number'?id:"'"+String(id)+"'";}
 function setFbStatus(state, msg) {
   const dot = document.getElementById('fbDot');
   const txt = document.getElementById('fbMsg');
@@ -1156,6 +1309,7 @@ function loadFromFirebase() {
         if (d.CAT_ICONS)      Object.assign(CAT_ICONS,  d.CAT_ICONS);
         if (d.ADMIN_USER)     ADMIN_USER     = d.ADMIN_USER;
         if (d.ADMIN_PASS)     ADMIN_PASS     = d.ADMIN_PASS;
+        if (d.distributors)  distributors   = d.distributors;
         setFbStatus('ok', 'Connected — data loaded from cloud');
         toast('Cloud data loaded ✓', 'ok');
       } else {
@@ -1184,6 +1338,11 @@ function saveToFirebase() {
     CAT_ICONS,
     ADMIN_USER,
     ADMIN_PASS,
+    distributors: distributors.map(function(d){
+      // Strip credentials — never store in Firebase
+      var safe = Object.assign({}, d);
+      return safe;
+    }),
     lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
     updatedBy: 'admin'
   };
@@ -1226,6 +1385,7 @@ function finishInit() {
   populateDealCatFilter();
   renderDealsAdmin();
   renderDealsAllTable();
+  renderDistributors();
 }
 
 function logChange(msg) {
@@ -1279,7 +1439,8 @@ function showSection(id, el) {
   document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
   document.getElementById('sec-' + id).classList.add('active');
   if (el) el.classList.add('active');
-  if (id === 'deals') { renderDealsAdmin(); renderDealsAllTable(); }
+  if (id === 'deals')         { renderDealsAdmin(); renderDealsAllTable(); }
+  if (id === 'distributors')  { renderDistributors(); }
 }
 
 // ══════════════════════════════════════════════════════
@@ -1350,10 +1511,10 @@ function renderProductsTable() {
       <td>${pr.combo!=null?`<span class="td-combo">${fmt(pr.combo)}</span>`:'<span style="color:var(--text3)">—</span>'} ${pr.comboOn?'<span class="badge-on">ON</span>':'<span class="badge-off">OFF</span>'}</td>
       <td style="font-size:12px;color:${p.stock===0?'var(--red)':p.stock<=5?'var(--orange)':'var(--green)'}">${p.stock}</td>
       <td style="display:flex;gap:5px;flex-wrap:wrap;">
-        <button class="action-btn" onclick="openEditProduct(${JSON.stringify(p.id)})"><i class="fas fa-edit"></i></button>
-        ${(p.isCustom || p.isRawOverride) ? `<button class="action-btn del" title="${p.isRawOverride?'Revert to original':'Delete product'}" onclick="deleteProduct(${JSON.stringify(p.id)})"><i class="fas fa-${p.isRawOverride?'undo':'trash'}"></i></button>` : ''}
-        <button class="action-btn ${pr.saleOn?'sale-on':''}" onclick="quickToggle(${JSON.stringify(p.id)},'sale')">${pr.saleOn?'Sale ON':'Sale'}</button>
-        <button class="action-btn ${pr.comboOn?'combo-on':''}" onclick="quickToggle(${JSON.stringify(p.id)},'combo')">${pr.comboOn?'Combo ON':'Combo'}</button>
+        <button class="action-btn" onclick="openEditProduct(${safeId(p.id)})"><i class="fas fa-edit"></i></button>
+        ${(p.isCustom || p.isRawOverride) ? `<button class="action-btn del" title="${p.isRawOverride?'Revert to original':'Delete product'}" onclick="deleteProduct(${safeId(p.id)})"><i class="fas fa-${p.isRawOverride?'undo':'trash'}"></i></button>` : ''}
+        <button class="action-btn ${pr.saleOn?'sale-on':''}" onclick="quickToggle(${safeId(p.id)},'sale')">${pr.saleOn?'Sale ON':'Sale'}</button>
+        <button class="action-btn ${pr.comboOn?'combo-on':''}" onclick="quickToggle(${safeId(p.id)},'combo')">${pr.comboOn?'Combo ON':'Combo'}</button>
       </td></tr>`;
   }).join('') || '<tr><td colspan="9" style="text-align:center;color:var(--text3);padding:30px">No products found</td></tr>';
   // Pagination
@@ -1515,7 +1676,7 @@ function renderPriceTable() {
   if (pfFilter === 'marked') prods = prods.filter(p => prices[p.id] && prices[p.id].normal !== basePrices[p.id]);
   document.getElementById('priceTableBody').innerHTML = prods.map(p => {
     const pr = prices[p.id] || { normal: p.price, sale: null, saleOn: false, combo: null, comboOn: false };
-    const pid = JSON.stringify(p.id);
+    const pid = safeId(p.id);
     return `<tr>
       <td class="td-name">${p.name}</td>
       <td class="td-price" style="color:var(--text3)">${fmt(basePrices[p.id] || p.price)}</td>
@@ -1674,7 +1835,7 @@ function searchBundleProd() {
   if (!q) { document.getElementById('bmSearchResults').innerHTML = ''; return; }
   const res = allProducts.filter(p => p.name.toLowerCase().includes(q) || (p.code||'').toLowerCase().includes(q)).slice(0, 10);
   document.getElementById('bmSearchResults').innerHTML = res.map(p =>
-    `<div style="padding:7px 10px;cursor:pointer;font-size:13px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;" onclick="addBundleItem(${JSON.stringify(p.id)})">
+    `<div style="padding:7px 10px;cursor:pointer;font-size:13px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;" onclick="addBundleItem(${safeId(p.id)})">
       <span>${p.name}</span>
       <span style="color:var(--cyan);font-size:12px">${fmt(prices[p.id]?.normal||p.price)}</span>
     </div>`
@@ -2444,7 +2605,7 @@ function renderDealsAdmin() {
         + '<td style="color:var(--text3);text-decoration:line-through">R ' + normal.toFixed(2) + '</td>'
         + '<td style="color:#ff6b00;font-weight:700">R ' + sale.toFixed(2) + '</td>'
         + '<td><span style="background:rgba(255,107,0,.15);color:#ff6b00;padding:2px 8px;border-radius:10px;font-size:12px;font-weight:700">-' + pct + '%</span></td>'
-        + '<td style="text-align:center"><button onclick="removeDeal(' + JSON.stringify(p.id) + ')" style="background:rgba(255,71,87,.15);color:#ff4757;border:1px solid rgba(255,71,87,.3);padding:4px 12px;border-radius:6px;font-size:12px;cursor:pointer;font-weight:600;">Remove</button></td>'
+        + '<td style="text-align:center"><button onclick="removeDeal(' + safeId(p.id) + ')" style="background:rgba(255,71,87,.15);color:#ff4757;border:1px solid rgba(255,71,87,.3);padding:4px 12px;border-radius:6px;font-size:12px;cursor:pointer;font-weight:600;">Remove</button></td>'
         + '</tr>';
     }).join('')
     + '</tbody></table></div>';
@@ -2488,13 +2649,21 @@ function filterDealSearch() {
   res.innerHTML = matches.map(function(p) {
     var pr = prices[p.id] || prices[String(p.id)] || {};
     var normal = pr.normal || p.price || 0;
-    return '<div onclick="selectDealProduct(' + JSON.stringify(p.id) + ',' + JSON.stringify(p.name) + ',' + normal + ')" style="padding:9px 14px;cursor:pointer;border-bottom:1px solid var(--border);font-size:13px;color:var(--text);transition:.15s;" class="deal-search-item">'
+    return '<div data-pid="' + String(p.id) + '" data-pname="' + p.name.replace(/"/g,'&quot;').substring(0,55) + '" data-pnormal="' + normal + '" onclick="selectDealFromItem(this)" style="padding:9px 14px;cursor:pointer;border-bottom:1px solid var(--border);font-size:13px;color:var(--text);transition:.15s;" class="deal-search-item">'
       + '<span style="font-weight:600">' + p.name.substring(0,55) + '</span> '
       + '<span style="color:var(--text3);font-size:11px">– R ' + normal.toFixed(2) + '</span>'
       + '</div>';
   }).join('');
 }
 
+function selectDealFromItem(el) {
+  var pid    = el.getAttribute('data-pid');
+  var pname  = el.getAttribute('data-pname');
+  var normal = parseFloat(el.getAttribute('data-pnormal')) || 0;
+  // Try to match numeric id
+  var numPid = isNaN(pid) ? pid : Number(pid);
+  selectDealProduct(numPid, pname, normal);
+}
 function selectDealProduct(pid, pname, normal) {
   dealSearchSelected = { pid: pid, pname: pname, normal: normal };
   document.getElementById('dealSearchInput').value = pname;
@@ -2552,7 +2721,7 @@ function renderDealsAllTable() {
     var normal  = pr.normal || p.price || 0;
     var sale    = pr.sale || 0;
     var pct     = (sale > 0 && normal > 0) ? Math.round((1-sale/normal)*100) : 0;
-    var pid     = JSON.stringify(p.id);
+    var pid     = safeId(p.id);
     return '<tr style="' + (pr.saleOn ? 'background:rgba(255,107,0,.05)' : '') + '">'
       + '<td style="font-size:12px;color:var(--text)">' + p.name.substring(0,45) + (p.name.length>45?'…':'') + '</td>'
       + '<td style="color:var(--text3)">R ' + normal.toFixed(2) + '</td>'
@@ -2606,6 +2775,522 @@ function populateDealCatFilter() {
   sel.innerHTML = '<option value="">All Categories</option>' + [...cats].sort().map(function(c){return '<option value="'+c+'">'+c+'</option>';}).join('');
 }
 
+
+
+
+// ══════════════════════════════════════════════════════════════════
+// MULTI-DISTRIBUTOR SYNC
+// ══════════════════════════════════════════════════════════════════
+let distributors       = [];   // array of distributor config objects
+let distFetchedData    = [];   // staging area for current sync preview
+let activeSyncDistId   = null; // which distributor is being synced right now
+let distCsvRows        = [];   // parsed CSV rows staging
+
+// ── Distributor data model ──
+// {
+//   id:          'dist_1234567890',
+//   name:        'Rectron SA',
+//   type:        'api' | 'csv' | 'manual',
+//   url:         '...',          // API URL template (credentials embedded)
+//   fieldMap:    { name, code, cat, price, stock, image, desc, catDefault },
+//   markup:      15,             // percent
+//   minPrice:    0,
+//   active:      true,
+//   productCount: 0,             // updated after each sync
+//   lastSync:    '2026-03-01'
+// }
+// Credentials (user/pass) stored only in sessionStorage - NEVER in Firebase
+
+// ── SA Supplier Templates ──
+const DIST_TEMPLATES = {
+  esquire: {
+    name: 'Esquire Technology',
+    type: 'api',
+    url:  'https://api.esquire.co.za/api/DataFeed?u={{user}}&p={{pass}}&t=json&m=0&o=ascending&r=RoundNearest&rm=0&min={{minPrice}}',
+    fieldMap: { name:'ProductName', code:'ProductCode', cat:'Category', price:'Price', stock:'AvailableQty', image:'Image', desc:'ProductSummary', catDefault:'IT Equipment' },
+    markup: 15, minPrice: 0
+  },
+  rectron: {
+    name: 'Rectron SA',
+    type: 'csv',
+    url:  '',
+    fieldMap: { name:'Description', code:'PartNumber', cat:'Category', price:'Price', stock:'QtyOnHand', image:'ImageURL', desc:'LongDescription', catDefault:'IT Equipment' },
+    markup: 12, minPrice: 0
+  },
+  tarsus: {
+    name: 'Tarsus Technology',
+    type: 'csv',
+    url:  '',
+    fieldMap: { name:'ProductDescription', code:'ProductCode', cat:'ProductCategory', price:'ExclVAT', stock:'AvailableQty', image:'Image', desc:'LongDescription', catDefault:'IT Equipment' },
+    markup: 12, minPrice: 0
+  },
+  pinnacle: {
+    name: 'Pinnacle',
+    type: 'csv',
+    url:  '',
+    fieldMap: { name:'Product Name', code:'Product Code', cat:'Category', price:'Price Excl', stock:'Stock', image:'Image', desc:'Description', catDefault:'IT Equipment' },
+    markup: 10, minPrice: 0
+  },
+  json: {
+    name: '',
+    type: 'api',
+    url:  '',
+    fieldMap: { name:'name', code:'sku', cat:'category', price:'price', stock:'stock', image:'image', desc:'description', catDefault:'Products' },
+    markup: 10, minPrice: 0
+  },
+  csv: {
+    name: '',
+    type: 'csv',
+    url:  '',
+    fieldMap: { name:'name', code:'sku', cat:'category', price:'price', stock:'stock', image:'image', desc:'description', catDefault:'Products' },
+    markup: 10, minPrice: 0
+  }
+};
+
+// ── Render distributor cards ──────────────────────────────────
+function renderDistributors() {
+  var wrap = document.getElementById('distListWrap');
+  if (!wrap) return;
+  if (!distributors.length) {
+    wrap.innerHTML = '<div style="text-align:center;padding:48px 20px;color:var(--text3);font-size:13px"><i class="fas fa-globe" style="font-size:36px;display:block;margin-bottom:14px;opacity:.25"></i>No distributors yet.<br>Click <strong style="color:var(--text2)">Add Distributor</strong> to connect your first supplier.</div>';
+    return;
+  }
+  wrap.innerHTML = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px">'
+    + distributors.map(function(d) {
+      var count = customProducts.filter(function(p){ return p.distributorId === d.id; }).length;
+      var statusColor = d.active ? 'var(--cyan)' : 'var(--text3)';
+      var typeBadge   = d.type === 'api' ? '<span style="background:rgba(0,212,255,.12);color:var(--cyan);padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600">JSON API</span>'
+                       : d.type === 'csv' ? '<span style="background:rgba(165,214,167,.15);color:#81c784;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600">CSV</span>'
+                       : '<span style="background:rgba(255,183,77,.12);color:#ffb74d;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600">MANUAL</span>';
+      return '<div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;transition:.2s" id="dcard_' + d.id + '">'
+        + '<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px">'
+        + '<div>'
+        + '<div style="font-weight:700;font-size:15px;color:var(--text);margin-bottom:5px">' + d.name + '</div>'
+        + '<div style="display:flex;align-items:center;gap:7px">' + typeBadge
+        + '<span style="font-size:11px;color:' + statusColor + '">' + (d.active ? '● Active' : '○ Inactive') + '</span>'
+        + '</div></div>'
+        + '<div style="display:flex;gap:6px">'
+        + '<button onclick="openEditDist(\'' + d.id + '\')" title="Edit" style="background:var(--bg4);border:1px solid var(--border);color:var(--text2);padding:6px 10px;border-radius:7px;cursor:pointer;font-size:13px"><i class="fas fa-pencil-alt"></i></button>'
+        + '<button onclick="deleteDist(\'' + d.id + '\')" title="Delete" style="background:rgba(255,71,87,.1);border:1px solid rgba(255,71,87,.3);color:#ff4757;padding:6px 10px;border-radius:7px;cursor:pointer;font-size:13px"><i class="fas fa-trash"></i></button>'
+        + '</div></div>'
+        + '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px">'
+        + '<div style="background:var(--bg3);border-radius:8px;padding:10px;text-align:center"><div style="font-size:18px;font-weight:700;color:var(--cyan)">' + count + '</div><div style="font-size:10px;color:var(--text3)">Products</div></div>'
+        + '<div style="background:var(--bg3);border-radius:8px;padding:10px;text-align:center"><div style="font-size:18px;font-weight:700;color:var(--orange)">' + (d.markup || 0) + '%</div><div style="font-size:10px;color:var(--text3)">Markup</div></div>'
+        + '<div style="background:var(--bg3);border-radius:8px;padding:10px;text-align:center"><div style="font-size:13px;font-weight:700;color:var(--text2)">' + (d.lastSync ? d.lastSync.substring(0,10) : 'Never') + '</div><div style="font-size:10px;color:var(--text3)">Last Sync</div></div>'
+        + '</div>'
+        + (d.type !== 'manual'
+          ? '<button onclick="startDistSync(\'' + d.id + '\')" style="width:100%;background:linear-gradient(135deg,var(--cyan),var(--orange));color:#000;border:none;padding:10px;border-radius:8px;font-weight:700;cursor:pointer;font-size:13px"><i class="fas fa-sync-alt"></i> Sync Now</button>'
+          : '<div style="font-size:12px;color:var(--text3);text-align:center;padding:6px">Manual — add products via Products tab</div>')
+        + '</div>';
+    }).join('')
+    + '</div>';
+}
+
+// ── Open add/edit modal ───────────────────────────────────────
+var editingDistId = null;
+function openAddDist() {
+  editingDistId = null;
+  document.getElementById('distModalTitle').textContent = 'Add Distributor';
+  clearDistForm();
+  openModal('distModal');
+}
+function openEditDist(id) {
+  var d = distributors.find(function(x){ return x.id === id; });
+  if (!d) return;
+  editingDistId = id;
+  document.getElementById('distModalTitle').textContent = 'Edit — ' + d.name;
+  document.getElementById('dName').value        = d.name || '';
+  document.getElementById('dType').value        = d.type || 'api';
+  document.getElementById('dUrl').value         = d.url  || '';
+  document.getElementById('dMarkup').value      = d.markup != null ? d.markup : '';
+  document.getElementById('dMinPrice').value    = d.minPrice || '';
+  document.getElementById('dActive').checked    = d.active !== false;
+  var fm = d.fieldMap || {};
+  document.getElementById('fmName').value     = fm.name     || '';
+  document.getElementById('fmCode').value     = fm.code     || '';
+  document.getElementById('fmCat').value      = fm.cat      || '';
+  document.getElementById('fmPrice').value    = fm.price    || '';
+  document.getElementById('fmStock').value    = fm.stock    || '';
+  document.getElementById('fmImage').value    = fm.image    || '';
+  document.getElementById('fmDesc').value     = fm.desc     || '';
+  document.getElementById('fmCatDefault').value = fm.catDefault || '';
+  // Restore credentials from sessionStorage
+  var creds = getDistCreds(id);
+  document.getElementById('dUser').value = creds.user || '';
+  document.getElementById('dPass').value = creds.pass || '';
+  onDistTypeChange();
+  openModal('distModal');
+}
+function clearDistForm() {
+  ['dName','dUrl','dUser','dPass','dMarkup','dMinPrice','fmName','fmCode','fmCat','fmPrice','fmStock','fmImage','fmDesc','fmCatDefault'].forEach(function(id){
+    var el = document.getElementById(id); if(el) el.value = '';
+  });
+  document.getElementById('dType').value = 'api';
+  document.getElementById('dActive').checked = true;
+  onDistTypeChange();
+}
+function onDistTypeChange() {
+  var t = document.getElementById('dType').value;
+  document.getElementById('dApiFields').style.display = t === 'api'  ? '' : 'none';
+  document.getElementById('dCsvFields').style.display = t === 'csv'  ? '' : 'none';
+}
+
+// ── Load template ─────────────────────────────────────────────
+function loadDistTemplate(key) {
+  var t = DIST_TEMPLATES[key];
+  if (!t) return;
+  if (t.name) document.getElementById('dName').value = t.name;
+  document.getElementById('dType').value  = t.type;
+  document.getElementById('dUrl').value   = t.url || '';
+  document.getElementById('dMarkup').value = t.markup != null ? t.markup : '';
+  var fm = t.fieldMap || {};
+  document.getElementById('fmName').value      = fm.name     || '';
+  document.getElementById('fmCode').value      = fm.code     || '';
+  document.getElementById('fmCat').value       = fm.cat      || '';
+  document.getElementById('fmPrice').value     = fm.price    || '';
+  document.getElementById('fmStock').value     = fm.stock    || '';
+  document.getElementById('fmImage').value     = fm.image    || '';
+  document.getElementById('fmDesc').value      = fm.desc     || '';
+  document.getElementById('fmCatDefault').value= fm.catDefault || '';
+  onDistTypeChange();
+  toast('Template loaded: ' + t.name, 'ok');
+}
+
+// ── Save distributor ──────────────────────────────────────────
+function saveDist() {
+  var name = document.getElementById('dName').value.trim();
+  if (!name) { toast('Name is required', 'err'); return; }
+  var fm = {
+    name:        document.getElementById('fmName').value.trim()     || 'name',
+    code:        document.getElementById('fmCode').value.trim()     || 'sku',
+    cat:         document.getElementById('fmCat').value.trim()      || 'category',
+    price:       document.getElementById('fmPrice').value.trim()    || 'price',
+    stock:       document.getElementById('fmStock').value.trim()    || 'stock',
+    image:       document.getElementById('fmImage').value.trim()    || 'image',
+    desc:        document.getElementById('fmDesc').value.trim()     || 'description',
+    catDefault:  document.getElementById('fmCatDefault').value.trim() || 'Products'
+  };
+  var d = {
+    id:         editingDistId || ('dist_' + Date.now()),
+    name:       name,
+    type:       document.getElementById('dType').value,
+    url:        document.getElementById('dUrl').value.trim(),
+    fieldMap:   fm,
+    markup:     parseFloat(document.getElementById('dMarkup').value) || 0,
+    minPrice:   parseFloat(document.getElementById('dMinPrice').value) || 0,
+    active:     document.getElementById('dActive').checked,
+    lastSync:   editingDistId ? (distributors.find(function(x){return x.id===editingDistId;})||{}).lastSync || null : null
+  };
+  // Save credentials to sessionStorage only
+  var user = document.getElementById('dUser').value.trim();
+  var pass = document.getElementById('dPass').value.trim();
+  if (user || pass) saveDistCreds(d.id, user, pass);
+
+  if (editingDistId) {
+    var idx = distributors.findIndex(function(x){ return x.id === editingDistId; });
+    if (idx >= 0) distributors[idx] = d;
+  } else {
+    distributors.push(d);
+  }
+  closeModal('distModal');
+  renderDistributors();
+  saveToFirebase();
+  toast((editingDistId ? 'Updated: ' : 'Added: ') + name, 'ok');
+}
+
+// ── Delete distributor ────────────────────────────────────────
+function deleteDist(id) {
+  var d = distributors.find(function(x){ return x.id === id; });
+  if (!d) return;
+  var count = customProducts.filter(function(p){ return p.distributorId === id; }).length;
+  var msg = 'Remove distributor "' + d.name + '"?';
+  if (count > 0) msg += '\n\n' + count + ' synced products will also be removed.';
+  if (!confirm(msg)) return;
+  distributors = distributors.filter(function(x){ return x.id !== id; });
+  customProducts = customProducts.filter(function(p){ return p.distributorId !== id; });
+  // Rebuild allProducts
+  var _ov = new Set(customProducts.filter(function(p){return p.isRawOverride;}).map(function(p){return String(p.id);}));
+  allProducts = [...RAW_PRODUCTS.filter(function(p){return !_ov.has(String(p.id));}), ...customProducts];
+  renderDistributors();
+  renderProductsTable();
+  renderPriceTable();
+  renderDashboard();
+  saveToFirebase();
+  toast('Distributor removed', 'ok');
+}
+
+// ── Credential storage (sessionStorage only) ──────────────────
+function saveDistCreds(id, user, pass) {
+  try { sessionStorage.setItem('distcreds_' + id, JSON.stringify({user:user, pass:pass})); } catch(e){}
+}
+function getDistCreds(id) {
+  try { return JSON.parse(sessionStorage.getItem('distcreds_' + id) || '{}'); } catch(e){ return {}; }
+}
+
+// ── Start sync for a distributor ──────────────────────────────
+function startDistSync(id) {
+  var d = distributors.find(function(x){ return x.id === id; });
+  if (!d) return;
+  activeSyncDistId = id;
+  distFetchedData  = [];
+  distCsvRows      = [];
+  document.getElementById('distSyncPanel').style.display = '';
+  document.getElementById('distSyncLabel').textContent   = d.name;
+  document.getElementById('distPreviewWrap').style.display = 'none';
+  document.getElementById('distLog').innerHTML = '';
+  distProgress(0);
+  distStatus('Preparing sync for ' + d.name + '...');
+
+  if (d.type === 'csv') {
+    distLog('CSV distributor — upload a new file or apply last loaded data.', 'info');
+    distStatus('Upload a CSV file in Edit, then sync again — or use the file already in memory.');
+    if (distCsvRows.length) {
+      processDistProducts(d, distCsvRows);
+    } else {
+      distStatus('No CSV loaded. Edit this distributor and upload a file first.');
+      distProgress(0);
+    }
+    return;
+  }
+
+  // API sync
+  var creds  = getDistCreds(d.id);
+  var rawUrl = d.url || '';
+  var url    = rawUrl
+    .replace('{{user}}',     encodeURIComponent(creds.user || ''))
+    .replace('{{pass}}',     encodeURIComponent(creds.pass || ''))
+    .replace('{{minPrice}}', encodeURIComponent(d.minPrice || 0));
+
+  if (!url) {
+    distLog('No API URL configured. Edit this distributor to add a URL.', 'err');
+    distStatus('No URL — edit distributor first.');
+    return;
+  }
+
+  distLog('Connecting to ' + d.name + ' API...', 'info');
+  distProgress(15);
+  var proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(url);
+
+  fetch(proxyUrl)
+    .then(function(res) {
+      distProgress(50);
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      return res.text();
+    })
+    .then(function(text) {
+      distProgress(70);
+      distLog('Data received — parsing...', 'info');
+      var data;
+      try { data = JSON.parse(text); } catch(e) {
+        var m = text.match(/\[[\s\S]*\]/);
+        if (m) data = JSON.parse(m[0]);
+        else throw new Error('Could not parse response as JSON');
+      }
+      var rows = Array.isArray(data) ? data : (data.Products||data.products||data.items||data.data||[]);
+      if (!rows.length) throw new Error('No products in response');
+      distLog('Got ' + rows.length + ' products from ' + d.name, 'ok');
+      processDistProducts(d, rows);
+    })
+    .catch(function(err) {
+      distLog('ERROR: ' + err.message, 'err');
+      distStatus('Fetch failed: ' + err.message);
+      distProgress(0);
+    });
+}
+
+// ── Parse one field from a row using the field map ────────────
+function getField(row, fieldName, fallback) {
+  if (!fieldName) return fallback || '';
+  // Support comma-separated fallbacks: "ProductName,Name,title"
+  var keys = fieldName.split(',').map(function(k){ return k.trim(); });
+  for (var i = 0; i < keys.length; i++) {
+    var v = row[keys[i]];
+    if (v !== undefined && v !== null && v !== '') return v;
+  }
+  return fallback || '';
+}
+
+// ── Process raw rows into preview staging ─────────────────────
+function processDistProducts(d, rows) {
+  var fm      = d.fieldMap || {};
+  var markup  = d.markup || 0;
+  var minP    = d.minPrice || 0;
+  var updated = 0, added = 0, skipped = 0;
+  distFetchedData = [];
+
+  rows.forEach(function(row) {
+    var name  = String(getField(row, fm.name,  '')).trim();
+    var code  = String(getField(row, fm.code,  '')).trim();
+    var cat   = String(getField(row, fm.cat,   fm.catDefault || 'Products')).trim() || (fm.catDefault || 'Products');
+    var desc  = String(getField(row, fm.desc,  '')).trim();
+    var image = String(getField(row, fm.image, '')).trim();
+    var rawP  = parseFloat(String(getField(row, fm.price, 0)).replace(/[^0-9.]/g,'')) || 0;
+    var stock = parseInt(String(getField(row, fm.stock, 0)).replace(/[^0-9]/g,''))  || 0;
+
+    if (!name) { skipped++; return; }
+    if (rawP < minP) { skipped++; return; }
+
+    var sellPrice = markup > 0 ? parseFloat((rawP * (1 + markup/100)).toFixed(2)) : rawP;
+
+    // Match against existing by code first, then name
+    var existing = code
+      ? allProducts.find(function(p){ return p.code && String(p.code).trim() === code; })
+      : allProducts.find(function(p){ return p.name.trim().toLowerCase() === name.toLowerCase(); });
+
+    var entry = {
+      name:name, code:code, cat:cat, desc:desc, image:image,
+      costPrice:rawP, sellPrice:sellPrice, stock:stock
+    };
+
+    if (existing) {
+      var pr = prices[existing.id] || {};
+      if (Math.abs((pr.normal||0) - sellPrice) > 0.01 || existing.stock !== stock) {
+        entry.status = 'updated'; entry.existingId = existing.id;
+        entry.oldPrice = pr.normal || existing.price; entry.oldStock = existing.stock;
+        updated++;
+      } else {
+        entry.status = 'unchanged'; skipped++;
+      }
+    } else {
+      entry.status = 'new'; added++;
+    }
+    distFetchedData.push(entry);
+  });
+
+  distProgress(100);
+  distStatus('Ready — ' + updated + ' to update · ' + added + ' new · ' + skipped + ' unchanged/skipped');
+  distLog(updated + ' updates · ' + added + ' new products · ' + skipped + ' skipped', 'ok');
+
+  // Show preview table (only changed/new)
+  var previewRows = distFetchedData.filter(function(r){ return r.status !== 'unchanged'; });
+  document.getElementById('distPreviewCount').textContent = previewRows.length;
+  document.getElementById('distPreviewBody').innerHTML = previewRows.slice(0, 200).map(function(r) {
+    var badge = r.status === 'new'
+      ? '<span style="background:rgba(0,212,255,.15);color:var(--cyan);padding:2px 7px;border-radius:8px;font-size:10px">NEW</span>'
+      : '<span style="background:rgba(255,183,77,.15);color:#ffb74d;padding:2px 7px;border-radius:8px;font-size:10px">UPDATE</span>';
+    return '<tr>'
+      + '<td style="font-size:12px">' + r.name.substring(0,55) + '</td>'
+      + '<td style="font-size:11px;color:var(--text3)">' + r.cat + '</td>'
+      + '<td style="font-size:12px;color:var(--text3)">R' + r.costPrice.toFixed(2) + '</td>'
+      + '<td style="font-size:12px;color:var(--cyan);font-weight:700">R' + r.sellPrice.toFixed(2) + '</td>'
+      + '<td style="font-size:12px">' + r.stock + '</td>'
+      + '<td>' + badge + '</td>'
+      + '</tr>';
+  }).join('');
+  if (previewRows.length > 200) {
+    document.getElementById('distPreviewBody').innerHTML += '<tr><td colspan="6" style="text-align:center;color:var(--text3);font-size:12px;padding:10px">... and ' + (previewRows.length-200) + ' more</td></tr>';
+  }
+  document.getElementById('distPreviewWrap').style.display = previewRows.length ? '' : 'none';
+  if (!previewRows.length) distLog('Everything is up to date — nothing to sync.', 'ok');
+}
+
+// ── Apply the sync ────────────────────────────────────────────
+function applyDistSync() {
+  var d = distributors.find(function(x){ return x.id === activeSyncDistId; });
+  if (!d) return;
+  var optPrices = document.getElementById('dOptPrices').checked;
+  var optStock  = document.getElementById('dOptStock').checked;
+  var optNew    = document.getElementById('dOptNew').checked;
+  var updated   = 0, added = 0;
+
+  distFetchedData.forEach(function(p) {
+    if (p.status === 'updated' && p.existingId != null) {
+      if (optPrices) {
+        if (!prices[p.existingId]) prices[p.existingId] = {normal:p.sellPrice,sale:null,saleOn:false,combo:null,comboOn:false};
+        else prices[p.existingId].normal = p.sellPrice;
+        basePrices[p.existingId] = p.sellPrice;
+      }
+      if (optStock) {
+        var prod = allProducts.find(function(x){return x.id===p.existingId;});
+        if (prod) prod.stock = p.stock;
+      }
+      updated++;
+    } else if (p.status === 'new' && optNew) {
+      var newId = d.id + '_' + (p.code || Date.now() + '_' + Math.random().toString(36).slice(2,6));
+      if (!allProducts.find(function(x){return x.id===newId;})) {
+        var newProd = {
+          id:newId, isCustom:true,
+          distributorId:   d.id,
+          distributorName: d.name,
+          name:p.name, code:p.code, category:p.cat,
+          description:p.desc, image:p.image,
+          price:p.sellPrice, stock:p.stock
+        };
+        customProducts.push(newProd);
+        allProducts.push(newProd);
+        prices[newId]     = {normal:p.sellPrice, sale:null, saleOn:false, combo:null, comboOn:false};
+        basePrices[newId] = p.sellPrice;
+        added++;
+      }
+    }
+  });
+
+  // Update distributor lastSync and product count
+  var idx = distributors.findIndex(function(x){return x.id===activeSyncDistId;});
+  if (idx>=0) {
+    distributors[idx].lastSync    = new Date().toISOString().substring(0,10);
+    distributors[idx].productCount= customProducts.filter(function(p){return p.distributorId===activeSyncDistId;}).length;
+  }
+
+  logChange(d.name + ' sync: ' + updated + ' updated, ' + added + ' added');
+  distLog('Applied — ' + updated + ' updated · ' + added + ' new products added', 'ok');
+  distStatus('Sync complete — saving to Firebase...');
+  saveToFirebase();
+  renderDistributors();
+  renderProductsTable();
+  renderPriceTable();
+  renderDashboard();
+  document.getElementById('distPreviewWrap').style.display = 'none';
+  toast(d.name + ' sync done — ' + updated + ' updated, ' + added + ' added', 'ok');
+}
+
+// ── CSV Upload ────────────────────────────────────────────────
+function previewDistCsv(input) {
+  var file = input.files[0];
+  if (!file) return;
+  var info = document.getElementById('dCsvInfo');
+  info.style.display = '';
+
+  if (file.name.endsWith('.csv')) {
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var lines  = e.target.result.split('\n').filter(function(l){return l.trim();});
+      var headers= lines[0].split(',').map(function(h){return h.replace(/"/g,'').trim();});
+      distCsvRows = lines.slice(1).map(function(line) {
+        var vals = line.split(',');
+        var row  = {};
+        headers.forEach(function(h,i){row[h]=(vals[i]||'').replace(/"/g,'').trim();});
+        return row;
+      });
+      info.innerHTML = '<i class="fas fa-check-circle" style="color:var(--cyan)"></i> Loaded <b>' + distCsvRows.length + '</b> rows · Columns: ' + headers.join(', ');
+      toast('CSV loaded: ' + distCsvRows.length + ' rows', 'ok');
+    };
+    reader.readAsText(file);
+  } else {
+    info.innerHTML = '<i class="fas fa-info-circle" style="color:var(--orange)"></i> Excel file detected. Save as CSV first for best results, or the system will attempt to parse it.';
+  }
+}
+
+// ── UI helpers ────────────────────────────────────────────────
+function distProgress(pct) {
+  var bar = document.getElementById('distProgBar');
+  if (bar) bar.style.width = pct + '%';
+}
+function distStatus(msg) {
+  var el = document.getElementById('distProgStatus');
+  if (el) el.textContent = msg;
+}
+function distLog(msg, type) {
+  var el = document.getElementById('distLog');
+  if (!el) return;
+  var color = type==='ok'?'#4caf50':type==='err'?'#ff4757':type==='warn'?'#ffb74d':'var(--text2)';
+  el.innerHTML += '<div style="color:' + color + '">' + new Date().toLocaleTimeString() + ' — ' + msg + '</div>';
+  el.scrollTop = el.scrollHeight;
+}
+
+// ══════════════════════════════════════════════════════════════
+// END MULTI-DISTRIBUTOR SYNC
+// ══════════════════════════════════════════════════════════════
 
 </script>
 </body>
