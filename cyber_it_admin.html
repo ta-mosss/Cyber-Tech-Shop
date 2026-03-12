@@ -593,7 +593,7 @@ select.form-input option{background:var(--bg3);}
     <!-- ADD/EDIT DISTRIBUTOR MODAL -->
     <div class="overlay hidden" id="distModal">
       <div class="modal" style="max-width:640px;max-height:90vh;overflow-y:auto">
-        <button class="modal-close" onclick="closeModal('distModal')"><i class="fas fa-times"></i></button>
+        <button class="modal-close" onclick="document.getElementById('distModal').classList.add('hidden')"><i class="fas fa-times"></i></button>
         <h3 id="distModalTitle">Add Distributor</h3>
 
         <!-- QUICK TEMPLATES -->
@@ -684,7 +684,7 @@ select.form-input option{background:var(--bg3);}
         </div>
 
         <div class="modal-footer">
-          <button class="btn-top danger" onclick="closeModal('distModal')">Cancel</button>
+          <button class="btn-top danger" onclick="document.getElementById('distModal').classList.add('hidden')">Cancel</button>
           <button class="btn-top save" onclick="saveDist()"><i class="fas fa-save"></i> Save</button>
         </div>
       </div>
@@ -2206,7 +2206,7 @@ function saveSettings() {
 // ══════════════════════════════════════════════════════
 function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
 document.addEventListener('click', e => {
-  ['prodModal','bundleModal'].forEach(id => {
+  ['prodModal','bundleModal','distModal'].forEach(id => {
     const el = document.getElementById(id);
     if (el && e.target === el) closeModal(id);
   });
@@ -2892,7 +2892,7 @@ function openAddDist() {
   editingDistId = null;
   document.getElementById('distModalTitle').textContent = 'Add Distributor';
   clearDistForm();
-  openModal('distModal');
+  document.getElementById('distModal').classList.remove('hidden');
 }
 function openEditDist(id) {
   var d = distributors.find(function(x){ return x.id === id; });
@@ -2919,7 +2919,7 @@ function openEditDist(id) {
   document.getElementById('dUser').value = creds.user || '';
   document.getElementById('dPass').value = creds.pass || '';
   onDistTypeChange();
-  openModal('distModal');
+  document.getElementById('distModal').classList.remove('hidden');
 }
 function clearDistForm() {
   ['dName','dUrl','dUser','dPass','dMarkup','dMinPrice','fmName','fmCode','fmCat','fmPrice','fmStock','fmImage','fmDesc','fmCatDefault'].forEach(function(id){
@@ -2992,7 +2992,7 @@ function saveDist() {
   } else {
     distributors.push(d);
   }
-  closeModal('distModal');
+  document.getElementById('distModal').classList.add('hidden');
   renderDistributors();
   saveToFirebase();
   toast((editingDistId ? 'Updated: ' : 'Added: ') + name, 'ok');

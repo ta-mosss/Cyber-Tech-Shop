@@ -77,6 +77,7 @@ header{background:var(--bg2);border-bottom:2px solid var(--border);padding:10px 
 .hbtn.cart-btn{background:var(--cyan);color:#050b14;border-color:var(--cyan);font-weight:600;}
 .hbtn.cart-btn:hover{background:#00b8d9;}
 .cart-count{background:#050b14;color:var(--cyan);border-radius:50%;width:18px;height:18px;font-size:10px;display:inline-flex;align-items:center;justify-content:center;font-weight:700;}
+.mob-theme-btn{display:none;background:transparent;border:1px solid var(--border2);color:var(--cyan);padding:7px 10px;border-radius:8px;font-size:16px;cursor:pointer;transition:.2s;}
 .mob-menu-btn{display:none;background:transparent;border:1px solid var(--border2);color:var(--text2);padding:7px 10px;border-radius:8px;font-size:16px;align-items:center;justify-content:center;}
 
 /* NAV BAR */
@@ -244,6 +245,7 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:30px 16p
 /* TABLET */
 @media(max-width:900px){
   .sidebar{display:none;}
+  .mob-theme-btn{display:flex;}
   .mob-menu-btn{display:flex;}
   .logo-sub{display:none;}
   .header-actions .hbtn:not(.cart-btn){display:none;}
@@ -539,7 +541,7 @@ header{display:flex;align-items:center;gap:10px;padding:8px 12px;position:sticky
 
 <!-- NAV BAR -->
 <div class="nav-outer">
-  <button class="sidebar-toggle-btn" id="sidebarToggleBtn" onclick="toggleSidebar()" title="Filters"><i class="fas fa-sliders-h"></i> Filters</button>
+  <button class="mob-theme-btn" id="mobThemeToggle" onclick="setTheme(document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark')" title="Toggle theme"><i class="fas fa-moon" id="mobThemeIcon"></i></button>
   <button class="nav-arrow" onclick="scrollNav(-160)"><i class="fas fa-chevron-left"></i></button>
   <div class="nav-bar" id="navBar"></div>
   <button class="nav-arrow" onclick="scrollNav(160)"><i class="fas fa-chevron-right"></i></button>
@@ -562,11 +564,6 @@ header{display:flex;align-items:center;gap:10px;padding:8px 12px;position:sticky
 </div>
 <div class="overlay" id="mobNavOverlay" onclick="closeMobNav()"></div>
 
-<!-- ═══════════════════════════════════════════════════════════
-     HOMEPAGE — inserted between promo-band and <!-- LAYOUT -->
-     ═══════════════════════════════════════════════════════════ -->
-
-<!-- ① HERO BANNER -->
 <div class="hero-banner" id="heroBanner">
   <div class="hero-bg-grid"></div>
   <div class="hero-content">
@@ -631,7 +628,7 @@ header{display:flex;align-items:center;gap:10px;padding:8px 12px;position:sticky
 </div>
 
 <!-- ③ DEALS OF THE WEEK -->
-<div class="section-wrap" id="dealsSection">
+<div class="section-wrap" id="dealsSection" style="display:none">
   <div class="section-hdr">
     <div class="section-hdr-left">
       <span class="section-eyebrow">🔥 LIMITED TIME</span>
@@ -1352,7 +1349,14 @@ function loadFromFirebase() {
   db.collection('shop').doc('config').onSnapshot(doc => {
     if (doc.exists) {
       const d = doc.data();
-      prices         = d.prices         || {};
+      // Normalize Firebase price keys (Firebase stores all keys as strings)
+      const rawPrices = d.prices || {};
+      prices = {};
+      Object.keys(rawPrices).forEach(k => {
+        const numK = isNaN(k) ? k : Number(k);
+        prices[numK] = rawPrices[k];  // numeric key
+        prices[k]    = rawPrices[k];  // string key (keep both)
+      });
       customProducts = d.customProducts || [];
       bundles        = d.bundles        || [];
       // merge extra category groups
@@ -1386,7 +1390,15 @@ function buildMergedProducts() {
   PRODUCTS = [...RAW_PRODUCTS];
   // fill in default prices for base products
   PRODUCTS.forEach(p => {
-    if (!prices[p.id]) prices[p.id] = {normal:p.price,sale:null,saleOn:false,combo:null,comboOn:false};
+    // Normalize: Firebase stores keys as strings, products use numeric ids
+    // Merge string key into numeric key so both point to same object
+    const strKey = String(p.id);
+    if (prices[strKey] && !prices[p.id]) {
+      prices[p.id] = prices[strKey]; // copy Firebase string-keyed data to numeric key
+    } else if (!prices[p.id]) {
+      prices[p.id] = {normal:p.price,sale:null,saleOn:false,combo:null,comboOn:false};
+    }
+    prices[strKey] = prices[p.id]; // keep string key in sync
   });
   // add custom products (admin-created)
   customProducts.forEach(cp => {
@@ -1423,11 +1435,11 @@ function buildMergedProducts() {
 // ══════════════════════════════════════════════════════════
 function fmt(n){return 'R '+Number(n).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');}
 function getEff(id){
-  const pr=prices[id];
-  if(!pr)return{price:0,type:'normal'};
+  const pr=prices[id]||prices[String(id)]||null;
+  if(!pr)return{price:prices[id]?.normal||0,type:'normal'};
   if(pr.saleOn&&pr.sale!=null)return{price:pr.sale,type:'sale'};
   if(pr.comboOn&&pr.combo!=null)return{price:pr.combo,type:'combo'};
-  return{price:pr.normal,type:'normal'};
+  return{price:pr.normal||0,type:'normal'};
 }
 
 // ══════════════════════════════════════════════════════════
@@ -1579,7 +1591,11 @@ function renderPagination(pages,total){
   if(currentPage<pages)h+=`<button class="page-btn" onclick="goPage(${currentPage+1})"><i class="fas fa-chevron-right"></i></button>`;
   pg.innerHTML=h;
 }
-function goPage(n){currentPage=n;renderProducts();window.scrollTo({top:400,behavior:'smooth'});}
+function goPage(n){
+  currentPage=n;renderProducts();
+  var el=document.getElementById('productsGrid');
+  if(el){var top=el.getBoundingClientRect().top+window.pageYOffset-90;window.scrollTo({top:Math.max(0,top),behavior:'smooth'});}
+}
 
 // ══════════════════════════════════════════════════════════
 //  PRODUCT MODAL
@@ -1717,7 +1733,7 @@ function buildDealsSection() {
   }).slice(0, 8);
 
   // Only show section if admin has set real sale items
-  var dealsWrap = grid.closest ? grid.closest('.section-wrap') : grid.parentElement;
+  var dealsWrap = document.getElementById('dealsSection') || (grid.closest ? grid.closest('.section-wrap') : grid.parentElement);
   if (!deals.length) {
     if (dealsWrap) dealsWrap.style.display = 'none';
     return;
@@ -2026,6 +2042,8 @@ function setTheme(t){
   if(lb)  lb.classList.toggle('active',t==='light');
   if(dbm){ dbm.style.background=t==='dark'?'var(--cyan)':'var(--bg4)'; dbm.style.color=t==='dark'?'#000':'var(--text2)'; }
   if(lbm){ lbm.style.background=t==='light'?'var(--orange)':'var(--bg4)'; lbm.style.color=t==='light'?'#fff':'var(--text2)'; }
+  var mti=document.getElementById('mobThemeIcon');if(mti){mti.className=t==='dark'?'fas fa-moon':'fas fa-sun';}
+  var mtb=document.getElementById('mobThemeToggle');if(mtb){mtb.style.color=t==='dark'?'var(--cyan)':'var(--orange)';}
   try{localStorage.setItem('cyberIT_theme',t);}catch(e){}
 }
 function initTheme(){
@@ -2043,7 +2061,7 @@ function initTheme(){
 // ══════════════════════════════════════════════════════════
 function toggleSidebar() {
   var sb  = document.getElementById('sidebar');
-  var btn = document.getElementById('sidebarToggleBtn');
+  var btn = null;
   var ov  = document.getElementById('sidebarOverlay');
   if (!sb) return;
   sb.classList.toggle('sidebar-open');
