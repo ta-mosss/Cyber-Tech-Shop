@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+
+  <!-- Homepage / Shop -->
+  <url>
+    <loc>https://shop.mbulahenigroup.co.za/</loc>
+    <lastmod>2026-03-13</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <!-- Category: All Products -->
+  <url>
+    <loc>https://shop.mbulahenigroup.co.za/?cat=All+Products</loc>
+    <lastmod>2026-03-13</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Category: Computers & Monitors -->
+  <url>
+    <loc>https://shop.mbulahenigroup.co.za/?cat=Computers+%26+Monitors</loc>
+    <lastmod>2026-03-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Category: Smartphones -->
+  <url>
+    <loc>https://shop.mbulahenigroup.co.za/?cat=Smartphones</loc>
+    <lastmod>2026-03-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Category: Networking -->
+  <url>
+    <loc>https://shop.mbulahenigroup.co.za/?cat=Networking</loc>
+    <lastmod>2026-03-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Category: Keyboards & Mice -->
+  <url>
+    <loc>https://shop.mbulahenigroup.co.za/?cat=Keyboards+%26+Mice</loc>
+    <lastmod>2026-03-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Category: Gaming -->
+  <url>
+    <loc>https://shop.mbulahenigroup.co.za/?cat=Gaming</loc>
+    <lastmod>2026-03-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Category: Audio -->
+  <url>
+    <loc>https://shop.mbulahenigroup.co.za/?cat=Audio</loc>
+    <lastmod>2026-03-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Category: Storage & Memory -->
+  <url>
+    <loc>https://shop.mbulahenigroup.co.za/?cat=Storage+%26+Memory</loc>
+    <lastmod>2026-03-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Category: Cables & Adapters -->
+  <url>
+    <loc>https://shop.mbulahenigroup.co.za/?cat=Cables+%26+Adapters</loc>
+    <lastmod>2026-03-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <!-- Category: Power & Charging -->
+  <url>
+    <loc>https://shop.mbulahenigroup.co.za/?cat=Power+%26+Charging</loc>
+    <lastmod>2026-03-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <!-- Category: Software & CCTV -->
+  <url>
+    <loc>https://shop.mbulahenigroup.co.za/?cat=Software+%26+CCTV</loc>
+    <lastmod>2026-03-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Category: Printers & USB -->
+  <url>
+    <loc>https://shop.mbulahenigroup.co.za/?cat=Printers+%26+USB</loc>
+    <lastmod>2026-03-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <!-- Search landing pages for high-value keywords -->
+  <url>
+    <loc>https://shop.mbulahenigroup.co.za/?search=laptop</loc>
+    <lastmod>2026-03-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://shop.mbulahenigroup.co.za/?search=mikrotik</loc>
+    <lastmod>2026-03-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://shop.mbulahenigroup.co.za/?search=ubiquiti</loc>
+    <lastmod>2026-03-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://shop.mbulahenigroup.co.za/?search=router</loc>
+    <lastmod>2026-03-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://shop.mbulahenigroup.co.za/?search=printer</loc>
+    <lastmod>2026-03-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://shop.mbulahenigroup.co.za/?search=cctv</loc>
+    <lastmod>2026-03-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+</urlset>
