@@ -1566,7 +1566,7 @@ function prodCard(p){
   if(!p.isBundle&&!p.isNew&&eff.type==='sale')badges.push('<span class="badge sale">SALE</span>');
   if(!p.isBundle&&eff.type==='combo')badges.push('<span class="badge combo">COMBO</span>');
   if(isLow&&!p.isBundle)badges.push('<span class="badge low">LOW STOCK</span>');
-  if(p.distributorName)badges.push('<span class="badge" style="background:rgba(129,199,132,.18);color:#81c784;font-size:9px">'+p.distributorName+'</span>');
+  // distributor source hidden from customers
   const idJson=safeId(p.id);
   return `<div class="product-card ${eff.type==='sale'?'on-sale':''} ${(eff.type==='combo'||p.isBundle)?'combo':''}" onclick="openProdModal(${idJson})">
     <div class="prod-badges">${badges.join('')}</div>

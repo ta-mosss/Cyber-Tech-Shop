@@ -606,6 +606,7 @@ select.form-input option{background:var(--bg3);}
             <button type="button" onclick="loadDistTemplate('pinnacle')" style="padding:6px 13px;border-radius:7px;border:1px solid var(--border);background:var(--bg4);color:var(--text2);font-size:12px;cursor:pointer"><i class="fas fa-mountain" style="color:#ffb74d"></i> Pinnacle</button>
             <button type="button" onclick="loadDistTemplate('json')" style="padding:6px 13px;border-radius:7px;border:1px solid rgba(0,212,255,.4);background:rgba(0,212,255,.07);color:var(--cyan);font-size:12px;cursor:pointer"><i class="fas fa-code"></i> Custom JSON</button>
             <button type="button" onclick="loadDistTemplate('csv')" style="padding:6px 13px;border-radius:7px;border:1px solid var(--border);background:var(--bg4);color:var(--text2);font-size:12px;cursor:pointer"><i class="fas fa-file-csv" style="color:#a5d6a7"></i> CSV Upload</button>
+            <button type="button" onclick="loadDistTemplate('xml')" style="padding:6px 13px;border-radius:7px;border:1px solid rgba(129,199,132,.4);background:rgba(129,199,132,.07);color:#81c784;font-size:12px;cursor:pointer"><i class="fas fa-code"></i> XML Feed</button>
           </div>
         </div>
 
@@ -619,6 +620,7 @@ select.form-input option{background:var(--bg3);}
             <select class="form-input" id="dType" onchange="onDistTypeChange()">
               <option value="api">JSON API</option>
               <option value="csv">CSV / Excel Upload</option>
+              <option value="xml">XML Feed</option>
               <option value="manual">Manual Only</option>
             </select>
           </div>
@@ -642,6 +644,9 @@ select.form-input option{background:var(--bg3);}
           <div style="background:rgba(255,107,0,.07);border:1px solid rgba(255,107,0,.2);border-radius:8px;padding:9px 13px;font-size:12px;color:var(--text2);margin-bottom:14px">
             <i class="fas fa-lock" style="color:var(--orange)"></i> Credentials are stored in your browser only — never saved to Firebase.
           </div>
+          <div id="dXmlNote" style="display:none;background:rgba(129,199,132,.08);border:1px solid rgba(129,199,132,.25);border-radius:8px;padding:9px 13px;font-size:12px;color:var(--text2);margin-bottom:14px">
+            <i class="fas fa-code" style="color:#81c784"></i> <b>XML Feed:</b> Enter the URL of the XML feed. The system will fetch it via CORS proxy and auto-detect common XML product structures (products/product, items/item, catalog/item). Use field mapping below to match XML tag names to product fields.
+          </div>
         </div>
 
         <div id="dCsvFields" style="display:none">
@@ -656,7 +661,7 @@ select.form-input option{background:var(--bg3);}
         <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:16px">
           <div style="font-family:'Orbitron',monospace;font-size:10px;color:var(--cyan);letter-spacing:1px;margin-bottom:12px">FIELD MAPPING — which column in your feed maps to what</div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-            <div class="form-group" style="margin:0"><label style="font-size:11px">Name field</label><input class="form-input" id="fmName" placeholder="ProductName / Name / title" style="font-size:12px;padding:6px 8px"></div>
+            <div class="form-group" style="margin:0"><label style="font-size:11px">Name field <span style="color:var(--text3);font-weight:400">(column that has product name)</span></label><input class="form-input" id="fmName" placeholder="ProductName / Name / title" style="font-size:12px;padding:6px 8px"></div>
             <div class="form-group" style="margin:0"><label style="font-size:11px">SKU / Code field</label><input class="form-input" id="fmCode" placeholder="ProductCode / SKU / sku" style="font-size:12px;padding:6px 8px"></div>
             <div class="form-group" style="margin:0"><label style="font-size:11px">Category field</label><input class="form-input" id="fmCat" placeholder="Category / category" style="font-size:12px;padding:6px 8px"></div>
             <div class="form-group" style="margin:0"><label style="font-size:11px">Price field</label><input class="form-input" id="fmPrice" placeholder="Price / SellPrice / price" style="font-size:12px;padding:6px 8px"></div>
@@ -685,7 +690,8 @@ select.form-input option{background:var(--bg3);}
 
         <div class="modal-footer">
           <button class="btn-top danger" onclick="document.getElementById('distModal').classList.add('hidden')">Cancel</button>
-          <button class="btn-top save" onclick="saveDist()"><i class="fas fa-save"></i> Save</button>
+          <button class="btn-top" id="dModalSyncBtn" onclick="saveDist()" style="display:none;background:linear-gradient(135deg,var(--cyan),var(--orange));color:#000;border-color:transparent;font-weight:700"><i class="fas fa-sync-alt"></i> Save & Sync Now</button>
+          <button class="btn-top save" id="dModalSaveBtn" onclick="saveDist()"><i class="fas fa-save"></i> Save</button>
         </div>
       </div>
     </div>
@@ -2844,6 +2850,13 @@ const DIST_TEMPLATES = {
     url:  '',
     fieldMap: { name:'name', code:'sku', cat:'category', price:'price', stock:'stock', image:'image', desc:'description', catDefault:'Products' },
     markup: 10, minPrice: 0
+  },
+  xml: {
+    name: '',
+    type: 'xml',
+    url:  '',
+    fieldMap: { name:'name', code:'sku', cat:'category', price:'price', stock:'stock', image:'image', desc:'description', catDefault:'Products' },
+    markup: 10, minPrice: 0
   }
 };
 
@@ -2927,12 +2940,26 @@ function clearDistForm() {
   });
   document.getElementById('dType').value = 'api';
   document.getElementById('dActive').checked = true;
+  distCsvRows = [];
+  var syncBtn = document.getElementById('dModalSyncBtn');
+  var saveBtn = document.getElementById('dModalSaveBtn');
+  if (syncBtn) syncBtn.style.display = 'none';
+  if (saveBtn) saveBtn.style.display = '';
+  var info = document.getElementById('dCsvInfo');
+  if (info) { info.style.display = 'none'; info.innerHTML = ''; }
   onDistTypeChange();
 }
 function onDistTypeChange() {
   var t = document.getElementById('dType').value;
-  document.getElementById('dApiFields').style.display = t === 'api'  ? '' : 'none';
-  document.getElementById('dCsvFields').style.display = t === 'csv'  ? '' : 'none';
+  document.getElementById('dApiFields').style.display = (t === 'api' || t === 'xml') ? '' : 'none';
+  document.getElementById('dCsvFields').style.display = t === 'csv' ? '' : 'none';
+  var xmlNote = document.getElementById('dXmlNote');
+  if (xmlNote) xmlNote.style.display = t === 'xml' ? '' : 'none';
+  // Show Save&Sync only for CSV with rows loaded
+  var syncBtn = document.getElementById('dModalSyncBtn');
+  var saveBtn = document.getElementById('dModalSaveBtn');
+  if (syncBtn) syncBtn.style.display = (t === 'csv' && distCsvRows.length) ? '' : 'none';
+  if (saveBtn) saveBtn.style.display = '';
 }
 
 // ── Load template ─────────────────────────────────────────────
@@ -2996,6 +3023,14 @@ function saveDist() {
   renderDistributors();
   saveToFirebase();
   toast((editingDistId ? 'Updated: ' : 'Added: ') + name, 'ok');
+
+  // For CSV distributors: if rows were loaded in this session, key them to the new dist id
+  // and immediately kick off the sync so user doesn't have to click again
+  if (d.type === 'csv' && distCsvRows.length) {
+    try { sessionStorage.setItem('distcsv_' + d.id, JSON.stringify({rows: distCsvRows})); } catch(e){}
+    // Small delay to let the modal close and cards render first
+    setTimeout(function(){ startDistSync(d.id); }, 400);
+  }
 }
 
 // ── Delete distributor ────────────────────────────────────────
@@ -3033,7 +3068,7 @@ function startDistSync(id) {
   if (!d) return;
   activeSyncDistId = id;
   distFetchedData  = [];
-  distCsvRows      = [];
+  if (d.type !== 'csv') distCsvRows = []; // keep CSV rows in memory for CSV distributors
   document.getElementById('distSyncPanel').style.display = '';
   document.getElementById('distSyncLabel').textContent   = d.name;
   document.getElementById('distPreviewWrap').style.display = 'none';
@@ -3042,12 +3077,24 @@ function startDistSync(id) {
   distStatus('Preparing sync for ' + d.name + '...');
 
   if (d.type === 'csv') {
-    distLog('CSV distributor — upload a new file or apply last loaded data.', 'info');
-    distStatus('Upload a CSV file in Edit, then sync again — or use the file already in memory.');
+    // Try to restore CSV from sessionStorage if not in memory
+    if (!distCsvRows.length) {
+      try {
+        var saved = sessionStorage.getItem('distcsv_' + d.id) || sessionStorage.getItem('distcsv_pending');
+        if (saved) {
+          var parsed = JSON.parse(saved);
+          distCsvRows = parsed.rows || [];
+          distLog('Restored ' + distCsvRows.length + ' rows from last upload.', 'info');
+        }
+      } catch(e){}
+    }
     if (distCsvRows.length) {
+      distLog('Processing ' + distCsvRows.length + ' rows from CSV...', 'info');
+      distProgress(30);
       processDistProducts(d, distCsvRows);
     } else {
-      distStatus('No CSV loaded. Edit this distributor and upload a file first.');
+      distStatus('No CSV loaded yet.');
+      distLog('Click the ✏️ Edit button on this distributor, upload your CSV file, then click "Save & Sync".', 'warn');
       distProgress(0);
     }
     return;
@@ -3067,7 +3114,7 @@ function startDistSync(id) {
     return;
   }
 
-  distLog('Connecting to ' + d.name + ' API...', 'info');
+  distLog('Connecting to ' + d.name + ' (' + d.type.toUpperCase() + ')...', 'info');
   distProgress(15);
   var proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(url);
 
@@ -3080,6 +3127,17 @@ function startDistSync(id) {
     .then(function(text) {
       distProgress(70);
       distLog('Data received — parsing...', 'info');
+
+      if (d.type === 'xml') {
+        // Parse XML feed
+        var rows = parseXmlFeed(text);
+        if (!rows.length) throw new Error('No products found in XML — check field mapping matches your XML tag names');
+        distLog('Parsed ' + rows.length + ' products from XML', 'ok');
+        processDistProducts(d, rows);
+        return;
+      }
+
+      // JSON parsing
       var data;
       try { data = JSON.parse(text); } catch(e) {
         var m = text.match(/\[[\s\S]*\]/);
@@ -3103,8 +3161,13 @@ function getField(row, fieldName, fallback) {
   if (!fieldName) return fallback || '';
   // Support comma-separated fallbacks: "ProductName,Name,title"
   var keys = fieldName.split(',').map(function(k){ return k.trim(); });
+  // Build case-insensitive lookup map once
+  var rowLower = {};
+  Object.keys(row).forEach(function(k){ rowLower[k.toLowerCase()] = row[k]; });
   for (var i = 0; i < keys.length; i++) {
-    var v = row[keys[i]];
+    var v = row[keys[i]]; // exact match first
+    if (v !== undefined && v !== null && v !== '') return v;
+    v = rowLower[keys[i].toLowerCase()]; // case-insensitive fallback
     if (v !== undefined && v !== null && v !== '') return v;
   }
   return fallback || '';
@@ -3184,6 +3247,51 @@ function processDistProducts(d, rows) {
   if (!previewRows.length) distLog('Everything is up to date — nothing to sync.', 'ok');
 }
 
+// ── Parse XML feed into row objects ──────────────────────────
+function parseXmlFeed(xmlText) {
+  var rows = [];
+  try {
+    var parser = new DOMParser();
+    var doc    = parser.parseFromString(xmlText, 'text/xml');
+    // Try common XML product container patterns
+    var productNodes = null;
+    var containers   = ['product','item','Product','Item','PRODUCT','ITEM','entry','Entry'];
+    for (var ci = 0; ci < containers.length; ci++) {
+      var nodes = doc.getElementsByTagName(containers[ci]);
+      if (nodes && nodes.length > 0) { productNodes = nodes; break; }
+    }
+    if (!productNodes || productNodes.length === 0) {
+      // Fallback: get all children of root
+      var root = doc.documentElement;
+      if (root && root.children.length > 0) {
+        productNodes = root.children[0].children || root.children;
+      }
+    }
+    if (!productNodes) return rows;
+    for (var i = 0; i < productNodes.length; i++) {
+      var node = productNodes[i];
+      var row  = {};
+      // Get all child elements as key-value pairs
+      for (var j = 0; j < node.children.length; j++) {
+        var child = node.children[j];
+        row[child.tagName] = child.textContent.trim();
+        // Also store lowercase version
+        row[child.tagName.toLowerCase()] = child.textContent.trim();
+      }
+      // Also get attributes
+      for (var k = 0; k < node.attributes.length; k++) {
+        var attr = node.attributes[k];
+        row[attr.name] = attr.value;
+        row[attr.name.toLowerCase()] = attr.value;
+      }
+      if (Object.keys(row).length > 0) rows.push(row);
+    }
+  } catch(e) {
+    distLog('XML parse error: ' + e.message, 'err');
+  }
+  return rows;
+}
+
 // ── Apply the sync ────────────────────────────────────────────
 function applyDistSync() {
   var d = distributors.find(function(x){ return x.id === activeSyncDistId; });
@@ -3250,25 +3358,77 @@ function previewDistCsv(input) {
   if (!file) return;
   var info = document.getElementById('dCsvInfo');
   info.style.display = '';
+  info.innerHTML = '<i class="fas fa-spinner fa-spin" style="color:var(--cyan)"></i> Reading file...';
 
-  if (file.name.endsWith('.csv')) {
+  if (file.name.toLowerCase().endsWith('.csv')) {
     var reader = new FileReader();
     reader.onload = function(e) {
-      var lines  = e.target.result.split('\n').filter(function(l){return l.trim();});
-      var headers= lines[0].split(',').map(function(h){return h.replace(/"/g,'').trim();});
+      var text   = e.target.result;
+      // Handle both comma and semicolon delimiters
+      var firstLine = text.split('\n')[0];
+      var delim  = (firstLine.split(';').length > firstLine.split(',').length) ? ';' : ',';
+      var lines  = text.split('\n').filter(function(l){return l.trim();});
+      var headers= lines[0].split(delim).map(function(h){return h.replace(/^"|"$/g,'').trim();});
+
       distCsvRows = lines.slice(1).map(function(line) {
-        var vals = line.split(',');
-        var row  = {};
-        headers.forEach(function(h,i){row[h]=(vals[i]||'').replace(/"/g,'').trim();});
+        // Handle quoted fields with commas inside
+        var vals = [];
+        var cur = '', inQ = false;
+        for (var ci = 0; ci < line.length; ci++) {
+          var ch = line[ci];
+          if (ch === '"') { inQ = !inQ; }
+          else if (ch === delim && !inQ) { vals.push(cur.trim()); cur = ''; }
+          else { cur += ch; }
+        }
+        vals.push(cur.trim());
+        var row = {};
+        headers.forEach(function(h,i){ row[h] = (vals[i]||'').replace(/^"|"$/g,'').trim(); });
         return row;
-      });
-      info.innerHTML = '<i class="fas fa-check-circle" style="color:var(--cyan)"></i> Loaded <b>' + distCsvRows.length + '</b> rows · Columns: ' + headers.join(', ');
+      }).filter(function(r){ return Object.values(r).some(function(v){return v;}); });
+
+      // Store in sessionStorage so it survives modal close
+      try { sessionStorage.setItem('distcsv_pending', JSON.stringify({rows: distCsvRows, headers: headers, fileName: file.name})); } catch(e){}
+
+      info.innerHTML = '<i class="fas fa-check-circle" style="color:var(--cyan)"></i> <b>' + distCsvRows.length + '</b> rows loaded · Columns detected: <span style="color:var(--cyan)">' + headers.join(' · ') + '</span>';
+
+      // Auto-suggest field mapping from column names
+      autoMapDistFields(headers);
+
+      // Show the sync-now button in modal
+      var syncBtn = document.getElementById('dModalSyncBtn');
+      if (syncBtn) syncBtn.style.display = '';
+
       toast('CSV loaded: ' + distCsvRows.length + ' rows', 'ok');
     };
     reader.readAsText(file);
   } else {
-    info.innerHTML = '<i class="fas fa-info-circle" style="color:var(--orange)"></i> Excel file detected. Save as CSV first for best results, or the system will attempt to parse it.';
+    info.innerHTML = '<i class="fas fa-info-circle" style="color:var(--orange)"></i> Please save as CSV (.csv) format and re-upload for best results.';
   }
+}
+
+// Auto-suggest field mapping based on column header names
+function autoMapDistFields(headers) {
+  var lc = headers.map(function(h){return h.toLowerCase();});
+  function best(candidates) {
+    for (var i=0;i<candidates.length;i++){
+      var ci = lc.indexOf(candidates[i]);
+      if (ci>=0) return headers[ci];
+    }
+    return '';
+  }
+  var map = {
+    fmName:  best(['description','productname','product name','name','title','product']),
+    fmCode:  best(['sku','code','product code','productcode','part number','partnumber','item code']),
+    fmCat:   best(['category','manufacturer','brand','type','group']),
+    fmPrice: best(['dealer price','price','sellprice','cost','wholesale price','excl','price excl']),
+    fmStock: best(['total stock','stock','qty','quantity','availableqty','available']),
+    fmImage: best(['image url','image','imageurl','img','photo']),
+    fmDesc:  best(['summary','long description','longdescription','details','spec']),
+  };
+  Object.keys(map).forEach(function(id){
+    var el = document.getElementById(id);
+    if (el && map[id] && !el.value) el.value = map[id];
+  });
 }
 
 // ── UI helpers ────────────────────────────────────────────────
