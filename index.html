@@ -365,6 +365,7 @@ footer{
 /* ═══ WA FAB ═══ */
 .wa-fab{
   position:fixed;bottom:28px;right:28px;
+  cursor:pointer; border:none;
   background:#25d366;color:#fff;
   width:54px;height:54px;border-radius:50%;
   display:flex;align-items:center;justify-content:center;
@@ -673,8 +674,9 @@ footer{
   box-shadow: 0 14px 40px rgba(0,0,0,.4), 0 0 20px rgba(0,229,255,.08);
 }
 .scc-img {
-  height: 110px; overflow: hidden;
+  height: 130px; overflow: hidden;
   background: var(--bg3);
+  position: relative;
 }
 .scc-img img {
   width: 100%; height: 100%; object-fit: cover;
@@ -988,7 +990,8 @@ footer{
 
   /* Shop spotlight */
   .shop-cat-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
-  .shop-cat-card.featured { grid-column: span 2; aspect-ratio: 2/1; grid-row: span 1; }
+  .shop-cat-card.featured { grid-column: span 2; grid-row: span 1; }
+.shop-cat-card.featured .scc-img { height: 160px; }
   .shop-cat-name { font-size: 10px; }
   .shop-promo-strip { grid-template-columns: 1fr; }
   .shop-promo-card { padding: 18px; gap: 14px; flex-wrap: wrap; }
@@ -1067,6 +1070,134 @@ html, body { overflow-x: hidden; max-width: 100vw; }
 .tech-stack-grid { overflow: hidden; }
 nav { overflow: hidden; }
 
+
+/* ═══ WHATSAPP ENQUIRY MODAL ═══ */
+.wa-modal-overlay {
+  position: fixed; inset: 0; z-index: 1100;
+  background: rgba(0,0,0,.75);
+  backdrop-filter: blur(6px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 16px;
+  opacity: 0; pointer-events: none;
+  transition: opacity .25s ease;
+}
+.wa-modal-overlay.open {
+  opacity: 1; pointer-events: all;
+}
+.wa-modal-box {
+  background: var(--bg1);
+  border: 1px solid var(--border2);
+  border-radius: 20px;
+  width: 100%; max-width: 460px;
+  max-height: 96vh; overflow-y: auto;
+  padding: 32px;
+  position: relative;
+  box-shadow: 0 32px 80px rgba(0,0,0,.7), 0 0 0 1px rgba(0,229,255,.08);
+  transform: translateY(16px);
+  transition: transform .25s ease;
+}
+.wa-modal-overlay.open .wa-modal-box {
+  transform: translateY(0);
+}
+[data-theme="light"] .wa-modal-box {
+  background: var(--card);
+  border-color: var(--border2);
+  box-shadow: 0 32px 80px rgba(0,50,120,.18);
+}
+.wa-modal-close {
+  position: absolute; top: 16px; right: 16px;
+  background: var(--bg3); border: 1px solid var(--border2);
+  color: var(--text2); width: 34px; height: 34px;
+  border-radius: 50%; font-size: 15px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: var(--t);
+}
+.wa-modal-close:hover { border-color: #ff5252; color: #ff5252; }
+.wa-modal-header { margin-bottom: 20px; }
+.wa-modal-wa-icon {
+  width: 48px; height: 48px; border-radius: 14px;
+  background: #25d366; display: flex; align-items: center;
+  justify-content: center; font-size: 22px; color: #fff;
+  margin-bottom: 14px;
+}
+.wa-modal-title {
+  font-family: var(--font-display);
+  font-size: 20px; font-weight: 800;
+  color: var(--text); margin-bottom: 4px;
+}
+.wa-modal-subject-tag {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: rgba(0,229,255,.08); border: 1px solid rgba(0,229,255,.2);
+  color: var(--cyan); font-size: 12px; font-weight: 600;
+  padding: 4px 12px; border-radius: 20px; margin-bottom: 6px;
+}
+.wa-modal-sub {
+  font-size: 13px; color: var(--text2); line-height: 1.6;
+}
+.wa-form { display: flex; flex-direction: column; gap: 12px; margin-top: 20px; }
+.wa-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.wa-field { display: flex; flex-direction: column; gap: 5px; }
+.wa-field label {
+  font-size: 11px; font-weight: 700; color: var(--text3);
+  text-transform: uppercase; letter-spacing: .8px;
+  font-family: var(--font-display);
+}
+.wa-field label .req { color: #ff5252; }
+.wa-field label .opt {
+  color: var(--text3); font-weight: 400;
+  font-size: 10px; text-transform: none; letter-spacing: 0;
+}
+.wa-input {
+  background: var(--bg3); border: 1.5px solid var(--border2);
+  color: var(--text); padding: 11px 14px;
+  border-radius: 10px; font-size: 14px;
+  font-family: var(--font-body); outline: none;
+  transition: var(--t); width: 100%;
+}
+.wa-input:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(0,229,255,.1); }
+.wa-input.err { border-color: #ff5252; box-shadow: 0 0 0 3px rgba(255,82,82,.1); }
+.wa-input::placeholder { color: var(--text3); }
+[data-theme="light"] .wa-input { background: var(--bg2); }
+.wa-select {
+  background: var(--bg3); border: 1.5px solid var(--border2);
+  color: var(--text); padding: 11px 14px;
+  border-radius: 10px; font-size: 14px;
+  font-family: var(--font-body); outline: none;
+  transition: var(--t); width: 100%; cursor: pointer;
+  -webkit-appearance: none; appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%234a6b80' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+}
+.wa-select:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(0,229,255,.1); }
+[data-theme="light"] .wa-select { background-color: var(--bg2); }
+.wa-err-msg {
+  font-size: 11px; color: #ff5252; margin-top: 3px;
+  display: none;
+}
+.wa-field.has-err .wa-err-msg { display: block; }
+.wa-field.has-err .wa-input { border-color: #ff5252; }
+.wa-send-btn {
+  background: #25d366; color: #fff; border: none;
+  padding: 14px; border-radius: 12px;
+  font-family: var(--font-display); font-weight: 800;
+  font-size: 15px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  gap: 10px; transition: var(--t); margin-top: 4px;
+  letter-spacing: .3px;
+}
+.wa-send-btn:hover { background: #1da851; transform: translateY(-1px); box-shadow: 0 6px 24px rgba(37,211,102,.4); }
+.wa-privacy {
+  text-align: center; font-size: 11px; color: var(--text3);
+  margin-top: 10px; line-height: 1.6;
+}
+.wa-privacy i { color: var(--green); }
+@media (max-width: 480px) {
+  .wa-modal-box { padding: 22px 18px; border-radius: 16px; }
+  .wa-form-row { grid-template-columns: 1fr; }
+  .wa-modal-title { font-size: 17px; }
+}
+
 </style>
 <body>
 
@@ -1089,7 +1220,7 @@ nav { overflow: hidden; }
   </div>
   <div class="mob-nav-footer">
     <a href="citm_services.html" class="mob-nav-cta store" target="_blank"><i class="fas fa-store"></i> Browse Tech Store</a>
-    <a href="https://wa.me/27737335518?text=Hi%2C+I+need+IT+support" class="mob-nav-cta wa" target="_blank"><i class="fab fa-whatsapp"></i> WhatsApp Us</a>
+    <a href="#" class="mob-nav-cta wa"  onclick="openWAModal('General IT Support');return false;"><i class="fab fa-whatsapp"></i> WhatsApp Us</a>
     <div class="mob-nav-theme">
       <span>Switch Theme</span>
       <button class="mob-theme-toggle" onclick="toggleTheme()">🌙 / ☀️ Toggle</button>
@@ -1145,7 +1276,7 @@ nav { overflow: hidden; }
         Stop firefighting IT problems. Cyber I.T Masters manages your <strong>entire IT infrastructure</strong> — networks, workstations, cybersecurity, cloud and compliance — so your business never skips a beat.
       </p>
       <div class="hero-ctas">
-        <a href="https://wa.me/27737335518?text=Hi%2C+I%27d+like+a+managed+IT+services+quote" target="_blank" class="cta-primary">
+        <a href="#"  class="cta-primary" onclick="openWAModal('Managed IT Services Quote');return false;">
           <i class="fab fa-whatsapp"></i> Get an MSP Quote
         </a>
         <a href="citm_services.html" class="cta-shop-hero">
@@ -1193,7 +1324,7 @@ nav { overflow: hidden; }
           <div class="hsc-label">Tech Hardware Shop</div>
           <div class="hsc-desc">276+ products — networking, computers, gaming, CCTV. Delivered nationwide.</div>
         </div>
-        <div class="hsc-price">Shop Now<span>shop.mbulahenigroup.co.za</span></div>
+        <div class="hsc-price"><a href="citm_services.html" style="color:var(--cyan);font-weight:800;text-decoration:none;display:flex;align-items:center;gap:5px;padding:8px 14px;background:rgba(0,229,255,.08);border:1px solid rgba(0,229,255,.2);border-radius:20px;"><i class="fas fa-store" style="font-size:11px"></i> Shop Now</a></div>
       </div>
     </div>
   </div>
@@ -1237,7 +1368,7 @@ nav { overflow: hidden; }
         <div class="sc-title">Network Monitoring &amp; Management</div>
         <p class="sc-desc">Continuous 24/7 monitoring of routers, switches, firewalls and access points. We detect faults, bandwidth issues and intrusions in real-time — and act before you notice a problem.</p>
         <ul class="sc-bullets"><li>Real-time alerts &amp; auto-remediation</li><li>MikroTik, Ubiquiti, Reyee &amp; Cisco</li><li>Monthly performance reports</li></ul>
-        <a href="https://wa.me/27737335518?text=I+need+network+monitoring+services" class="sc-link" target="_blank">Get started <i class="fas fa-arrow-right"></i></a>
+        <a href="#" class="sc-link"  onclick="openWAModal('Network Monitoring & Management');return false;">Get started <i class="fas fa-arrow-right"></i></a>
       </div>
 
       <div class="service-card">
@@ -1248,7 +1379,7 @@ nav { overflow: hidden; }
         <div class="sc-title">Workstation &amp; Endpoint Management</div>
         <p class="sc-desc">Remote monitoring and management (RMM) for all desktops, laptops and servers. Automated patching, software updates, health checks and inventory management — fully hands-off.</p>
         <ul class="sc-bullets"><li>Automated OS &amp; software patching</li><li>Remote support &amp; troubleshooting</li><li>Hardware health monitoring</li></ul>
-        <a href="https://wa.me/27737335518?text=I+need+workstation+management" class="sc-link" style="color:var(--orange)" target="_blank">Learn more <i class="fas fa-arrow-right"></i></a>
+        <a href="#" class="sc-link" style="color:var(--orange)"  onclick="openWAModal('Workstation & Endpoint Management');return false;">Learn more <i class="fas fa-arrow-right"></i></a>
       </div>
 
       <div class="service-card">
@@ -1259,7 +1390,7 @@ nav { overflow: hidden; }
         <div class="sc-title">Cybersecurity &amp; Threat Protection</div>
         <p class="sc-desc">Multi-layered security: EDR, next-gen antivirus, email phishing protection, vulnerability scanning and firewall management. We contain threats before they spread.</p>
         <ul class="sc-bullets"><li>EDR + next-gen antivirus (Kaspersky/Bitdefender)</li><li>Email security &amp; anti-phishing</li><li>Dark web monitoring &amp; breach alerts</li></ul>
-        <a href="https://wa.me/27737335518?text=I+need+cybersecurity+services" class="sc-link" style="color:#ff5252" target="_blank">Secure my business <i class="fas fa-arrow-right"></i></a>
+        <a href="#" class="sc-link" style="color:#ff5252"  onclick="openWAModal('Cybersecurity & Threat Protection');return false;">Secure my business <i class="fas fa-arrow-right"></i></a>
       </div>
 
       <div class="service-card">
@@ -1270,7 +1401,7 @@ nav { overflow: hidden; }
         <div class="sc-title">Cloud &amp; Microsoft 365 Management</div>
         <p class="sc-desc">Full Microsoft 365 administration — user provisioning, licence management, SharePoint, Teams and OneDrive optimisation. Cloud migrations and hybrid infrastructure setups.</p>
         <ul class="sc-bullets"><li>M365 user &amp; licence management</li><li>SharePoint &amp; Teams administration</li><li>Cloud migration &amp; hybrid setup</li></ul>
-        <a href="https://wa.me/27737335518?text=I+need+Microsoft+365+management" class="sc-link" style="color:var(--green)" target="_blank">Migrate to cloud <i class="fas fa-arrow-right"></i></a>
+        <a href="#" class="sc-link" style="color:var(--green)"  onclick="openWAModal('Cloud & Microsoft 365 Management');return false;">Migrate to cloud <i class="fas fa-arrow-right"></i></a>
       </div>
 
       <div class="service-card">
@@ -1281,7 +1412,7 @@ nav { overflow: hidden; }
         <div class="sc-title">Backup &amp; Disaster Recovery</div>
         <p class="sc-desc">Automated daily backups to secure offsite and cloud storage. Fast recovery of files, servers and entire systems in the event of ransomware, hardware failure or accidental deletion.</p>
         <ul class="sc-bullets"><li>Automated cloud &amp; local backups</li><li>Tested recovery procedures</li><li>Ransomware-resilient architecture</li></ul>
-        <a href="https://wa.me/27737335518?text=I+need+backup+and+disaster+recovery" class="sc-link" style="color:var(--purple)" target="_blank">Protect my data <i class="fas fa-arrow-right"></i></a>
+        <a href="#" class="sc-link" style="color:var(--purple)"  onclick="openWAModal('Backup & Disaster Recovery');return false;">Protect my data <i class="fas fa-arrow-right"></i></a>
       </div>
 
       <div class="service-card">
@@ -1292,7 +1423,7 @@ nav { overflow: hidden; }
         <div class="sc-title">IT Helpdesk &amp; On-Site Support</div>
         <p class="sc-desc">Dedicated helpdesk with real humans — not a chatbot. Fast remote resolution for day-to-day IT issues, with on-site dispatch for hardware faults and complex problems across SA.</p>
         <ul class="sc-bullets"><li>Unlimited remote support tickets</li><li>On-site visits nationwide</li><li>SLA-backed response times</li></ul>
-        <a href="https://wa.me/27737335518?text=I+need+IT+helpdesk+support" class="sc-link" style="color:var(--gold)" target="_blank">Talk to helpdesk <i class="fas fa-arrow-right"></i></a>
+        <a href="#" class="sc-link" style="color:var(--gold)"  onclick="openWAModal('IT Helpdesk & On-Site Support');return false;">Talk to helpdesk <i class="fas fa-arrow-right"></i></a>
       </div>
 
       <div class="service-card">
@@ -1303,7 +1434,7 @@ nav { overflow: hidden; }
         <div class="sc-title">Network Design &amp; Infrastructure</div>
         <p class="sc-desc">Design and deployment of enterprise-grade networks for offices, warehouses, schools and multi-site businesses. Structured cabling, VLAN segmentation, WiFi mapping and ISP integration.</p>
         <ul class="sc-bullets"><li>Site surveys &amp; network design</li><li>Structured cabling &amp; rack setup</li><li>Multi-site &amp; VLAN configuration</li></ul>
-        <a href="https://wa.me/27737335518?text=I+need+network+infrastructure+design" class="sc-link" target="_blank">Plan my network <i class="fas fa-arrow-right"></i></a>
+        <a href="#" class="sc-link"  onclick="openWAModal('Network Design & Infrastructure');return false;">Plan my network <i class="fas fa-arrow-right"></i></a>
       </div>
 
       <div class="service-card">
@@ -1314,7 +1445,7 @@ nav { overflow: hidden; }
         <div class="sc-title">CCTV &amp; Physical Security</div>
         <p class="sc-desc">IP camera systems, NVR/DVR setup, remote viewing and access control integration. Full site design, installation and ongoing monitoring for offices, retail and warehousing.</p>
         <ul class="sc-bullets"><li>IP &amp; analog camera systems</li><li>Remote viewing configuration</li><li>Access control integration</li></ul>
-        <a href="https://wa.me/27737335518?text=I+need+CCTV+installation" class="sc-link" style="color:var(--orange)" target="_blank">Get a CCTV quote <i class="fas fa-arrow-right"></i></a>
+        <a href="#" class="sc-link" style="color:var(--orange)"  onclick="openWAModal('CCTV & Physical Security');return false;">Get a CCTV quote <i class="fas fa-arrow-right"></i></a>
       </div>
 
       <div class="service-card">
@@ -1325,7 +1456,7 @@ nav { overflow: hidden; }
         <div class="sc-title">IT Compliance &amp; POPIA Advisory</div>
         <p class="sc-desc">Help South African businesses meet POPIA requirements — data audits, security policy documentation, breach response procedures and staff awareness training.</p>
         <ul class="sc-bullets"><li>POPIA gap assessment &amp; remediation</li><li>Security policy documentation</li><li>Staff cybersecurity training</li></ul>
-        <a href="https://wa.me/27737335518?text=I+need+POPIA+compliance+help" class="sc-link" style="color:var(--green)" target="_blank">Get compliant <i class="fas fa-arrow-right"></i></a>
+        <a href="#" class="sc-link" style="color:var(--green)"  onclick="openWAModal('IT Compliance & POPIA Advisory');return false;">Get compliant <i class="fas fa-arrow-right"></i></a>
       </div>
 
     </div>
@@ -1405,7 +1536,7 @@ nav { overflow: hidden; }
           <div class="plan-feat half"><i class="fas fa-minus"></i> On-site support (add-on)</div>
           <div class="plan-feat half"><i class="fas fa-minus"></i> Cybersecurity suite (add-on)</div>
         </div>
-        <button class="plan-btn ghost" onclick="window.open('https://wa.me/27737335518?text=Hi%2C+I%27m+interested+in+the+Essentials+MSP+package','_blank')">
+        <button class="plan-btn ghost" onclick="openWAModal('Essentials MSP Package (R1,499/mo)')">
           <i class="fab fa-whatsapp"></i> Get This Plan
         </button>
       </div>
@@ -1431,7 +1562,7 @@ nav { overflow: hidden; }
           <div class="plan-feat"><i class="fas fa-check"></i> 4-hour response SLA</div>
           <div class="plan-feat"><i class="fas fa-check"></i> 2&times; monthly on-site visits</div>
         </div>
-        <button class="plan-btn cyan" onclick="window.open('https://wa.me/27737335518?text=Hi%2C+I%27m+interested+in+the+Professional+MSP+package','_blank')">
+        <button class="plan-btn cyan" onclick="openWAModal('Professional MSP Package (R3,999/mo)')">
           <i class="fab fa-whatsapp"></i> Start This Plan
         </button>
       </div>
@@ -1453,7 +1584,7 @@ nav { overflow: hidden; }
           <div class="plan-feat"><i class="fas fa-check"></i> Dedicated account manager</div>
           <div class="plan-feat"><i class="fas fa-check"></i> Unlimited on-site visits (SA)</div>
         </div>
-        <button class="plan-btn" style="background:linear-gradient(135deg,var(--purple),#9d4edd);color:#fff;border:none;" onclick="window.open('https://wa.me/27737335518?text=Hi%2C+I%27m+interested+in+the+Business+MSP+package','_blank')">
+        <button class="plan-btn" style="background:linear-gradient(135deg,var(--purple),#9d4edd);color:#fff;border:none;" onclick="openWAModal('Business MSP Package (R7,999/mo)')">
           <i class="fab fa-whatsapp"></i> Get This Plan
         </button>
       </div>
@@ -1475,7 +1606,7 @@ nav { overflow: hidden; }
           <div class="plan-feat"><i class="fas fa-check"></i> Hardware procurement &amp; lifecycle</div>
           <div class="plan-feat"><i class="fas fa-check"></i> Staff cybersecurity awareness training</div>
         </div>
-        <button class="plan-btn" style="background:linear-gradient(135deg,var(--gold),#f59e0b);color:#0d1b2a;border:none;font-weight:900;" onclick="window.open('https://wa.me/27737335518?text=Hi%2C+I%27d+like+to+discuss+an+Enterprise+MSP+contract','_blank')">
+        <button class="plan-btn" style="background:linear-gradient(135deg,var(--gold),#f59e0b);color:#0d1b2a;border:none;font-weight:900;" onclick="openWAModal('Enterprise MSP Contract (Custom)')">
           <i class="fas fa-comments"></i> Discuss Enterprise Plan
         </button>
         <p class="plan-note">Government, schools &amp; multi-site businesses welcome. CSD registered.</p>
@@ -1485,7 +1616,7 @@ nav { overflow: hidden; }
     <div class="plans-note">
       <i class="fas fa-info-circle"></i>
       All plans include a <strong>free 30-minute IT assessment</strong>. Prices exclude VAT. Hardware costs quoted separately.
-      <a href="https://wa.me/27737335518?text=I+need+help+choosing+an+MSP+package" target="_blank">Not sure which plan? Chat with us &rarr;</a>
+      <a href="#"  onclick="openWAModal('Help Choosing an MSP Package');return false;">Not sure which plan? Chat with us &rarr;</a>
     </div>
   </div>
 </div>
@@ -1532,48 +1663,55 @@ nav { overflow: hidden; }
 
     <!-- Category visual grid -->
     <div class="shop-cat-grid">
-      <a href="citm_services.html" class="shop-cat-card featured">
-        <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=600&q=75" alt="Networking Equipment" loading="lazy">
-        <div class="shop-cat-body">
-          <div class="shop-cat-icon">🌐</div>
-          <div class="shop-cat-name">Networking &amp; Infrastructure</div>
+
+      <a href="citm_services.html" class="shop-cat-card featured" style="--accent:var(--cyan)">
+        <div class="scc-img">
+          <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&q=80&auto=format&fit=crop" alt="Networking Equipment" loading="lazy" onerror="this.parentNode.style.background='linear-gradient(135deg,#0a1628,#0e2040)';this.style.display='none'">
         </div>
+        <div class="scc-label"><i class="fas fa-network-wired"></i> Networking &amp; Infrastructure</div>
+        <div class="scc-sub">MikroTik · Ubiquiti · Reyee · Cudy</div>
       </a>
-      <a href="citm_services.html" class="shop-cat-card">
-        <img src="https://images.unsplash.com/photo-1587831990711-23ca6441447b?w=400&q=75" alt="Computers" loading="lazy">
-        <div class="shop-cat-body">
-          <div class="shop-cat-icon">🖥️</div>
-          <div class="shop-cat-name">Computers &amp; Monitors</div>
+
+      <a href="citm_services.html" class="shop-cat-card" style="--accent:#64b5f6">
+        <div class="scc-img">
+          <img src="https://images.unsplash.com/photo-1587831990711-23ca6441447b?w=600&q=80&auto=format&fit=crop" alt="Computers &amp; Monitors" loading="lazy" onerror="this.parentNode.style.background='linear-gradient(135deg,#0a1628,#0e2040)';this.style.display='none'">
         </div>
+        <div class="scc-label"><i class="fas fa-desktop"></i> Computers &amp; Monitors</div>
+        <div class="scc-sub">Desktops · Laptops · Screens</div>
       </a>
-      <a href="citm_services.html" class="shop-cat-card">
-        <img src="https://images.unsplash.com/photo-1593118247619-e2d6f056869e?w=400&q=75" alt="Gaming" loading="lazy">
-        <div class="shop-cat-body">
-          <div class="shop-cat-icon">🎮</div>
-          <div class="shop-cat-name">Gaming Gear</div>
+
+      <a href="citm_services.html" class="shop-cat-card" style="--accent:var(--orange)">
+        <div class="scc-img">
+          <img src="https://images.unsplash.com/photo-1593118247619-e2d6f056869e?w=600&q=80&auto=format&fit=crop" alt="Gaming Gear" loading="lazy" onerror="this.parentNode.style.background='linear-gradient(135deg,#1a0a28,#2e0e40)';this.style.display='none'">
         </div>
+        <div class="scc-label"><i class="fas fa-gamepad"></i> Gaming Gear</div>
+        <div class="scc-sub">Mice · Keyboards · Headsets</div>
       </a>
-      <a href="citm_services.html" class="shop-cat-card">
-        <img src="https://images.unsplash.com/photo-1557597774-9d475d030a97?w=400&q=75" alt="CCTV Security" loading="lazy">
-        <div class="shop-cat-body">
-          <div class="shop-cat-icon">📷</div>
-          <div class="shop-cat-name">CCTV &amp; Security</div>
+
+      <a href="citm_services.html" class="shop-cat-card" style="--accent:#ff5252">
+        <div class="scc-img">
+          <img src="https://images.unsplash.com/photo-1557597774-9d475d030a97?w=600&q=80&auto=format&fit=crop" alt="CCTV &amp; Security" loading="lazy" onerror="this.parentNode.style.background='linear-gradient(135deg,#0a1410,#0e2818)';this.style.display='none'">
         </div>
+        <div class="scc-label"><i class="fas fa-video"></i> CCTV &amp; Security</div>
+        <div class="scc-sub">IP Cameras · DVR · NVR</div>
       </a>
-      <a href="citm_services.html" class="shop-cat-card">
-        <img src="https://images.unsplash.com/photo-1531492746076-161ca9bcad58?w=400&q=75" alt="Storage" loading="lazy">
-        <div class="shop-cat-body">
-          <div class="shop-cat-icon">💾</div>
-          <div class="shop-cat-name">Storage &amp; Memory</div>
+
+      <a href="citm_services.html" class="shop-cat-card" style="--accent:var(--purple)">
+        <div class="scc-img">
+          <img src="https://images.unsplash.com/photo-1531492746076-161ca9bcad58?w=600&q=80&auto=format&fit=crop" alt="Storage &amp; Memory" loading="lazy" onerror="this.parentNode.style.background='linear-gradient(135deg,#0a0a28,#1a0e40)';this.style.display='none'">
         </div>
+        <div class="scc-label"><i class="fas fa-hdd"></i> Storage &amp; Memory</div>
+        <div class="scc-sub">SSDs · HDDs · RAM · USB</div>
       </a>
-      <a href="citm_services.html" class="shop-cat-card">
-        <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&q=75" alt="Audio" loading="lazy">
-        <div class="shop-cat-body">
-          <div class="shop-cat-icon">🎧</div>
-          <div class="shop-cat-name">Audio &amp; Peripherals</div>
+
+      <a href="citm_services.html" class="shop-cat-card" style="--accent:var(--gold)">
+        <div class="scc-img">
+          <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&q=80&auto=format&fit=crop" alt="Audio &amp; Peripherals" loading="lazy" onerror="this.parentNode.style.background='linear-gradient(135deg,#1a1400,#2e2400)';this.style.display='none'">
         </div>
+        <div class="scc-label"><i class="fas fa-headphones"></i> Audio &amp; Peripherals</div>
+        <div class="scc-sub">Headsets · Speakers · Mics</div>
       </a>
+
     </div>
 
     <!-- Two promo cards -->
@@ -1694,7 +1832,7 @@ nav { overflow: hidden; }
     <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">What does "24/7 monitoring" actually mean in practice? <i class="fas fa-chevron-down"></i></div><div class="faq-a">We deploy lightweight monitoring agents on your network devices and endpoints. These continuously report status, performance metrics and security events to our platform. When something anomalous happens — a device going offline, a suspicious login, high CPU — we're alerted immediately and act before it becomes a problem for you.</div></div>
     <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">How is cybersecurity handled under the MSP model? <i class="fas fa-chevron-down"></i></div><div class="faq-a">From the Professional plan upwards, we deploy EDR, next-gen antivirus, email phishing protection and firewall management. We run monthly vulnerability scans and push security patches. On the Business plan and above, you get SIEM log monitoring and a formal incident response procedure.</div></div>
     <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Do you help with POPIA compliance? <i class="fas fa-chevron-down"></i></div><div class="faq-a">Yes. Our Business and Enterprise plans include POPIA gap assessments, security policy documentation, breach response procedures and staff awareness training. POPIA carries significant penalties for non-compliance — we make sure your IT environment meets the requirements.</div></div>
-    <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Can I buy hardware from you as well as take an MSP plan? <i class="fas fa-chevron-down"></i></div><div class="faq-a">Absolutely — that's the whole idea. We are both an MSP and a tech hardware retailer. MSP clients get priority pricing on hardware from our store. Browse 276+ products at shop.mbulahenigroup.co.za — networking gear, computers, CCTV, gaming peripherals and more. Delivered nationwide.</div></div>
+    <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Can I buy hardware from you as well as take an MSP plan? <i class="fas fa-chevron-down"></i></div><div class="faq-a">Absolutely — that's the whole idea. We are both an MSP and a tech hardware retailer. MSP clients get priority pricing on hardware from our store. Browse 276+ products at <a href="citm_services.html" style="color:var(--cyan);font-weight:600">our tech store</a> — networking gear, computers, CCTV, gaming peripherals and more. Delivered nationwide.</div></div>
     <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Do you serve businesses outside of Limpopo / Johannesburg? <i class="fas fa-chevron-down"></i></div><div class="faq-a">Yes — we serve businesses across South Africa. Remote monitoring and management works regardless of location. For on-site visits, we cover Limpopo and Gauteng on all plans, with on-site visits to other provinces available at travel cost for Business and Enterprise clients.</div></div>
   </div>
 </div>
@@ -1705,14 +1843,14 @@ nav { overflow: hidden; }
   <h2 class="cta-band-title">One Team. Managed IT<br><span>&amp; Your Tech Store.</span></h2>
   <p class="cta-band-sub">Book a free IT assessment, get a managed services quote — or simply browse our tech store. We're your one-stop IT partner across South Africa.</p>
   <div class="cta-band-btns">
-    <a href="https://wa.me/27737335518?text=Hi%2C+I%27d+like+a+free+IT+assessment" target="_blank" class="cta-primary"><i class="fab fa-whatsapp"></i> Book Free IT Assessment</a>
+    <a href="#"  class="cta-primary" onclick="openWAModal('Free IT Assessment');return false;"><i class="fab fa-whatsapp"></i> Book Free IT Assessment</a>
     <a href="citm_services.html" class="cta-primary" style="background:linear-gradient(135deg,var(--orange),var(--orange2));box-shadow:0 4px 28px rgba(255,109,0,.35)"><i class="fas fa-store"></i> Shop Tech Products</a>
     <a href="tel:0870931138" class="cta-ghost"><i class="fas fa-phone"></i> Call 087 093 1138</a>
   </div>
   <div class="cta-contact-row">
     <div class="cta-contact-item"><i class="fas fa-phone"></i> <a href="tel:0870931138">087 093 1138</a></div>
     <div class="cta-contact-item"><i class="fab fa-whatsapp"></i> <a href="https://wa.me/27737335518">073 733 5518</a></div>
-    <div class="cta-contact-item"><i class="fas fa-envelope"></i> <a href="/cdn-cgi/l/email-protection#e28b8c848da28f80978e838a878c8b85908d9792cc818dcc9883"><span class="__cf_email__" data-cfemail="2940474f4669444b5c4548414c47404e5b465c59074a46075348">[email&#160;protected]</span></a></div>
+    <div class="cta-contact-item"><i class="fas fa-envelope"></i> <a href="mailto:info@mbulahenigroup.co.za">info@mbulahenigroup.co.za</a></div>
     <div class="cta-contact-item"><i class="fas fa-map-marker-alt"></i> Polokwane &mdash; serving SA-wide</div>
   </div>
 </div>
@@ -1748,8 +1886,7 @@ nav { overflow: hidden; }
       <h4>Contact</h4>
       <a href="tel:0870931138">087 093 1138</a>
       <a href="https://wa.me/27737335518">073 733 5518 (WhatsApp)</a>
-      <a href="/cdn-cgi/l/email-protection#1f767179705f727d6a737e777a7176786d706a6f317c7031657e"><span class="__cf_email__" data-cfemail="553c3b333a1538372039343d303b3c32273a20257b363a7b2f34">[email&#160;protected]</span></a>
-      <a href="https://mbulahenigroup.co.za">mbulahenigroup.co.za</a>
+      <a href="mailto:info@mbulahenigroup.co.za">info@mbulahenigroup.co.za</a>
     </div>
   </div>
   <div class="footer-bottom">
@@ -1761,7 +1898,7 @@ nav { overflow: hidden; }
     </div>
   </div>
 </footer>
-<a href="https://wa.me/27737335518" target="_blank" class="wa-fab" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+<button onclick="openWAModal('General IT Enquiry')" class="wa-fab" aria-label="Chat with us"><i class="fab fa-whatsapp"></i></button>
 
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 function openMobNav(){
@@ -1828,6 +1965,180 @@ document.addEventListener('DOMContentLoaded',function(){
   initTheme();
   revealOnScroll();
 });
+
+/* ═══ WHATSAPP ENQUIRY MODAL ═══ */
+var _waSubject = '';
+
+function openWAModal(subject) {
+  _waSubject = subject || 'IT Enquiry';
+  document.getElementById('waModalSubjectText').textContent = _waSubject;
+  // Reset form
+  document.getElementById('waForm').reset();
+  document.querySelectorAll('.wa-field.has-err').forEach(function(f){ f.classList.remove('has-err'); });
+  // Show modal
+  var overlay = document.getElementById('waModalOverlay');
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  // Focus first field after transition
+  setTimeout(function(){ document.getElementById('waFirstName').focus(); }, 260);
+}
+
+function closeWAModal(e, force) {
+  if (e && e.target !== document.getElementById('waModalOverlay') && !force) return;
+  document.getElementById('waModalOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// Close on Escape key
+document.addEventListener('keydown', function(e){
+  if (e.key === 'Escape') closeWAModal(null, true);
+});
+
+function validateWA() {
+  var ok = true;
+  var checks = [
+    { id: 'waFirstName',  field: 'fieldFirstName', test: function(v){ return v.length >= 2; } },
+    { id: 'waLastName',   field: 'fieldLastName',  test: function(v){ return v.length >= 2; } },
+    { id: 'waPhone',      field: 'fieldPhone',     test: function(v){ return /^[0-9+\s()-]{7,}$/.test(v); } },
+  ];
+  // Location check
+  var loc = document.getElementById('waLocation').value;
+  var locField = document.getElementById('waLocation').closest('.wa-field');
+  if (!loc) {
+    locField.classList.add('has-err');
+    ok = false;
+  } else {
+    locField.classList.remove('has-err');
+  }
+  checks.forEach(function(c){
+    var el = document.getElementById(c.id);
+    var field = document.getElementById(c.field);
+    if (!c.test(el.value.trim())) {
+      field.classList.add('has-err');
+      el.classList.add('err');
+      ok = false;
+    } else {
+      field.classList.remove('has-err');
+      el.classList.remove('err');
+    }
+  });
+  return ok;
+}
+
+function submitWAModal() {
+  if (!validateWA()) return;
+
+  var firstName = document.getElementById('waFirstName').value.trim();
+  var lastName  = document.getElementById('waLastName').value.trim();
+  var phone     = document.getElementById('waPhone').value.trim();
+  var location  = document.getElementById('waLocation').value;
+  var email     = document.getElementById('waEmail').value.trim();
+  var company   = document.getElementById('waCompany').value.trim();
+  var note      = document.getElementById('waNote').value.trim();
+
+  var msg = '';
+  msg += 'Hello Cyber I.T Masters,\n\n';
+  msg += '*Enquiry: ' + _waSubject + '*\n\n';
+  msg += '*Name:* ' + firstName + ' ' + lastName + '\n';
+  msg += '*Phone:* ' + phone + '\n';
+  msg += '*Province:* ' + location + '\n';
+  if (company) msg += '*Company:* ' + company + '\n';
+  if (email)   msg += '*Email:* ' + email + '\n';
+  if (note)    msg += '\n*Details:* ' + note + '\n';
+  msg += '\nPlease assist me with the above enquiry. Thank you.';
+
+  closeWAModal(null, true);
+  window.open('https://wa.me/27737335518?text=' + encodeURIComponent(msg), '_blank');
+}
+
 </script>
+
+<!-- ═══ WHATSAPP ENQUIRY MODAL ═══ -->
+<div class="wa-modal-overlay" id="waModalOverlay" onclick="closeWAModal(event)">
+  <div class="wa-modal-box" role="dialog" aria-modal="true" aria-labelledby="waModalTitle">
+
+    <button class="wa-modal-close" onclick="closeWAModal(null,true)" aria-label="Close">
+      <i class="fas fa-times"></i>
+    </button>
+
+    <div class="wa-modal-header">
+      <div class="wa-modal-wa-icon"><i class="fab fa-whatsapp"></i></div>
+      <div class="wa-modal-title" id="waModalTitle">Send us a Message</div>
+      <div class="wa-modal-subject-tag" id="waModalSubjectTag">
+        <i class="fas fa-tag"></i>
+        <span id="waModalSubjectText">IT Enquiry</span>
+      </div>
+      <p class="wa-modal-sub">
+        Fill in your details and we'll start a WhatsApp conversation with everything we need — no back-and-forth, straight to the point.
+      </p>
+    </div>
+
+    <form class="wa-form" id="waForm" onsubmit="return false;">
+      <div class="wa-form-row">
+        <div class="wa-field" id="fieldFirstName">
+          <label>First Name <span class="req">*</span></label>
+          <input class="wa-input" id="waFirstName" type="text" placeholder="Your first name" autocomplete="given-name">
+          <span class="wa-err-msg">Please enter your first name</span>
+        </div>
+        <div class="wa-field" id="fieldLastName">
+          <label>Last Name <span class="req">*</span></label>
+          <input class="wa-input" id="waLastName" type="text" placeholder="Your last name" autocomplete="family-name">
+          <span class="wa-err-msg">Please enter your last name</span>
+        </div>
+      </div>
+
+      <div class="wa-form-row">
+        <div class="wa-field" id="fieldPhone">
+          <label>WhatsApp Number <span class="req">*</span></label>
+          <input class="wa-input" id="waPhone" type="tel" placeholder="e.g. 082 000 0000" autocomplete="tel">
+          <span class="wa-err-msg">Please enter a valid phone number</span>
+        </div>
+        <div class="wa-field">
+          <label>Location <span class="req">*</span></label>
+          <select class="wa-select" id="waLocation">
+            <option value="">Select province...</option>
+            <option>Limpopo</option>
+            <option>Gauteng</option>
+            <option>Western Cape</option>
+            <option>KwaZulu-Natal</option>
+            <option>Eastern Cape</option>
+            <option>Mpumalanga</option>
+            <option>North West</option>
+            <option>Free State</option>
+            <option>Northern Cape</option>
+            <option>Outside South Africa</option>
+          </select>
+          <span class="wa-err-msg" id="locErr">Please select your province</span>
+        </div>
+      </div>
+
+      <div class="wa-field">
+        <label>Email Address <span class="opt">(optional)</span></label>
+        <input class="wa-input" id="waEmail" type="email" placeholder="your@email.com" autocomplete="email">
+      </div>
+
+      <div class="wa-field">
+        <label>Company / Organisation <span class="opt">(optional)</span></label>
+        <input class="wa-input" id="waCompany" type="text" placeholder="Company or organisation name" autocomplete="organization">
+      </div>
+
+      <div class="wa-field">
+        <label>Tell us more <span class="opt">(optional)</span></label>
+        <textarea class="wa-input" id="waNote" rows="3" placeholder="Any additional details — e.g. number of devices, site size, urgency..." style="resize:vertical;"></textarea>
+      </div>
+
+      <button type="button" class="wa-send-btn" onclick="submitWAModal()">
+        <i class="fab fa-whatsapp"></i> Open WhatsApp &amp; Send
+      </button>
+
+      <p class="wa-privacy">
+        <i class="fas fa-shield-alt"></i>
+        Your details are only used to respond to your enquiry. We never spam.
+      </p>
+    </form>
+
+  </div>
+</div>
+
 </body>
 </html>
