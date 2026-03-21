@@ -1,0 +1,1694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cyber I.T Masters | MSP Support Portal</title>
+<meta name="description" content="Cyber I.T Masters Managed IT Support Portal. Submit IT tickets, start remote support sessions, chat with technicians and download remote tools.">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --accent: #00c2ff;
+  --accent-dim: #0096c7;
+  --accent-glow: rgba(0,194,255,0.15);
+  --bg: #060d1a;
+  --surface: #0d1626;
+  --surface-raised: #111e32;
+  --border: rgba(0,194,255,0.12);
+  --border-hover: rgba(0,194,255,0.5);
+  --text: #e2e8f0;
+  --muted: #64748b;
+  --success: #10b981;
+  --header-bg: rgba(6,13,26,0.9);
+  --grid-line: rgba(0,194,255,0.03);
+  --shadow: rgba(0,0,0,0.4);
+}
+
+body.light-mode {
+  --accent: #0077cc;
+  --accent-dim: #005fa3;
+  --accent-glow: rgba(0,119,204,0.1);
+  --bg: #f0f4f8;
+  --surface: #ffffff;
+  --surface-raised: #f8fafc;
+  --border: rgba(0,119,204,0.15);
+  --border-hover: rgba(0,119,204,0.45);
+  --text: #0f172a;
+  --muted: #64748b;
+  --success: #059669;
+  --header-bg: rgba(255,255,255,0.92);
+  --grid-line: rgba(0,119,204,0.04);
+  --shadow: rgba(0,0,0,0.1);
+}
+
+/* Theme toggle button */
+.theme-toggle {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--muted);
+  width: 36px; height: 36px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: all 0.2s;
+  margin-left: 6px;
+  flex-shrink: 0;
+}
+.theme-toggle:hover {
+  border-color: var(--border-hover);
+  color: var(--accent);
+  background: var(--accent-glow);
+}
+
+/* Show/hide sun vs moon based on mode */
+body:not(.light-mode) .theme-icon-light { display: none; }
+body.light-mode .theme-icon-dark { display: none; }
+body.light-mode .theme-icon-light { display: flex; }
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Nunito', sans-serif;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* Background grid effect */
+body::before {
+  content:'';
+  position:fixed;
+  inset:0;
+  background-image:
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events:none;
+  z-index:0;
+}
+
+/* ─── HEADER ──────────────────────────────────────── */
+header {
+  background: var(--header-bg);
+  backdrop-filter: blur(16px);
+  padding: 18px 48px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.logo {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--accent);
+  letter-spacing: -0.5px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo-icon {
+  width: 34px; height: 34px;
+  background: var(--accent-glow);
+  border: 1px solid var(--border-hover);
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+}
+
+.logo-icon svg { width:18px; height:18px; }
+
+nav { display:flex; align-items:center; gap:6px; }
+
+nav a {
+  text-decoration: none;
+  color: var(--muted);
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+nav a:hover { color: var(--accent); background: var(--accent-glow); }
+
+/* ─── HERO ──────────────────────────────────────── */
+.hero {
+  text-align: center;
+  padding: 90px 20px 70px;
+  position: relative;
+  z-index: 1;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--accent-glow);
+  border: 1px solid var(--border-hover);
+  border-radius: 100px;
+  padding: 6px 16px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--accent);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+}
+
+.hero-badge span {
+  width: 6px; height: 6px;
+  background: var(--accent);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%,100%{ opacity:1; transform:scale(1); }
+  50%{ opacity:0.5; transform:scale(1.4); }
+}
+
+.hero h1 {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: clamp(32px, 5vw, 52px);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -1.5px;
+  margin-bottom: 18px;
+}
+
+.hero h1 span { color: var(--accent); }
+
+.hero p {
+  color: var(--muted);
+  max-width: 560px;
+  margin: 0 auto 36px;
+  font-size: 16px;
+}
+
+.hero-stats {
+  display: inline-flex;
+  gap: 40px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 32px;
+}
+
+.stat { text-align:center; }
+.stat-val { font-family:'Syne',sans-serif; font-size:22px; font-weight:800; color:var(--accent); }
+.stat-label { font-size:12px; color:var(--muted); }
+
+/* ─── SECTION ──────────────────────────────────────── */
+.section {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 0 32px 80px;
+  position: relative;
+  z-index: 1;
+}
+
+.section-label {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--accent);
+  margin-bottom: 10px;
+}
+
+.section-title {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: clamp(22px, 3vw, 30px);
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.section-sub { color: var(--muted); font-size:15px; margin-bottom:36px; }
+
+/* ─── CARDS ──────────────────────────────────────── */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+  gap: 20px;
+}
+
+.card {
+  background: var(--surface);
+  border-radius: 16px;
+  padding: 32px 28px;
+  border: 1px solid var(--border);
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+
+.card::before {
+  content:'';
+  position:absolute;
+  top:-60px; right:-60px;
+  width:140px; height:140px;
+  border-radius:50%;
+  background: var(--accent-glow);
+  transition: all 0.4s;
+  opacity:0;
+}
+
+.card:hover::before { opacity:1; }
+.card:hover {
+  border-color: var(--border-hover);
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px var(--shadow), 0 0 0 1px var(--border-hover);
+}
+
+.card-icon {
+  width: 48px; height: 48px;
+  border-radius: 12px;
+  background: var(--accent-glow);
+  border: 1px solid var(--border-hover);
+  display: grid;
+  place-items: center;
+  margin-bottom: 20px;
+}
+
+.card-icon svg { width:22px; height:22px; stroke:var(--accent); }
+
+.card h3 {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.card p { color: var(--muted); font-size: 14px; margin-bottom: 24px; line-height: 1.7; }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 20px;
+  background: var(--accent);
+  color: #000;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.2s;
+  border: none;
+  cursor: pointer;
+}
+
+.btn:hover { background: var(--accent-dim); transform: translateX(2px); }
+
+.btn-outline {
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid var(--border-hover);
+}
+.btn-outline:hover { background: var(--accent-glow); color: var(--accent); }
+
+/* ─── WHATSAPP MODAL ──────────────────────────────────────── */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(6,13,26,0.85);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal-overlay.open { display: flex; }
+
+.modal {
+  background: var(--surface-raised);
+  border: 1px solid var(--border-hover);
+  border-radius: 20px;
+  padding: 40px;
+  width: 100%;
+  max-width: 480px;
+  position: relative;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from { opacity:0; transform: translateY(20px); }
+  to { opacity:1; transform: translateY(0); }
+}
+
+.modal-close {
+  position: absolute;
+  top: 16px; right: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--muted);
+  width: 32px; height: 32px;
+  cursor: pointer;
+  font-size: 18px;
+  display: grid;
+  place-items: center;
+  transition: 0.2s;
+}
+.modal-close:hover { border-color: var(--border-hover); color: var(--text); }
+
+.modal-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.modal-logo .wa-icon {
+  width: 44px; height: 44px;
+  background: #25D366;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+}
+
+.modal-logo .wa-icon svg { width:24px; height:24px; fill:white; }
+.modal h2 { font-family:'Syne',sans-serif; font-size:22px; font-weight:800; }
+.modal-sub { color:var(--muted); font-size:13px; margin-top:2px; }
+
+.form-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px; }
+.form-full { grid-column: span 2; }
+
+.form-group { display:flex; flex-direction:column; gap:6px; }
+.form-group label { font-size:12px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px; }
+
+.form-group input,
+.form-group textarea {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 11px 14px;
+  color: var(--text);
+  font-family: 'Nunito', sans-serif;
+  font-size: 14px;
+  transition: 0.2s;
+  outline: none;
+  resize: vertical;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.form-group textarea { min-height: 90px; }
+
+.btn-wa {
+  width: 100%;
+  background: #25D366;
+  color: white;
+  border: none;
+  justify-content: center;
+  font-size: 15px;
+  padding: 14px;
+  margin-top: 8px;
+}
+.btn-wa:hover { background: #1ebe5d; color: white; }
+
+/* ─── COMING SOON FEATURES ──────────────────────────────────────── */
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.feature-box {
+  background: var(--surface);
+  padding: 24px 20px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+
+.feature-box.coming::after {
+  content: 'SOON';
+  position: absolute;
+  top: 10px; right: 10px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  background: var(--accent-glow);
+  color: var(--accent);
+  border: 1px solid var(--border-hover);
+  border-radius: 4px;
+  padding: 2px 6px;
+}
+
+.feature-box h4 {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.feature-box p { color: var(--muted); font-size: 13px; line-height: 1.6; }
+
+.feature-icon { font-size: 24px; margin-bottom: 12px; }
+
+/* ─── FOOTER ──────────────────────────────────────── */
+footer {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  padding: 36px 48px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+  margin-bottom: 60px;
+}
+
+.footer-brand { font-family:'Syne',sans-serif; font-weight:700; color:var(--accent); font-size:15px; }
+.footer-copy { color: var(--muted); font-size: 13px; }
+.footer-links { display:flex; gap:20px; }
+.footer-links a { color:var(--muted); font-size:13px; text-decoration:none; transition:0.2s; }
+.footer-links a:hover { color:var(--accent); }
+
+/* ─── STICKY BAR ──────────────────────────────────────── */
+.sticky-bar {
+  position: fixed;
+  bottom: 0; left: 0;
+  width: 100%;
+  background: var(--header-bg);
+  backdrop-filter: blur(16px);
+  padding: 12px 24px;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  border-top: 1px solid var(--border);
+  z-index: 999;
+}
+
+.sticky-bar a {
+  text-decoration: none;
+  padding: 9px 18px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sticky-bar a.primary { background: var(--accent); color: #000; }
+.sticky-bar a.primary:hover { background: var(--accent-dim); }
+.sticky-bar a.secondary { background: #25D366; color: white; }
+.sticky-bar a.secondary:hover { background: #1ebe5d; }
+.sticky-bar a.tertiary { background: var(--surface-raised); color: var(--text); border: 1px solid var(--border); }
+.sticky-bar a.tertiary:hover { border-color: var(--border-hover); color: var(--accent); }
+
+.sticky-bar button {
+  text-decoration: none;
+  padding: 9px 18px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #25D366;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+.sticky-bar button:hover { background: #1ebe5d; }
+
+body.light-mode .modal-overlay { background: rgba(15,23,42,0.6); }
+body.light-mode .modal { background: #ffffff; }
+body.light-mode .form-group input,
+body.light-mode .form-group textarea { background: #f1f5f9; color: #0f172a; }
+body.light-mode .logo-icon svg { stroke: var(--accent); }
+
+/* ─── PAGE TABS ──────────────────────────────────────── */
+.page-tabs {
+  display: flex;
+  gap: 4px;
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 24px 32px 0;
+  position: relative;
+  z-index: 1;
+}
+
+.tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 22px;
+  border-radius: 10px 10px 0 0;
+  border: 1px solid var(--border);
+  border-bottom: none;
+  background: var(--surface);
+  color: var(--muted);
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.3px;
+}
+
+.tab-btn:hover { color: var(--accent); border-color: var(--border-hover); }
+
+.tab-btn.active {
+  background: var(--surface-raised);
+  color: var(--accent);
+  border-color: var(--border-hover);
+  border-bottom: 2px solid var(--surface-raised);
+  position: relative;
+  z-index: 2;
+}
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+.tab-panel {
+  background: var(--surface-raised);
+  border: 1px solid var(--border-hover);
+  border-radius: 0 12px 12px 12px;
+  padding: 40px;
+  max-width: 1160px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+/* ─── DEVICE BOOKING FORM ──────────────────────────────────────── */
+.booking-header {
+  margin-bottom: 36px;
+}
+
+.booking-header h2 {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: clamp(22px, 3vw, 30px);
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.booking-header p { color: var(--muted); font-size: 14px; }
+
+.form-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 28px;
+  margin-bottom: 24px;
+}
+
+.form-section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 22px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.form-section-num {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #000;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.form-section-title h3 {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.booking-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.booking-full { grid-column: span 2; }
+
+.bform-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.bform-group label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.bform-group .hint {
+  font-size: 11px;
+  color: var(--muted);
+  opacity: 0.7;
+  margin-top: -2px;
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.bform-group input,
+.bform-group select,
+.bform-group textarea {
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 11px 14px;
+  color: var(--text);
+  font-family: 'Nunito', sans-serif;
+  font-size: 14px;
+  transition: all 0.2s;
+  outline: none;
+}
+
+.bform-group select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 36px;
+  cursor: pointer;
+}
+
+.bform-group select option { background: var(--surface-raised); color: var(--text); }
+
+.bform-group input:focus,
+.bform-group select:focus,
+.bform-group textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.bform-group textarea { min-height: 100px; resize: vertical; }
+
+/* Radio / checkbox groups */
+.radio-group, .checkbox-group {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 2px;
+}
+
+.radio-opt, .check-opt {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 9px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+  user-select: none;
+}
+
+.radio-opt input, .check-opt input { display: none; }
+
+.radio-opt.selected, .check-opt.selected {
+  border-color: var(--accent);
+  background: var(--accent-glow);
+  color: var(--accent);
+}
+
+.radio-dot {
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  border: 2px solid var(--muted);
+  display: grid;
+  place-items: center;
+  transition: 0.2s;
+  flex-shrink: 0;
+}
+
+.radio-opt.selected .radio-dot {
+  border-color: var(--accent);
+  background: var(--accent);
+}
+
+.check-box {
+  width: 14px; height: 14px;
+  border-radius: 3px;
+  border: 2px solid var(--muted);
+  display: grid;
+  place-items: center;
+  transition: 0.2s;
+  flex-shrink: 0;
+}
+
+.check-opt.selected .check-box {
+  border-color: var(--accent);
+  background: var(--accent);
+}
+
+.check-opt.selected .check-box::after {
+  content: '✓';
+  font-size: 9px;
+  color: #000;
+  font-weight: 900;
+}
+
+/* Authorization block */
+.auth-block {
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px;
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.7;
+  margin-bottom: 16px;
+}
+
+.auth-block strong { color: var(--text); }
+
+.auth-choices { display: flex; gap: 12px; }
+
+/* Submit */
+.btn-book {
+  width: 100%;
+  background: var(--accent);
+  color: #000;
+  border: none;
+  padding: 15px;
+  border-radius: 10px;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.2s;
+  margin-top: 8px;
+}
+
+.btn-book:hover { background: var(--accent-dim); transform: translateY(-1px); }
+
+/* Footer tagline */
+.booking-footer-note {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 12px;
+  color: var(--muted);
+  letter-spacing: 0.3px;
+}
+
+/* ─── PHOTO UPLOAD ──────────────────────────────────────── */
+.photo-upload-zone {
+  border: 2px dashed var(--border-hover);
+  border-radius: 12px;
+  padding: 24px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: var(--surface-raised);
+  position: relative;
+}
+
+.photo-upload-zone:hover,
+.photo-upload-zone.drag-over {
+  border-color: var(--accent);
+  background: var(--accent-glow);
+}
+
+.photo-upload-zone input[type="file"] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+}
+
+.photo-upload-icon {
+  width: 48px; height: 48px;
+  background: var(--accent-glow);
+  border: 1px solid var(--border-hover);
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  margin: 0 auto 12px;
+}
+
+.photo-upload-zone h4 {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.photo-upload-zone p {
+  font-size: 12px;
+  color: var(--muted);
+  margin: 0;
+}
+
+.photo-upload-zone .mobile-hint {
+  display: none;
+}
+
+@media(max-width:768px) {
+  .photo-upload-zone .desktop-hint { display: none; }
+  .photo-upload-zone .mobile-hint { display: block; }
+}
+
+.photo-preview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.photo-thumb {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  aspect-ratio: 1;
+  border: 1px solid var(--border);
+}
+
+.photo-thumb img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.photo-thumb .photo-label {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  background: rgba(0,0,0,0.65);
+  font-size: 10px;
+  color: #fff;
+  padding: 3px 6px;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.photo-thumb .remove-photo {
+  position: absolute;
+  top: 4px; right: 4px;
+  background: rgba(239,68,68,0.9);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 20px; height: 20px;
+  font-size: 12px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  line-height: 1;
+  z-index: 3;
+}
+
+.photo-upload-status {
+  margin-top: 12px;
+  font-size: 13px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.upload-spinner {
+  width: 16px; height: 16px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.photo-count-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--accent-glow);
+  border: 1px solid var(--border-hover);
+  border-radius: 100px;
+  padding: 3px 10px;
+  font-size: 12px;
+  color: var(--accent);
+  font-weight: 600;
+  margin-left: 8px;
+}
+
+body.light-mode .photo-upload-zone { background: #f8fafc; }
+body.light-mode .photo-upload-zone:hover { background: rgba(0,119,204,0.05); }
+
+.bform-group label { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; }
+
+
+
+@media(max-width:768px) {
+  .tab-panel { padding: 24px 16px; }
+  .booking-grid { grid-template-columns: 1fr; }
+  .booking-full { grid-column: span 1; }
+  .radio-group, .checkbox-group { flex-direction: column; }
+  .auth-choices { flex-direction: column; }
+  .page-tabs { padding: 16px 16px 0; }
+}
+
+@media(max-width:768px) {
+  header { padding: 14px 20px; flex-direction:column; gap:12px; }
+  .hero { padding: 60px 20px 50px; }
+  .hero-stats { gap: 24px; padding: 14px 20px; flex-wrap:wrap; justify-content:center; }
+  .section { padding: 0 20px 60px; }
+  .form-grid { grid-template-columns: 1fr; }
+  .form-full { grid-column: span 1; }
+  footer { flex-direction:column; gap:16px; text-align:center; }
+  .sticky-bar { gap:8px; padding: 10px 12px; }
+  .sticky-bar a, .sticky-bar button { padding: 8px 12px; font-size:12px; }
+  .modal { padding: 28px 20px; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">
+    <div class="logo-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#00c2ff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
+      </svg>
+    </div>
+    Cyber I.T Masters
+  </div>
+  <nav>
+    <a href="https://www.mbulahenigroup.co.za" target="_blank">Home</a>
+    <a href="https://shop.mbulahenigroup.co.za/" target="_blank">Services</a>
+    <a href="https://shop.mbulahenigroup.co.za/citm_services" target="_blank">Shop</a>
+    <a href="/contact">Contact</a>
+    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Toggle light/dark mode" aria-label="Toggle theme">
+      <span class="theme-icon-dark">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+      </span>
+      <span class="theme-icon-light">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+      </span>
+    </button>
+  </nav>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge"><span></span>Support Portal Live</div>
+  <h1>Managed IT <span>Support</span> Portal</h1>
+  <p>Submit IT support requests, start remote assistance sessions and connect with our technicians instantly.</p>
+  <div class="hero-stats">
+    <div class="stat"><div class="stat-val">24/7</div><div class="stat-label">Support Available</div></div>
+    <div class="stat"><div class="stat-val">&lt;1hr</div><div class="stat-label">Avg Response Time</div></div>
+    <div class="stat"><div class="stat-val">100%</div><div class="stat-label">Secure Sessions</div></div>
+  </div>
+</section>
+
+<!-- PAGE TABS -->
+<div class="page-tabs">
+  <button class="tab-btn active" onclick="switchTab('support', this)">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12h6M9 16h6M17 3H7a2 2 0 00-2 2v16l3-2 2 2 2-2 2 2 2-2 3 2V5a2 2 0 00-2-2z"/></svg>
+    Support
+  </button>
+  <button class="tab-btn" onclick="switchTab('booking', this)">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/><path d="M9 9l2 2 4-4"/></svg>
+    Device Booking
+  </button>
+</div>
+
+<!-- TAB: SUPPORT -->
+<div id="tab-support" class="tab-content active">
+  <div class="tab-panel">
+
+    <!-- SUPPORT CARDS -->
+    <div class="section-label">Get Help Now</div>
+    <div class="section-title" style="font-family:'Rajdhani',sans-serif;font-size:clamp(22px,3vw,30px);font-weight:700;margin-bottom:8px;">Support Channels</div>
+    <div class="section-sub">Choose the fastest way to reach our engineering team.</div>
+
+    <div class="grid" style="margin-bottom:48px;">
+
+      <!-- TICKET -->
+      <div class="card">
+        <div class="card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 12h6M9 16h6M17 3H7a2 2 0 00-2 2v16l3-2 2 2 2-2 2 2 2-2 3 2V5a2 2 0 00-2-2z"/>
+          </svg>
+        </div>
+        <h3>Submit Support Ticket</h3>
+        <p>Create a helpdesk ticket via our Spiceworks support portal and track your ticket status and updates.</p>
+        <a class="btn" href="https://mbulahenigroupdesk.on.spiceworks.com/portal" target="_blank">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
+          Open Support Portal
+        </a>
+      </div>
+
+      <!-- REMOTE SUPPORT / ANYDESK -->
+      <div class="card">
+        <div class="card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/><path d="M9 9l2 2 4-4"/>
+          </svg>
+        </div>
+        <h3>Start Remote Support</h3>
+        <p>Download the remote support application to connect with a technician securely using AnyDesk.</p>
+        <a class="btn" href="https://anydesk.com/en/downloads" target="_blank">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+          Download AnyDesk
+        </a>
+      </div>
+
+      <!-- WHATSAPP -->
+      <div class="card">
+        <div class="card-icon" style="background:rgba(37,211,102,0.12); border-color:rgba(37,211,102,0.3);">
+          <svg viewBox="0 0 24 24" fill="#25D366" stroke="none">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+          </svg>
+        </div>
+        <h3>Chat With Technician</h3>
+        <p>Need urgent help? Send us your details via WhatsApp so our engineers know who they're talking to and can assist you right away.</p>
+        <button class="btn" onclick="document.getElementById('waModal').classList.add('open')" style="background:#25D366;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          Start WhatsApp Chat
+        </button>
+      </div>
+
+    </div>
+
+
+    <!-- CLIENT PORTAL -->
+    <div class="section-label">Client Portal</div>
+    <div class="section-title" style="font-family:'Rajdhani',sans-serif;font-size:clamp(22px,3vw,30px);font-weight:700;margin-bottom:8px;">Portal Features</div>
+    <div class="section-sub">Some features are already live — more powerful tools are on the way as we build out our full MSP platform.</div>
+
+    <div class="features-grid" style="margin-bottom:20px;">
+      <div class="feature-box" style="border-color:rgba(16,185,129,0.3); position:relative;">
+        <div style="position:absolute;top:10px;right:10px;font-size:9px;font-weight:700;letter-spacing:1px;background:rgba(16,185,129,0.12);color:#10b981;border:1px solid rgba(16,185,129,0.35);border-radius:4px;padding:2px 7px;">LIVE</div>
+        <div class="feature-icon">🧾</div>
+        <h4>Download Invoices</h4>
+        <p>Access your full billing history and invoices anytime via Zoho Books.</p>
+        <a href="https://books.zohosecure.com/portal/mbulahenigroup" target="_blank" class="btn btn-outline" style="margin-top:14px; font-size:13px; padding:8px 14px;">
+          Open Zoho Books
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-box coming">
+        <div class="feature-icon">💬</div>
+        <h4>Technician Chat</h4>
+        <p>Live chat with our support engineers directly from your dashboard.</p>
+      </div>
+    </div>
+
+  </div><!-- end tab-panel -->
+</div><!-- end tab-support -->
+
+<!-- TAB: DEVICE BOOKING -->
+<div id="tab-booking" class="tab-content">
+  <div class="tab-panel">
+
+    <div class="booking-header">
+      <h2>📋 Book in Your Device for Service</h2>
+      <p>Please complete all sections below. This information will be sent directly to our engineers via WhatsApp.</p>
+    </div>
+
+    <!-- SECTION 1: CONTACT -->
+    <div class="form-section">
+      <div class="form-section-title">
+        <div class="form-section-num">1</div>
+        <h3>Your Contact Information</h3>
+      </div>
+      <div class="booking-grid">
+        <div class="bform-group">
+          <label>Company</label>
+          <input type="text" id="b-company" placeholder="e.g. Acme (Pty) Ltd">
+        </div>
+        <div class="bform-group">
+          <label>Name &amp; Surname</label>
+          <input type="text" id="b-name" placeholder="e.g. John Doe">
+        </div>
+        <div class="bform-group">
+          <label>Phone Number</label>
+          <input type="tel" id="b-phone" placeholder="+27 72 123 4567">
+        </div>
+        <div class="bform-group">
+          <label>Email Address</label>
+          <input type="email" id="b-email" placeholder="john@company.co.za">
+        </div>
+        <div class="bform-group booking-full">
+          <label>Address</label>
+          <input type="text" id="b-address" placeholder="e.g. 12 Main Street, Johannesburg, 2000">
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 2: DEVICE -->
+    <div class="form-section">
+      <div class="form-section-title">
+        <div class="form-section-num">2</div>
+        <h3>Device Information</h3>
+      </div>
+      <div class="booking-grid">
+        <div class="bform-group">
+          <label>Device Type</label>
+          <select id="b-dtype">
+            <option value="" disabled selected>Select device type</option>
+            <option>Laptop</option>
+            <option>Desktop</option>
+            <option>All-in-One PC</option>
+            <option>Tablet</option>
+            <option>Smartphone</option>
+            <option>Server</option>
+            <option>Printer / Peripheral</option>
+            <option>Networking Device</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="bform-group">
+          <label>Manufacturer</label>
+          <span class="hint">e.g. Dell, Apple, HP, Lenovo</span>
+          <input type="text" id="b-manufacturer" placeholder="e.g. Dell">
+        </div>
+        <div class="bform-group">
+          <label>Model Number</label>
+          <span class="hint">e.g. MacBook Pro 13" A2251, ThinkPad X1 Carbon 7th Gen</span>
+          <input type="text" id="b-model" placeholder="e.g. Inspiron 15 3000">
+        </div>
+        <div class="bform-group">
+          <label>Serial Number / Service Tag</label>
+          <input type="text" id="b-serial" placeholder="e.g. ABC1234XYZ">
+        </div>
+        <div class="bform-group">
+          <label>Operating System / Version</label>
+          <span class="hint">e.g. Windows 11 Pro, macOS Sonoma 14.5, iOS 17</span>
+          <input type="text" id="b-os" placeholder="e.g. Windows 11 Pro">
+        </div>
+        <div class="bform-group">
+          <label>Warranty Status</label>
+          <div class="radio-group" id="b-warranty-group">
+            <label class="radio-opt" onclick="selectRadio(this,'b-warranty-group')">
+              <input type="radio" name="b-warranty" value="Yes">
+              <span class="radio-dot"></span> Yes
+            </label>
+            <label class="radio-opt" onclick="selectRadio(this,'b-warranty-group')">
+              <input type="radio" name="b-warranty" value="No">
+              <span class="radio-dot"></span> No
+            </label>
+            <label class="radio-opt" onclick="selectRadio(this,'b-warranty-group')">
+              <input type="radio" name="b-warranty" value="Unknown">
+              <span class="radio-dot"></span> Unknown
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 3: PROBLEM -->
+    <div class="form-section">
+      <div class="form-section-title">
+        <div class="form-section-num">3</div>
+        <h3>Problem Description</h3>
+      </div>
+      <div class="booking-grid">
+        <div class="bform-group booking-full">
+          <label>Problem Description</label>
+          <textarea id="b-problem" placeholder="Please describe the problem in detail — when it started, what happens, any error messages..."></textarea>
+        </div>
+        <div class="bform-group booking-full">
+          <label>Accessories Supplied with Device</label>
+          <input type="text" id="b-accessories" placeholder="e.g. Charger, Mouse, Carry bag, None">
+        </div>
+        <div class="bform-group">
+          <label>Urgency of Repair</label>
+          <div class="radio-group" id="b-urgency-group">
+            <label class="radio-opt" onclick="selectRadio(this,'b-urgency-group')">
+              <input type="radio" name="b-urgency" value="Standard">
+              <span class="radio-dot"></span> Standard
+            </label>
+            <label class="radio-opt" onclick="selectRadio(this,'b-urgency-group')">
+              <input type="radio" name="b-urgency" value="High Priority">
+              <span class="radio-dot"></span>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              High Priority
+            </label>
+          </div>
+        </div>
+        <div class="bform-group">
+          <label>Condition on Arrival / Collection</label>
+          <input type="text" id="b-condition" placeholder="e.g. Good condition, cracked screen, dented casing">
+        </div>
+        <div class="bform-group booking-full">
+          <label>Physical Damage Noted</label>
+          <input type="text" id="b-damage" placeholder="e.g. Scratch on lid, broken USB port — or 'None'">
+        </div>
+        <div class="bform-group booking-full">
+          <label>Computer / Device Password</label>
+          <input type="text" id="b-password" placeholder="Leave blank if no password, or enter here for engineer access">
+        </div>
+
+        <!-- PHOTO UPLOAD -->
+        <div class="bform-group booking-full">
+          <label>
+            Device Photos
+            <span class="photo-count-badge" id="b-photo-count" style="display:none;">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              <span id="b-photo-count-num">0</span> photo(s)
+            </span>
+          </label>
+          <div class="photo-upload-zone" id="b-upload-zone"
+            ondragover="event.preventDefault();this.classList.add('drag-over')"
+            ondragleave="this.classList.remove('drag-over')"
+            ondrop="handleDrop(event,'b')">
+            <input type="file" id="b-photos" accept="image/*" multiple capture="environment"
+              onchange="handlePhotoSelect(this,'b')">
+            <div class="photo-upload-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/>
+                <circle cx="12" cy="13" r="4"/>
+              </svg>
+            </div>
+            <h4>Take or Upload Device Photos</h4>
+            <p class="desktop-hint">Drag &amp; drop images here, or click to browse — up to 5 photos</p>
+            <p class="mobile-hint">Tap to take a photo or choose from gallery — up to 5 photos</p>
+          </div>
+          <div class="photo-preview-grid" id="b-preview-grid"></div>
+          <div class="photo-upload-status" id="b-upload-status" style="display:none;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 4: AUTHORIZATION -->
+    <div class="form-section">
+      <div class="form-section-title">
+        <div class="form-section-num">4</div>
+        <h3>Client Authorization</h3>
+      </div>
+      <div class="auth-block">
+        <strong>I authorize Cyber I.T Masters to diagnose and repair the device described above.</strong> I understand that I am responsible for the backup of my data. I agree to the terms of service.
+      </div>
+      <div class="auth-choices" id="b-auth-group">
+        <label class="radio-opt" onclick="selectRadio(this,'b-auth-group')">
+          <input type="radio" name="b-auth" value="Agreed">
+          <span class="radio-dot"></span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          I Agree
+        </label>
+        <label class="radio-opt" onclick="selectRadio(this,'b-auth-group')">
+          <input type="radio" name="b-auth" value="Declined">
+          <span class="radio-dot"></span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          I Disagree
+        </label>
+      </div>
+    </div>
+
+    <button class="btn-book" onclick="sendBookingWhatsApp()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      Send Device Booking via WhatsApp
+    </button>
+
+    <div class="booking-footer-note">A Division of the Mbulaheni Group &nbsp;·&nbsp; © 2026 Cyber I.T Masters</div>
+
+  </div><!-- end tab-panel -->
+</div><!-- end tab-booking -->
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand">Cyber I.T Masters</div>
+  <div class="footer-copy">© 2026 Cyber I.T Masters | Managed IT Services & Tech Shop</div>
+  <div class="footer-links">
+    <a href="/privacy">Privacy</a>
+    <a href="/terms">Terms</a>
+    <a href="/contact">Contact</a>
+  </div>
+</footer>
+
+<!-- STICKY BAR -->
+<div class="sticky-bar">
+  <a class="primary" href="https://mbulahenigroupdesk.on.spiceworks.com/portal" target="_blank">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12h6M9 16h6M17 3H7a2 2 0 00-2 2v16l3-2 2 2 2-2 2 2 2-2 3 2V5a2 2 0 00-2-2z"/></svg>
+    Submit Ticket
+  </a>
+  <button onclick="document.getElementById('waModal').classList.add('open')" style="background:#25D366;color:white;border:none;padding:9px 18px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+    WhatsApp Support
+  </button>
+  <a class="tertiary" href="#" onclick="switchTab('booking', null); window.scrollTo({top:0,behavior:'smooth'}); return false;" style="background:var(--accent-glow);border:1px solid var(--border-hover);color:var(--accent);">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/><path d="M9 9l2 2 4-4"/></svg>
+    Book Device
+  </a>
+  <a class="tertiary" href="https://anydesk.com/en/downloads" target="_blank">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+    Download AnyDesk
+  </a>
+</div>
+
+<!-- WHATSAPP MODAL -->
+<div class="modal-overlay" id="waModal" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal">
+    <button class="modal-close" onclick="document.getElementById('waModal').classList.remove('open')">×</button>
+
+    <div class="modal-logo">
+      <div class="wa-icon">
+        <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      </div>
+      <div>
+        <h2>WhatsApp Support</h2>
+        <div class="modal-sub">Tell us about yourself so we can assist you faster</div>
+      </div>
+    </div>
+
+    <div class="form-grid">
+      <div class="form-group">
+        <label>First Name</label>
+        <input type="text" id="wa-firstname" placeholder="John">
+      </div>
+      <div class="form-group">
+        <label>Last Name</label>
+        <input type="text" id="wa-lastname" placeholder="Doe">
+      </div>
+      <div class="form-group">
+        <label>Cell Number</label>
+        <input type="tel" id="wa-cell" placeholder="+27 72 123 4567">
+      </div>
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" id="wa-email" placeholder="john@company.co.za">
+      </div>
+      <div class="form-group form-full">
+        <label>Describe Your Issue</label>
+        <textarea id="wa-issue" placeholder="Please describe what's happening so our engineer can prepare before the chat..."></textarea>
+      </div>
+    </div>
+
+    <button class="btn btn-wa" onclick="sendWhatsApp()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      Open WhatsApp
+    </button>
+  </div>
+</div>
+
+<script>
+/* ─── THEME ──────────────────────────────── */
+(function() {
+  if (localStorage.getItem('theme') === 'light') document.body.classList.add('light-mode');
+})();
+
+function toggleTheme() {
+  document.body.classList.toggle('light-mode');
+  localStorage.setItem('theme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
+}
+
+/* ─── TABS ──────────────────────────────── */
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  if (btn) {
+    btn.classList.add('active');
+  } else {
+    document.querySelectorAll('.tab-btn').forEach(b => {
+      if (b.textContent.toLowerCase().includes(name === 'booking' ? 'device' : name))
+        b.classList.add('active');
+    });
+  }
+}
+
+/* ─── RADIO BUTTONS ──────────────────────────────── */
+function selectRadio(el, groupId) {
+  document.querySelectorAll('#' + groupId + ' .radio-opt').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function getRadioVal(groupId) {
+  const sel = document.querySelector('#' + groupId + ' .radio-opt.selected input');
+  return sel ? sel.value : '';
+}
+
+/* ─── WHATSAPP CHAT MODAL ──────────────────────────────── */
+function sendWhatsApp() {
+  const first = document.getElementById('wa-firstname').value.trim();
+  const last  = document.getElementById('wa-lastname').value.trim();
+  const cell  = document.getElementById('wa-cell').value.trim();
+  const email = document.getElementById('wa-email').value.trim();
+  const issue = document.getElementById('wa-issue').value.trim();
+  if (!first || !last || !cell || !email || !issue) {
+    alert('Please fill in all fields so our engineer can assist you.');
+    return;
+  }
+  const msg = `*Cyber I.T Masters Support Request*\n\n*Name:* ${first} ${last}\n*Cell:* ${cell}\n*Email:* ${email}\n\n*Issue Description:*\n${issue}`;
+  window.open(`https://wa.me/27726650565?text=${encodeURIComponent(msg)}`, '_blank');
+  document.getElementById('waModal').classList.remove('open');
+}
+
+/* ═══════════════════════════════════════════════════
+   PHOTO UPLOAD SYSTEM
+   - photoStore['s'] = inline (Support tab) form
+   - photoStore['b'] = Device Booking tab form
+   - Each entry: { id, file, previewUrl, hostedUrl }
+   - hostedUrl: null = uploading, 'failed' = error, url = success
+   ═══════════════════════════════════════════════════ */
+
+// ⚠️ Replace this with your own free ImgBB API key from https://api.imgbb.com/
+// Free account: unlimited uploads, images hosted permanently
+const IMGBB_API_KEY = 'YOUR_IMGBB_API_KEY_HERE';
+
+const photoStore = { b: [] };
+
+function handleDrop(e, prefix) {
+  e.preventDefault();
+  document.getElementById(prefix + '-upload-zone').classList.remove('drag-over');
+  const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
+  addPhotos(files, prefix);
+}
+
+function handlePhotoSelect(input, prefix) {
+  addPhotos(Array.from(input.files), prefix);
+  input.value = '';
+}
+
+function addPhotos(files, prefix) {
+  const store = photoStore[prefix];
+  const slots = 5 - store.length;
+  if (slots <= 0) { alert('Maximum 5 photos allowed. Remove one to add more.'); return; }
+  files.slice(0, slots).forEach(file => {
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const entry = {
+        id: Date.now() + Math.random(),
+        file,
+        previewUrl: ev.target.result,
+        hostedUrl: null   // null = still uploading
+      };
+      store.push(entry);
+      renderPreviews(prefix);
+      uploadToImgBB(entry, prefix);
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function removePhoto(id, prefix) {
+  photoStore[prefix] = photoStore[prefix].filter(p => p.id !== id);
+  renderPreviews(prefix);
+  syncPhotoCount(prefix);
+}
+
+function renderPreviews(prefix) {
+  const grid = document.getElementById(prefix + '-preview-grid');
+  const store = photoStore[prefix];
+  if (!store.length) { grid.innerHTML = ''; syncPhotoCount(prefix); return; }
+  grid.innerHTML = store.map(p => {
+    const label = p.hostedUrl === null    ? '⏳ Uploading…'
+                : p.hostedUrl === 'failed' ? '❌ Failed'
+                : '✅ Ready';
+    const labelColor = p.hostedUrl === 'failed' ? '#ef4444' : p.hostedUrl ? '#10b981' : '#f59e0b';
+    return `
+      <div class="photo-thumb">
+        <img src="${p.previewUrl}" alt="Device photo">
+        <div class="photo-label" style="color:${labelColor}">${label}</div>
+        <button class="remove-photo" onclick="removePhoto(${p.id},'${prefix}')" title="Remove">×</button>
+      </div>`;
+  }).join('');
+  syncPhotoCount(prefix);
+}
+
+function syncPhotoCount(prefix) {
+  const count = photoStore[prefix].length;
+  const badge = document.getElementById(prefix + '-photo-count');
+  const num   = document.getElementById(prefix + '-photo-count-num');
+  badge.style.display = count > 0 ? 'inline-flex' : 'none';
+  if (num) num.textContent = count;
+}
+
+async function uploadToImgBB(entry, prefix) {
+  const statusEl = document.getElementById(prefix + '-upload-status');
+  statusEl.style.display = 'flex';
+  statusEl.innerHTML = `<div class="upload-spinner"></div> Uploading photo…`;
+
+  // If no real key configured, mark as failed gracefully
+  if (IMGBB_API_KEY === 'YOUR_IMGBB_API_KEY_HERE') {
+    entry.hostedUrl = 'failed';
+    renderPreviews(prefix);
+    statusEl.innerHTML = `⚠️ Photo hosting not configured — photos will not be embedded in the message. Please send them directly in WhatsApp after submitting.`;
+    return;
+  }
+
+  try {
+    const form = new FormData();
+    form.append('image', entry.file);
+    const res  = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: 'POST', body: form });
+    const data = await res.json();
+    entry.hostedUrl = data.success ? data.data.url : 'failed';
+  } catch {
+    entry.hostedUrl = 'failed';
+  }
+
+  renderPreviews(prefix);
+
+  const allDone  = photoStore[prefix].every(p => p.hostedUrl !== null);
+  if (allDone) {
+    const ok     = photoStore[prefix].filter(p => p.hostedUrl !== 'failed' && p.hostedUrl !== null).length;
+    const failed = photoStore[prefix].filter(p => p.hostedUrl === 'failed').length;
+    if (failed && ok)  statusEl.innerHTML = `✅ ${ok} photo(s) ready · ⚠️ ${failed} failed (send those in chat)`;
+    else if (failed)   statusEl.innerHTML = `⚠️ All uploads failed — please send photos directly in WhatsApp after submitting.`;
+    else             { statusEl.innerHTML = `✅ ${ok} photo(s) ready to send`; setTimeout(() => statusEl.style.display='none', 3000); }
+  }
+}
+
+function buildPhotoLines(prefix) {
+  const ok = photoStore[prefix].filter(p => p.hostedUrl && p.hostedUrl !== 'failed');
+  if (!ok.length) return '';
+  const links = ok.map((p, i) => `  📸 Photo ${i + 1}: ${p.hostedUrl}`).join('\n');
+  return `\n━━━━━━━━━━━━━━━━━━━━\n📷 *DEVICE PHOTOS (${ok.length} attached)*\n━━━━━━━━━━━━━━━━━━━━\n${links}\n`;
+}
+
+/* ─── BUILD & SEND BOOKING MESSAGE ──────────────────────────────── */
+function buildAndSendBooking(prefix) {
+  // Check for pending uploads first
+  const pending = photoStore[prefix].filter(p => p.hostedUrl === null);
+  if (pending.length) {
+    alert('Please wait — ' + pending.length + ' photo(s) are still uploading. Try again in a moment.');
+    return;
+  }
+
+  const g  = id => document.getElementById(prefix + '-' + id);
+  const rv = grp => getRadioVal(prefix + '-' + grp + '-group');
+
+  const company   = g('company').value.trim();
+  const name      = g('name').value.trim();
+  const phone     = g('phone').value.trim();
+  const email     = g('email').value.trim();
+  const address   = g('address').value.trim();
+  const dtype     = g('dtype').value;
+  const mfr       = g('manufacturer').value.trim();
+  const model     = g('model').value.trim();
+  const serial    = g('serial').value.trim();
+  const os        = g('os').value.trim();
+  const warranty  = rv('warranty');
+  const problem   = g('problem').value.trim();
+  const acc       = g('accessories').value.trim();
+  const urgency   = rv('urgency');
+  const condition = g('condition').value.trim();
+  const damage    = g('damage').value.trim();
+  const password  = g('password').value.trim();
+  const auth      = rv('auth');
+
+  if (!name || !phone || !email || !dtype || !mfr || !model || !problem || !auth) {
+    alert('Please fill in all required fields, and make sure Warranty, Urgency and Authorization are selected.');
+    return;
+  }
+  if (auth === 'Declined') {
+    alert('You must agree to the authorization to proceed with the device booking.');
+    return;
+  }
+
+  const dateStr    = new Date().toLocaleDateString('en-ZA', { day:'2-digit', month:'long', year:'numeric' });
+  const photoLines = buildPhotoLines(prefix);
+  const hasFailedPhotos = photoStore[prefix].some(p => p.hostedUrl === 'failed');
+
+  const msg =
+`🔧 *CYBER I.T MASTERS — DEVICE BOOKING*
+📅 Date: ${dateStr}
+
+━━━━━━━━━━━━━━━━━━━━
+👤 *SECTION 1: CLIENT DETAILS*
+━━━━━━━━━━━━━━━━━━━━
+🏢 Company: ${company || 'N/A'}
+👤 Name: ${name}
+📞 Phone: ${phone}
+📧 Email: ${email}
+📍 Address: ${address || 'N/A'}
+
+━━━━━━━━━━━━━━━━━━━━
+💻 *SECTION 2: DEVICE INFORMATION*
+━━━━━━━━━━━━━━━━━━━━
+📦 Device Type: ${dtype}
+🏭 Manufacturer: ${mfr}
+🔢 Model: ${model}
+🔑 Serial / Service Tag: ${serial || 'N/A'}
+🖥️ OS / Version: ${os || 'N/A'}
+🛡️ Warranty: ${warranty || 'N/A'}
+
+━━━━━━━━━━━━━━━━━━━━
+⚠️ *SECTION 3: PROBLEM DESCRIPTION*
+━━━━━━━━━━━━━━━━━━━━
+🔍 Problem:
+${problem}
+
+🎒 Accessories Supplied: ${acc || 'None'}
+⚡ Urgency: ${urgency || 'N/A'}
+🧾 Condition on Arrival: ${condition || 'N/A'}
+💥 Physical Damage Noted: ${damage || 'None'}
+🔐 Device Password: ${password || 'None provided'}
+${photoLines}
+━━━━━━━━━━━━━━━━━━━━
+✅ *AUTHORIZATION: ${auth}*
+━━━━━━━━━━━━━━━━━━━━
+${hasFailedPhotos ? '⚠️ Some photos could not be uploaded — please send them directly in this chat.\n' : ''}📎 _Please send any additional device photos directly in this chat._
+_A Division of the Mbulaheni Group_`;
+
+  window.open(`https://wa.me/27726650565?text=${encodeURIComponent(msg)}`, '_blank');
+}
+
+/* Both forms call buildAndSendBooking with their prefix */
+function sendBookingWhatsApp()       { buildAndSendBooking('b'); }
+</script>
+
+</body>
+</html>
