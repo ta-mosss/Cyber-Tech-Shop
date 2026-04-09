@@ -152,6 +152,7 @@ input[type=range]{width:100%;accent-color:var(--cyan);}
 .badge.dist{background:rgba(129,199,132,.18);color:#81c784;}
 .badge.bundle{background:rgba(180,79,255,0.9);color:#fff;}
 .badge.new-prod{background:rgba(0,212,255,0.9);color:#050b14;}
+.badge.refurb{background:rgba(0,200,140,0.9);color:#050b14;}
 
 /* PAGINATION */
 .pagination{display:flex;gap:6px;justify-content:center;margin-top:20px;flex-wrap:wrap;}
@@ -868,6 +869,12 @@ header{display:flex;align-items:center;gap:10px;padding:8px 12px;position:sticky
     <div class="modal-price" id="modalPrice"></div>
     <div class="modal-stock" id="modalStock"></div>
     <div class="modal-desc" id="modalDesc"></div>
+    <div id="modalSupplierBanner" style="display:none;align-items:center;gap:10px;background:rgba(0,200,140,0.1);border:1px solid rgba(0,200,140,0.4);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:#00c88c;">
+      <i class="fas fa-recycle" style="font-size:16px;"></i>
+      <div>
+        <strong>Refurbished Hardware</strong> · Quality-tested · Stock subject to availability
+      </div>
+    </div>
     <div id="bundleContents"></div>
     <div class="modal-actions">
       <button class="btn-cart" onclick="addToCartFromModal()"><i class="fas fa-cart-plus"></i> Add to Cart</button>
@@ -1309,7 +1316,19 @@ const RAW_PRODUCTS=[{id:1,name:`UniQue Africa Animal2  Mouse Pad`,code:`76662342
 {id:273,name:`Epson L8160 Ecotank Multifunction All-in-One Colour Printer`,code:`C11CJ20403`,category:`Printer (Inkjet)`,price:10799.0,stock:1,image:`https://www.xyz.co.za/ProdImg/Big_C11CJ20403.jpg`,description:`Epson L8160 Ecotank Multifunction All-in-One Colour Printer, Retail Box , 1 year Limited Warranty`},
 {id:274,name:`Evolis BADGY200 Card Printing Solution`,code:`PF000823`,category:`Printer (Laser) Accessories`,price:17499.0,stock:1,image:`https://api.esquire.co.za/Resources/Images/Products/Big_PF000823.JPG`,description:`Evolis BADGY200 Card Printing Solution - a compact, entry-level ID card printer designed for small-scale use, ideal for printing less than 500 single-sided cards annually. It offers professional-quality edge-to-edge printing with a resolution of 260 x 300 dpi. The printer can produce 95 color cards per hour (38 seconds per card) and 325 monochrome cards per hour (11 seconds per card). Its lightweight design (1.7 kg) makes it portable and suitable for any workspace.`},
 {id:275,name:`Epson L15160 EcoTank A3+ Multifunction All`,code:`C11CH71403SA`,category:`Printer (Inkjet)`,price:21999.0,stock:1,image:`https://www.xyz.co.za/ProdImg/Big_C11CH72403SA.jpg`,description:`Epson L15160 EcoTank A3+ Multifunction All-in-One Colour Printer, Retail Box , 1 year Limited Warranty`},
-{id:276,name:`Dahua 65 Inch 4K UHD Interactive Smart Whiteboard Screen`,code:`DHI-LCH65-MC420-B`,category:`Monitor Touch Screen`,price:25595.71,stock:6,image:`https://api.esquire.co.za/Resources/Images/Products/Big_DHI-LCH86-MC410-B-2.jpg`,description:`Dahua Interactive Smart WhiteBoard Screen - 65" Screen Size, LED Backlight, 16:9 Aspect Ratio, 3840 x 2160 Resolution, 60Hz Refresh Rate, Touchscreen, Up to 5ms Response Time, Infrared Touch Technology, Finger Plus Pen Writing Mode, 32767 x 32767 Touch Resolution, Android 14 OS, Quad-Core A55 CPU, 1.9GHz CPU Frequency, 8GB RAM, 64GB ROM, WiFi Dual-Band 2.4G/5G, Support Hotspot And Wi-Fi at the Same Time, Bluetooth Connectivity, 48 MP Camera, 4 MP Video, 2 Built-in Speaker, Retail Box, 2 Years Warranty.`}];
+{id:276,name:`Dahua 65 Inch 4K UHD Interactive Smart Whiteboard Screen`,code:`DHI-LCH65-MC420-B`,category:`Monitor Touch Screen`,price:25595.71,stock:6,image:`https://api.esquire.co.za/Resources/Images/Products/Big_DHI-LCH86-MC410-B-2.jpg`,description:`Dahua Interactive Smart WhiteBoard Screen - 65" Screen Size, LED Backlight, 16:9 Aspect Ratio, 3840 x 2160 Resolution, 60Hz Refresh Rate, Touchscreen, Up to 5ms Response Time, Infrared Touch Technology, Finger Plus Pen Writing Mode, 32767 x 32767 Touch Resolution, Android 14 OS, Quad-Core A55 CPU, 1.9GHz CPU Frequency, 8GB RAM, 64GB ROM, WiFi Dual-Band 2.4G/5G, Support Hotspot And Wi-Fi at the Same Time, Bluetooth Connectivity, 48 MP Camera, 4 MP Video, 2 Built-in Speaker, Retail Box, 2 Years Warranty.`},
+{id:277,name:`Dell Latitude E7470 Refurbished Laptop (Core i5, 8GB, 256GB SSD)`,code:`DS-LATE7470-I5`,category:`Refurbished Laptops`,price:3500.0,stock:5,supplier:`deviceshop`,image:`https://placehold.co/400x300/0a1628/00c88c?text=Dell+Latitude+E7470`,description:`Refurbished Dell Latitude E7470 – Intel Core i5-6300U, 8GB DDR4 RAM, 256GB SSD, 14-Inch FHD Display, Windows 10 Pro, Grade A Condition. Quality-tested with 3-month carry-in warranty. Stock subject to availability.`},
+{id:278,name:`Dell Latitude E5470 Refurbished Laptop (Core i7, 16GB, 512GB SSD)`,code:`DS-LATE5470-I7`,category:`Refurbished Laptops`,price:4800.0,stock:3,supplier:`deviceshop`,image:`https://placehold.co/400x300/0a1628/00c88c?text=Dell+Latitude+E5470`,description:`Refurbished Dell Latitude E5470 – Intel Core i7-6820HQ, 16GB DDR4 RAM, 512GB SSD, 14-Inch FHD Display, Windows 10 Pro, Grade A Condition. Quality-tested with 3-month carry-in warranty. Stock subject to availability.`},
+{id:279,name:`HP EliteBook 840 G3 Refurbished Laptop (Core i5, 8GB, 256GB SSD)`,code:`DS-HP840G3-I5`,category:`Refurbished Laptops`,price:3200.0,stock:4,supplier:`deviceshop`,image:`https://placehold.co/400x300/0a1628/00c88c?text=HP+EliteBook+840+G3`,description:`Refurbished HP EliteBook 840 G3 – Intel Core i5-6300U, 8GB DDR4 RAM, 256GB SSD, 14-Inch FHD Display, Windows 10 Pro, Grade A Condition. Quality-tested with 3-month carry-in warranty. Stock subject to availability.`},
+{id:280,name:`HP EliteBook 840 G4 Refurbished Laptop (Core i7, 16GB, 512GB SSD)`,code:`DS-HP840G4-I7`,category:`Refurbished Laptops`,price:4500.0,stock:3,supplier:`deviceshop`,image:`https://placehold.co/400x300/0a1628/00c88c?text=HP+EliteBook+840+G4`,description:`Refurbished HP EliteBook 840 G4 – Intel Core i7-7500U, 16GB DDR4 RAM, 512GB SSD, 14-Inch FHD Display, Windows 10 Pro, Grade A Condition. Quality-tested with 3-month carry-in warranty. Stock subject to availability.`},
+{id:281,name:`Lenovo ThinkPad T470 Refurbished Laptop (Core i5, 8GB, 256GB SSD)`,code:`DS-T470-I5`,category:`Refurbished Laptops`,price:3400.0,stock:6,supplier:`deviceshop`,image:`https://placehold.co/400x300/0a1628/00c88c?text=Lenovo+ThinkPad+T470`,description:`Refurbished Lenovo ThinkPad T470 – Intel Core i5-7300U, 8GB DDR4 RAM, 256GB SSD, 14-Inch FHD Display, Windows 10 Pro, Grade A Condition. Renowned business-class build quality. Quality-tested with 3-month carry-in warranty. Stock subject to availability.`},
+{id:282,name:`Lenovo ThinkPad T480 Refurbished Laptop (Core i7, 16GB, 512GB SSD)`,code:`DS-T480-I7`,category:`Refurbished Laptops`,price:5200.0,stock:2,supplier:`deviceshop`,image:`https://placehold.co/400x300/0a1628/00c88c?text=Lenovo+ThinkPad+T480`,description:`Refurbished Lenovo ThinkPad T480 – Intel Core i7-8550U, 16GB DDR4 RAM, 512GB SSD, 14-Inch FHD Display, Windows 10 Pro, Grade A Condition. Premium business laptop. Quality-tested with 3-month carry-in warranty. Stock subject to availability.`},
+{id:283,name:`Dell OptiPlex 7060 Refurbished Desktop Mini PC (Core i5, 8GB, 256GB SSD)`,code:`DS-OPT7060-I5`,category:`Refurbished Desktops`,price:2800.0,stock:4,supplier:`deviceshop`,image:`https://placehold.co/400x300/0a1628/00c88c?text=Dell+OptiPlex+7060`,description:`Refurbished Dell OptiPlex 7060 Micro – Intel Core i5-8500T, 8GB DDR4 RAM, 256GB SSD, Ultra Small Form Factor, Windows 10 Pro, Grade A Condition. Perfect office desktop. Quality-tested with 3-month carry-in warranty. Stock subject to availability.`},
+{id:284,name:`HP ProDesk 400 G4 Refurbished Desktop (Core i5, 8GB, 256GB SSD)`,code:`DS-PD400G4-I5`,category:`Refurbished Desktops`,price:2600.0,stock:3,supplier:`deviceshop`,image:`https://placehold.co/400x300/0a1628/00c88c?text=HP+ProDesk+400+G4`,description:`Refurbished HP ProDesk 400 G4 SFF – Intel Core i5-7500, 8GB DDR4 RAM, 256GB SSD, Small Form Factor, Windows 10 Pro, Grade A Condition. Reliable office computing at a great price. Quality-tested with 3-month carry-in warranty. Stock subject to availability.`},
+{id:285,name:`Lenovo ThinkCentre M710 Refurbished Desktop Mini (Core i5, 8GB, 256GB SSD)`,code:`DS-M710-I5`,category:`Refurbished Desktops`,price:2500.0,stock:5,supplier:`deviceshop`,image:`https://placehold.co/400x300/0a1628/00c88c?text=Lenovo+ThinkCentre+M710`,description:`Refurbished Lenovo ThinkCentre M710 Tiny – Intel Core i5-7500T, 8GB DDR4 RAM, 256GB SSD, Tiny Form Factor, Windows 10 Pro, Grade A Condition. Ultra-compact powerhouse. Quality-tested with 3-month carry-in warranty. Stock subject to availability.`},
+{id:286,name:`Dell Wyse 5070 Thin Client Refurbished (Celeron J4105, 4GB, 32GB)`,code:`DS-WYSE5070`,category:`Refurbished Desktops`,price:1800.0,stock:7,supplier:`deviceshop`,image:`https://placehold.co/400x300/0a1628/00c88c?text=Dell+Wyse+5070`,description:`Refurbished Dell Wyse 5070 Thin Client – Intel Celeron J4105, 4GB RAM, 32GB eMMC, Windows 10 IoT, Grade B Condition. Ideal for remote desktop environments and VDI. Quality-tested with 3-month carry-in warranty. Stock subject to availability.`},
+{id:287,name:`Apple MacBook Pro 13 Inch 2019 Refurbished (Core i5, 8GB, 256GB SSD)`,code:`DS-MBP13-2019`,category:`Refurbished Laptops`,price:7500.0,stock:2,supplier:`deviceshop`,image:`https://placehold.co/400x300/0a1628/00c88c?text=MacBook+Pro+13+2019`,description:`Refurbished Apple MacBook Pro 13-Inch 2019 – Intel Core i5, 8GB RAM, 256GB SSD, Retina Display, macOS, Grade A Condition. Premium Apple build. Quality-tested with 3-month carry-in warranty. Stock subject to availability.`},
+{id:288,name:`HP ZBook 15 G3 Refurbished Workstation Laptop (Core i7, 16GB, 512GB SSD)`,code:`DS-ZBOOK15G3`,category:`Refurbished Laptops`,price:5800.0,stock:2,supplier:`deviceshop`,image:`https://placehold.co/400x300/0a1628/00c88c?text=HP+ZBook+15+G3`,description:`Refurbished HP ZBook 15 G3 Mobile Workstation – Intel Core i7-6820HQ, NVIDIA Quadro M1000M, 16GB DDR4 RAM, 512GB SSD, 15.6-Inch FHD Display, Windows 10 Pro, Grade A Condition. Power-user workstation. Quality-tested with 3-month carry-in warranty. Stock subject to availability.`}];
 
 // ══════════════════════════════════════════════════════════
 //  CATEGORY GROUPS
@@ -1326,14 +1345,16 @@ const CAT_GROUPS={
   "Cables & Adapters":["Cable: HDMI","Cable: USB","Cable: USB 3.1","Cable: VGA","HDMI Adaptors"],
   "Power & Charging":["Power Banks","Home & Car Chargers","Power Supply Units(PSU)"],
   "Software & CCTV":["Software: Antivirus","Software: Internet Security","Software: Operating System","CCTV","CCTV (Dome Camera)","CCTV (Bullet Type Camera)"],
-  "Printers & USB":["Printer (Inkjet)","Printer (Laser) Accessories","USB (Hubs)","USB (Card Reader)"]
+  "Printers & USB":["Printer (Inkjet)","Printer (Laser) Accessories","USB (Hubs)","USB (Card Reader)"],
+  "Refurbished Hardware":["Refurbished Laptops","Refurbished Desktops"]
 };
 const CAT_ICONS={
   "All Products":"fas fa-th","Computers & Monitors":"fas fa-desktop","Smartphones":"fas fa-mobile-alt",
   "Networking":"fas fa-network-wired","Keyboards & Mice":"fas fa-keyboard","Gaming":"fas fa-gamepad",
   "Audio":"fas fa-headphones","Storage & Memory":"fas fa-hdd","Cables & Adapters":"fas fa-plug",
   "Power & Charging":"fas fa-bolt","Software & CCTV":"fas fa-shield-alt","Printers & USB":"fas fa-print",
-  "Bundle Deals":"fas fa-cubes","New Arrivals":"fas fa-star"
+  "Bundle Deals":"fas fa-cubes","New Arrivals":"fas fa-star",
+  "Refurbished Hardware":"fas fa-recycle","Refurbished Laptops":"fas fa-laptop","Refurbished Desktops":"fas fa-desktop"
 };
 
 function safeId(id){return typeof id==='number'?id:"'"+String(id)+"'";}
@@ -1583,8 +1604,17 @@ function renderProducts(){
   if(currentPage>pages)currentPage=1;
   const slice=filtered.slice((currentPage-1)*PER_PAGE,currentPage*PER_PAGE);
   const grid=document.getElementById('productsGrid');
+  // Show Device Shop banner when in Refurbished Hardware category
+  const isRefurb=(currentCat==='Refurbished Hardware'||currentCat==='Refurbished Laptops'||currentCat==='Refurbished Desktops'||subCatFilter==='Refurbished Laptops'||subCatFilter==='Refurbished Desktops');
+  const refurbBanner=isRefurb?`<div style="grid-column:1/-1;display:flex;align-items:center;gap:14px;background:rgba(0,200,140,0.08);border:1px solid rgba(0,200,140,0.35);border-radius:12px;padding:14px 18px;margin-bottom:4px;font-size:13px;color:#00c88c;">
+    <i class="fas fa-recycle" style="font-size:22px;flex-shrink:0;"></i>
+    <div>
+      <strong style="font-size:14px;">Refurbished Hardware</strong><br>
+      <span style="color:var(--text2);">Quality-tested refurbished laptops &amp; desktops. Stock is sold on a sale-to-sale basis — confirm availability before ordering. 3-month carry-in warranty included.</span>
+    </div>
+  </div>`:'';
   grid.innerHTML=slice.length
-    ? slice.map(prodCard).join('')
+    ? refurbBanner+slice.map(prodCard).join('')
     : '<div class="empty-state"><i class="fas fa-search"></i><p>No products found.</p></div>';
   renderPagination(pages,total);
 }
@@ -1603,6 +1633,7 @@ function prodCard(p){
   if(!p.isBundle&&!p.isNew&&eff.type==='sale')badges.push('<span class="badge sale">SALE</span>');
   if(!p.isBundle&&eff.type==='combo')badges.push('<span class="badge combo">COMBO</span>');
   if(isLow&&!p.isBundle)badges.push('<span class="badge low">LOW STOCK</span>');
+  if(p.supplier==='deviceshop')badges.push('<span class="badge refurb">REFURB</span>');
   // distributor source hidden from customers
   const idJson=safeId(p.id);
   return `<div class="product-card ${eff.type==='sale'?'on-sale':''} ${(eff.type==='combo'||p.isBundle)?'combo':''}" onclick="openProdModal(${idJson})">
@@ -1658,6 +1689,15 @@ function openProdModal(id){
   else if(p.stock<=5){ms.textContent=`Only ${p.stock} left!`;ms.className='modal-stock low';}
   else{ms.textContent='In Stock';ms.className='modal-stock ok';}
   document.getElementById('modalDesc').textContent=p.description||'';
+  // Device Shop supplier banner
+  const supplierBanner=document.getElementById('modalSupplierBanner');
+  if(supplierBanner){
+    if(p.supplier==='deviceshop'){
+      supplierBanner.style.display='flex';
+    } else {
+      supplierBanner.style.display='none';
+    }
+  }
   const bc=document.getElementById('bundleContents');
   if(p.isBundle&&p.bundleData?.items?.length){
     const lines=p.bundleData.items.map(i=>{const ip=PRODUCTS.find(x=>x.id===i.id);return ip?`<li>${ip.name} x${i.qty}</li>`:null;}).filter(Boolean);
