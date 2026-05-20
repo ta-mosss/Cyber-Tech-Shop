@@ -9,9 +9,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
-
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -257,58 +254,6 @@ body.light .theme-toggle::after{left:19px;}
   .detail-panel{width:100%;border-left:none;border-top:1px solid var(--border);}
   .admin-body{flex-direction:column!important;}
 }
-
-/* ── ENGINEER UPLOAD CENTER ── */
-.upload-center{
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:16px;
-  padding:24px;
-  margin-top:24px;
-}
-.upload-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:18px;
-}
-.upload-drop{
-  border:2px dashed var(--border2);
-  border-radius:14px;
-  padding:30px;
-  text-align:center;
-  cursor:pointer;
-  transition:all .2s;
-}
-.upload-drop:hover{
-  border-color:#00C896;
-  background:rgba(0,200,150,0.04);
-}
-.progress-wrap{
-  width:100%;
-  height:14px;
-  background:var(--bg3);
-  border-radius:999px;
-  overflow:hidden;
-  margin-top:12px;
-  border:1px solid var(--border);
-}
-.progress-bar{
-  height:100%;
-  width:0%;
-  background:linear-gradient(90deg,#00C896,#0EA5E9);
-  transition:width .3s;
-}
-.history-card{
-  background:var(--bg);
-  border:1px solid var(--border);
-  border-radius:10px;
-  padding:12px;
-  margin-bottom:10px;
-}
-@media(max-width:700px){
-  .upload-grid{grid-template-columns:1fr;}
-}
-
 @media(max-width:600px){
   .form-grid{grid-template-columns:1fr;}
   .form-grid.cols3{grid-template-columns:1fr;}
@@ -318,78 +263,6 @@ body.light .theme-toggle::after{left:19px;}
 </head>
 <body class="dark">
 <div id="root"></div>
-
-<!-- ENGINEER UPLOAD CENTER -->
-<div class="upload-center fu" id="engineer-upload-center" style="display:none;">
-  <div class="section-head">
-    <div class="section-num">↑</div>
-    <div>
-      <div class="section-title">Engineer Upload Center</div>
-      <div style="font-size:12px;color:var(--text3);margin-top:2px;">
-        Upload ticket-linked attachments, photos and engineer files.
-      </div>
-    </div>
-  </div>
-
-  <div class="upload-grid">
-    <div>
-      <div class="form-field">
-        <div class="field-label">Ticket Reference</div>
-        <input class="field-input" id="uploadTicketId" placeholder="CIM-1001"/>
-      </div>
-
-      <div class="form-field" style="margin-top:14px;">
-        <div class="field-label">Engineer Name</div>
-        <input class="field-input" id="uploadEngineer" placeholder="Assigned engineer"/>
-      </div>
-
-      <div class="form-field" style="margin-top:14px;">
-        <div class="field-label">Engineer Notes</div>
-        <textarea class="field-input" id="uploadNotes" placeholder="Work completed, diagnostics, notes..."></textarea>
-      </div>
-
-      <div class="upload-drop" onclick="document.getElementById('engineerFile').click();" style="margin-top:16px;">
-        <div style="font-size:42px;margin-bottom:10px;">📤</div>
-        <div style="font-weight:700;color:var(--text);margin-bottom:4px;">Choose File</div>
-        <div style="font-size:12px;color:var(--text3);">PDF, Images, Job Cards, Reports</div>
-        <input type="file" id="engineerFile"/>
-      </div>
-
-      <div class="upload-drop" onclick="document.getElementById('cameraFile').click();" style="margin-top:14px;">
-        <div style="font-size:42px;margin-bottom:10px;">📷</div>
-        <div style="font-weight:700;color:var(--text);margin-bottom:4px;">Camera Upload</div>
-        <div style="font-size:12px;color:var(--text3);">Capture engineer photos directly from mobile</div>
-        <input type="file" accept="image/*" capture="environment" id="cameraFile"/>
-      </div>
-
-      <div class="progress-wrap">
-        <div class="progress-bar" id="uploadProgressBar"></div>
-      </div>
-
-      <div id="uploadPercent" style="margin-top:8px;font-size:12px;color:var(--text3);">0%</div>
-
-      <button class="btn btn-primary" style="margin-top:16px;width:100%;" onclick="uploadEngineerAttachment()">
-        Upload Attachment
-      </button>
-    </div>
-
-    <div>
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-        <div>
-          <div style="font-size:15px;font-weight:700;color:var(--text);">Attachment History</div>
-          <div style="font-size:12px;color:var(--text3);">Recent uploads linked to tickets</div>
-        </div>
-
-        <button class="btn btn-secondary btn-sm" onclick="loadAttachmentHistory()">
-          Refresh
-        </button>
-      </div>
-
-      <div id="attachmentHistory"></div>
-    </div>
-  </div>
-</div>
-
 
 <script>
 const firebaseConfig={
@@ -402,8 +275,6 @@ const firebaseConfig={
 };
 firebase.initializeApp(firebaseConfig);
 const db=firebase.firestore();
-const storage=firebase.storage();
-
 </script>
 
 <script type="text/babel">
@@ -624,114 +495,6 @@ function generateJobCard(ticket){
 </style>
 </head>
 <body>
-
-<!-- ================= ENGINEER UPLOAD CENTER ================= -->
-<section id="engineerUploadCenter" style="margin:30px 0;padding:28px;border-radius:22px;background:#111827;border:1px solid #334155;">
-  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:15px;margin-bottom:24px;">
-    <div>
-      <h2 style="font-size:28px;font-weight:800;color:white;margin:0;">
-        Engineer Upload Center
-      </h2>
-      <p style="color:#94A3B8;margin-top:6px;">
-        Firebase attachment uploads, camera uploads, progress tracking and ticket-linked engineer files.
-      </p>
-    </div>
-
-    <div style="padding:8px 16px;border-radius:999px;background:#052e16;color:#86efac;font-size:12px;font-weight:700;">
-      Production Ready
-    </div>
-  </div>
-
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;" class="engineer-grid">
-
-    <!-- LEFT -->
-    <div style="background:#0f172a;padding:22px;border-radius:18px;border:1px solid #1e293b;">
-      <h3 style="margin-top:0;color:white;">Upload Ticket Attachment</h3>
-
-      <div style="margin-top:18px;">
-        <label style="display:block;color:#cbd5e1;font-size:13px;margin-bottom:8px;">Ticket ID</label>
-        <input id="engTicketId" type="text" placeholder="CIM-1001"
-          style="width:100%;padding:14px;border-radius:12px;border:1px solid #334155;background:#020617;color:white;">
-      </div>
-
-      <div style="margin-top:18px;">
-        <label style="display:block;color:#cbd5e1;font-size:13px;margin-bottom:8px;">Engineer Name</label>
-        <input id="engName" type="text" placeholder="Engineer Name"
-          style="width:100%;padding:14px;border-radius:12px;border:1px solid #334155;background:#020617;color:white;">
-      </div>
-
-      <div style="margin-top:18px;">
-        <label style="display:block;color:#cbd5e1;font-size:13px;margin-bottom:8px;">Engineer Notes</label>
-        <textarea id="engNotes" rows="4" placeholder="Work completed, diagnostics, notes..."
-          style="width:100%;padding:14px;border-radius:12px;border:1px solid #334155;background:#020617;color:white;"></textarea>
-      </div>
-
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:20px;">
-        <label style="padding:26px;border:2px dashed #334155;border-radius:18px;text-align:center;cursor:pointer;background:#020617;">
-          <div style="font-size:40px;">📁</div>
-          <div style="font-weight:700;color:white;margin-top:8px;">Choose File</div>
-          <div style="font-size:12px;color:#94A3B8;margin-top:4px;">PDF, DOCX, Images</div>
-          <input id="engineerFileUpload" type="file" hidden>
-        </label>
-
-        <label style="padding:26px;border:2px dashed #334155;border-radius:18px;text-align:center;cursor:pointer;background:#020617;">
-          <div style="font-size:40px;">📷</div>
-          <div style="font-weight:700;color:white;margin-top:8px;">Camera Upload</div>
-          <div style="font-size:12px;color:#94A3B8;margin-top:4px;">Mobile Photo Capture</div>
-          <input id="engineerCameraUpload" type="file" accept="image/*" capture="environment" hidden>
-        </label>
-      </div>
-
-      <div style="margin-top:20px;">
-        <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
-          <span style="color:#cbd5e1;font-size:13px;">Upload Progress</span>
-          <span id="uploadPercentText" style="color:#38bdf8;font-size:13px;font-weight:700;">0%</span>
-        </div>
-
-        <div style="width:100%;height:16px;background:#020617;border-radius:999px;overflow:hidden;border:1px solid #334155;">
-          <div id="uploadProgressFill"
-            style="height:100%;width:0%;background:linear-gradient(90deg,#06b6d4,#22c55e);transition:0.3s;"></div>
-        </div>
-      </div>
-
-      <button onclick="uploadEngineerFile()"
-        style="margin-top:22px;width:100%;padding:16px;border:none;border-radius:14px;background:linear-gradient(90deg,#06b6d4,#22c55e);font-weight:800;color:#020617;font-size:16px;cursor:pointer;">
-        Upload Attachment
-      </button>
-    </div>
-
-    <!-- RIGHT -->
-    <div style="background:#0f172a;padding:22px;border-radius:18px;border:1px solid #1e293b;">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
-        <div>
-          <h3 style="margin:0;color:white;">Attachment History Viewer</h3>
-          <p style="color:#94A3B8;font-size:12px;margin-top:5px;">
-            Recent ticket-linked uploads
-          </p>
-        </div>
-
-        <button onclick="loadEngineerHistory()"
-          style="padding:10px 16px;border:none;border-radius:12px;background:#1e293b;color:white;cursor:pointer;">
-          Refresh
-        </button>
-      </div>
-
-      <div id="engineerHistoryList">
-        <div style="color:#94A3B8;">No uploads loaded yet.</div>
-      </div>
-    </div>
-
-  </div>
-</section>
-
-<style>
-@media(max-width:900px){
-  .engineer-grid{
-    grid-template-columns:1fr !important;
-  }
-}
-</style>
-
 <div class="header">
   <div><div class="brand">⚡ ${CFG.bizName}</div><div class="brand-sub">${CFG.tagline} · ${CFG.email}</div></div>
   <div><div class="ref-badge">${ticket.ref}</div><div style="font-size:10px;color:#666;margin-top:4px;text-align:right">JOB CARD</div></div>
