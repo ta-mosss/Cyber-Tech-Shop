@@ -9,6 +9,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -48,6 +49,8 @@ input[type="time"]::-webkit-calendar-picker-indicator{filter:invert(0.4);}
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
 @keyframes toastIn{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
 @keyframes blink{0%,100%{opacity:1;}50%{opacity:0.3;}}
+@keyframes chatPop{from{opacity:0;transform:scale(0.92) translateY(8px);}to{opacity:1;transform:scale(1) translateY(0);}}
+@keyframes presencePulse{0%,100%{box-shadow:0 0 0 0 rgba(0,200,150,0.4);}50%{box-shadow:0 0 0 5px rgba(0,200,150,0);}}
 
 .fu{animation:fadeUp 0.35s ease forwards;}
 .si{animation:slideIn 0.3s ease forwards;}
@@ -141,13 +144,21 @@ textarea.field-input{resize:vertical;min-height:88px;line-height:1.6;}
 .mono{font-family:'IBM Plex Mono',monospace;font-size:11px;}
 
 /* ── DETAIL PANEL ── */
-.detail-panel{width:400px;background:var(--card);border-left:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;}
+.detail-panel{width:420px;background:var(--card);border-left:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;}
 .detail-panel.hidden{display:none;}
 .detail-header{padding:16px 20px;border-bottom:1px solid var(--border);}
 .detail-body{flex:1;overflow-y:auto;padding:16px 20px;}
 .detail-row{display:flex;padding:8px 0;border-bottom:1px solid var(--border);}
 .detail-key{font-size:11px;color:var(--text3);width:100px;flex-shrink:0;padding-top:1px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;}
 .detail-val{font-size:12px;color:var(--text2);flex:1;}
+
+/* ── DETAIL TABS ── */
+.detail-tabs{display:flex;border-bottom:1px solid var(--border);background:var(--bg2);flex-shrink:0;}
+.detail-tab{flex:1;padding:10px 8px;font-size:11px;font-weight:700;color:var(--text3);cursor:pointer;border:none;background:transparent;font-family:inherit;transition:all 0.15s;border-bottom:2px solid transparent;margin-bottom:-1px;letter-spacing:0.02em;text-transform:uppercase;}
+.detail-tab.active{color:#00C896;border-bottom-color:#00C896;background:transparent;}
+.detail-tab:hover:not(.active){color:var(--text2);background:var(--bg3);}
+.detail-tab-badge{background:#EF4444;color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:8px;margin-left:4px;font-family:'IBM Plex Mono',monospace;vertical-align:middle;}
+.detail-tab-new{background:rgba(0,200,150,0.2);color:#00C896;font-size:9px;font-weight:700;padding:1px 5px;border-radius:8px;margin-left:4px;animation:pulse 2s infinite;vertical-align:middle;}
 
 /* ── SECTION HEADER ── */
 .section-head{display:flex;align-items:center;gap:10px;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border);}
@@ -240,6 +251,37 @@ textarea.field-input{resize:vertical;min-height:88px;line-height:1.6;}
 body.dark .theme-toggle::after{left:3px;}
 body.light .theme-toggle::after{left:19px;}
 
+/* ════════════════════════════════════════════════════
+   LIVE CHAT STYLES
+════════════════════════════════════════════════════ */
+.chat-panel{display:flex;flex-direction:column;height:100%;min-height:0;}
+.chat-engineer-bar{padding:10px 16px;border-bottom:1px solid var(--border);background:var(--bg2);display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.chat-messages{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:5px;min-height:0;}
+.chat-msg{display:flex;gap:8px;align-items:flex-start;animation:chatPop 0.2s ease;}
+.chat-msg.mine{flex-direction:row-reverse;}
+.chat-bubble{max-width:84%;padding:8px 12px;border-radius:12px;font-size:12px;line-height:1.55;word-break:break-word;}
+.chat-msg:not(.mine) .chat-bubble{background:var(--bg3);color:var(--text2);border-radius:4px 12px 12px 12px;border:1px solid var(--border);}
+.chat-msg.mine .chat-bubble{background:linear-gradient(135deg,#00C896,#0EA5E9);color:#050810;border-radius:12px 4px 12px 12px;}
+.chat-meta{font-size:9px;color:var(--text4);margin-top:3px;font-family:'IBM Plex Mono',monospace;display:flex;align-items:center;gap:5px;flex-wrap:wrap;}
+.chat-msg.mine .chat-meta{justify-content:flex-end;}
+.chat-sys-msg{text-align:center;font-size:10px;color:var(--text4);padding:4px 8px;font-style:italic;border-radius:10px;background:var(--bg3);margin:2px auto;max-width:240px;}
+.chat-input-bar{padding:10px 12px;border-top:1px solid var(--border);display:flex;gap:6px;background:var(--card);flex-shrink:0;}
+.chat-textarea{flex:1;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:8px 11px;color:var(--text);font-size:12px;resize:none;min-height:36px;max-height:80px;font-family:inherit;line-height:1.5;}
+.chat-textarea:focus{outline:none;border-color:#00C896;box-shadow:0 0 0 3px rgba(0,200,150,0.1);}
+.chat-avatar{width:26px;height:26px;border-radius:50%;background:rgba(0,200,150,0.12);border:1px solid rgba(0,200,150,0.3);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#00C896;flex-shrink:0;margin-top:2px;font-family:'IBM Plex Mono',monospace;}
+.chat-avatar.alt{background:rgba(14,165,233,0.12);border-color:rgba(14,165,233,0.3);color:#0EA5E9;}
+.wa-fwd-btn{display:inline-flex;align-items:center;gap:3px;background:rgba(37,211,102,0.12);border:1px solid rgba(37,211,102,0.25);color:#25D366;padding:2px 7px;border-radius:5px;font-size:9px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;}
+.wa-fwd-btn:hover{background:rgba(37,211,102,0.22);}
+.typing-bar{padding:6px 16px;font-size:10px;color:var(--text4);font-style:italic;border-top:1px solid var(--border);background:var(--bg2);flex-shrink:0;min-height:26px;}
+
+/* ── PRESENCE ── */
+.presence-row{display:flex;align-items:center;gap:6px;padding:5px 8px;border-radius:6px;}
+.presence-online-dot{width:7px;height:7px;border-radius:50%;background:#00C896;box-shadow:0 0 0 2px rgba(0,200,150,0.25);animation:presencePulse 2s infinite;flex-shrink:0;}
+.presence-offline-dot{width:7px;height:7px;border-radius:50%;background:var(--text4);flex-shrink:0;}
+.presence-name{font-size:11px;font-weight:600;color:var(--text2);}
+.presence-time{font-size:9px;color:var(--text4);font-family:'IBM Plex Mono',monospace;margin-left:auto;}
+.chat-unread-dot{width:7px;height:7px;border-radius:50%;background:#EF4444;flex-shrink:0;animation:pulse 1.5s infinite;}
+
 /* ── PRINT STYLES ── */
 @media print{
   body *{visibility:hidden;}
@@ -271,10 +313,12 @@ const firebaseConfig={
   projectId:"test-bot-49f99",
   storageBucket:"test-bot-49f99.firebasestorage.app",
   messagingSenderId:"522231357803",
-  appId:"1:522231357803:web:bf65a73d1df7269615ac2e"
+  appId:"1:522231357803:web:bf65a73d1df7269615ac2e",
+  databaseURL:"https://test-bot-49f99-default-rtdb.firebaseio.com"
 };
 firebase.initializeApp(firebaseConfig);
 const db=firebase.firestore();
+const rtdb=firebase.database();
 </script>
 
 <script type="text/babel">
@@ -357,6 +401,20 @@ async function fsNote(ref,txt,type="note",engineer=""){
 function ts(){return new Date().toISOString();}
 function makeTktRef(num){return`CIM-${String(num).padStart(4,"0")}`;}
 
+/* ════════════════════════════════════════════════════
+   FIREBASE REALTIME DB HELPERS (LIVE CHAT)
+════════════════════════════════════════════════════ */
+function chatRef(ticketRef){return rtdb.ref(`chats/${ticketRef}`);}
+function typingRef(ticketRef){return rtdb.ref(`typing/${ticketRef}`);}
+function presenceRef(name){return rtdb.ref(`presence/${name.replace(/\s+/g,"_")}`);}
+
+async function sendChatMsg(ticketRef,from,text,type="text"){
+  await chatRef(ticketRef).push({from,text,at:Date.now(),type});
+}
+async function sendSysMsg(ticketRef,text){
+  await chatRef(ticketRef).push({from:"system",text,at:Date.now(),type:"system"});
+}
+
 /* ── SLA HELPERS ── */
 function getSLAInfo(ticket){
   if(!ticket||!ticket.createdAt||!ticket.priority) return null;
@@ -409,12 +467,7 @@ _${CFG.bizName} — ${CFG.tagline}_`
 function buildStatusUpdateMsg(t,newStatus,statement){
   const statusLabel=ST[newStatus]?.l||newStatus;
   const svc=SVCS.find(s=>s.id===t.serviceType)?.label||t.serviceType||"—";
-  const emoji={
-    resolved:"✅",
-    closed:"🔒",
-    awaiting:"📦",
-    "in-progress":"🔧",
-  }[newStatus]||"📋";
+  const emoji={resolved:"✅",closed:"🔒",awaiting:"📦","in-progress":"🔧"}[newStatus]||"📋";
   return(
 `${emoji} *Ticket Update — ${t.ref}*
 
@@ -499,7 +552,6 @@ function generateJobCard(ticket){
   <div><div class="brand">⚡ ${CFG.bizName}</div><div class="brand-sub">${CFG.tagline} · ${CFG.email}</div></div>
   <div><div class="ref-badge">${ticket.ref}</div><div style="font-size:10px;color:#666;margin-top:4px;text-align:right">JOB CARD</div></div>
 </div>
-
 <h2>Client Information</h2>
 <div class="grid">
   <div class="row"><div class="key">Client Name</div><div class="val">${ticket.clientName||ticket.name||"—"}</div></div>
@@ -507,7 +559,6 @@ function generateJobCard(ticket){
   <div class="row"><div class="key">Phone</div><div class="val">${ticket.phone||"—"}</div></div>
   <div class="row"><div class="key">Email</div><div class="val">${ticket.email||"—"}</div></div>
 </div>
-
 <h2>Device Information</h2>
 <div class="grid">
   <div class="row"><div class="key">Device Type</div><div class="val">${ticket.deviceType||"—"}</div></div>
@@ -523,23 +574,18 @@ function generateJobCard(ticket){
   <div class="row"><div class="key">Priority</div><div class="val">${ticket.priority||"—"}</div></div>
   <div class="row"><div class="key">Status</div><div class="val">${ST[ticket.status]?.l||ticket.status||"—"}</div></div>
 </div>
-
 <h2>Problem Description</h2>
 <div class="issue-box">${ticket.issueTitle||ticket.problemDescription||"—"}<br/>${ticket.issueDetail||""}</div>
-
 <h2>Engineer Findings</h2>
 <div class="findings-box">${(ticket.notes||[]).filter(n=>n.type==="engineer-note"||n.type==="note").map(n=>`[${new Date(n.at).toLocaleDateString("en-ZA")}] ${n.txt}`).join("<br/>") || "[ To be completed by engineer ]"}</div>
-
 <h2>Parts &amp; Labour</h2>
 <table class="parts-table">
   <tr><th>Item / Part</th><th>Qty</th><th>Unit Cost (R)</th><th>Total (R)</th></tr>
   ${(ticket.parts||[]).map(p=>`<tr><td>${p.name}</td><td>${p.qty}</td><td>${p.cost||"—"}</td><td>${p.qty&&p.cost?(p.qty*p.cost).toFixed(2):"—"}</td></tr>`).join("")||"<tr><td colspan='4' style='color:#aaa;text-align:center'>No parts listed</td></tr>"}
   <tr><td colspan="3" style="text-align:right;font-weight:700;padding:8px">TOTAL:</td><td style="font-weight:700">R ${(ticket.parts||[]).reduce((a,p)=>a+(p.qty&&p.cost?p.qty*p.cost:0),0).toFixed(2)}</td></tr>
 </table>
-
 <h2>Quotation Reference</h2>
 <div class="issue-box" style="min-height:30px">${ticket.quotationRef||"[ Link quotation reference here ]"}</div>
-
 <h2>Date Information</h2>
 <div class="grid">
   <div class="row"><div class="key">Date Logged</div><div class="val">${ticket.createdAt?new Date(ticket.createdAt).toLocaleString("en-ZA"):"—"}</div></div>
@@ -547,14 +593,11 @@ function generateJobCard(ticket){
   <div class="row"><div class="key">Date Resolved</div><div class="val">_________________________</div></div>
   <div class="row"><div class="key">Job Card Printed</div><div class="val">${new Date().toLocaleString("en-ZA")}</div></div>
 </div>
-
 <div class="sig-section">
   <div class="sig-box"><div class="sig-line"></div><div class="sig-lbl">Engineer Signature &amp; Date</div></div>
   <div class="sig-box"><div class="sig-line"></div><div class="sig-lbl">Client Signature &amp; Date (Device Collection)</div></div>
 </div>
-
 <div class="footer">${CFG.bizName} · ${CFG.tagline} · ${CFG.email} · Generated ${new Date().toLocaleString("en-ZA")}</div>
-
 <div style="text-align:center;margin-top:16px">
   <button onclick="window.print()" style="background:#00C896;color:#050810;border:none;border-radius:8px;padding:10px 24px;font-weight:700;font-size:14px;cursor:pointer;">🖨️ Print Job Card</button>
 </div>
@@ -803,6 +846,176 @@ function FollowUpModal({tickets,onClose}){
 }
 
 /* ════════════════════════════════════════════════════
+   LIVE CHAT COMPONENT  ← NEW
+════════════════════════════════════════════════════ */
+function TicketChat({ticket, activeEngineer, onWaForward}){
+  const [msgs,setMsgs]=useState([]);
+  const [input,setInput]=useState("");
+  const [typing,setTyping]=useState({});
+  const [sending,setSending]=useState(false);
+  const endRef=useRef();
+  const typingTimer=useRef();
+  const initDone=useRef(false);
+
+  // Announce presence
+  useEffect(()=>{
+    if(!activeEngineer||activeEngineer==="Unassigned") return;
+    const pr=presenceRef(activeEngineer);
+    pr.set({online:true,lastSeen:Date.now(),ticket:ticket.ref});
+    const disc=pr.onDisconnect();
+    disc.set({online:false,lastSeen:Date.now(),ticket:""});
+    return()=>{ pr.set({online:false,lastSeen:Date.now(),ticket:""}); };
+  },[activeEngineer,ticket.ref]);
+
+  // Subscribe to messages
+  useEffect(()=>{
+    const ref=chatRef(ticket.ref);
+    const handler=snap=>{
+      const data=snap.val()||{};
+      const list=Object.entries(data).map(([id,m])=>({id,...m})).sort((a,b)=>a.at-b.at);
+      setMsgs(list);
+      setTimeout(()=>endRef.current&&endRef.current.scrollIntoView({behavior:"smooth"}),60);
+    };
+    ref.on("value",handler);
+    return()=>ref.off("value",handler);
+  },[ticket.ref]);
+
+  // Subscribe to typing
+  useEffect(()=>{
+    const ref=typingRef(ticket.ref);
+    const handler=snap=>setTyping(snap.val()||{});
+    ref.on("value",handler);
+    return()=>ref.off("value",handler);
+  },[ticket.ref]);
+
+  // Auto-post system message on first open
+  useEffect(()=>{
+    if(!initDone.current&&activeEngineer&&activeEngineer!=="Unassigned"){
+      initDone.current=true;
+    }
+  },[activeEngineer,ticket.ref]);
+
+  const handleTyping=()=>{
+    if(!activeEngineer||activeEngineer==="Unassigned") return;
+    const nameKey=activeEngineer.replace(/\s+/g,"_");
+    typingRef(ticket.ref).child(nameKey).set(true);
+    clearTimeout(typingTimer.current);
+    typingTimer.current=setTimeout(()=>typingRef(ticket.ref).child(nameKey).remove(),2200);
+  };
+
+  const send=async()=>{
+    if(!input.trim()||!activeEngineer||activeEngineer==="Unassigned") return;
+    setSending(true);
+    const text=input.trim();
+    setInput("");
+    const nameKey=activeEngineer.replace(/\s+/g,"_");
+    typingRef(ticket.ref).child(nameKey).remove();
+    await sendChatMsg(ticket.ref,activeEngineer,text,"text");
+    setSending(false);
+  };
+
+  const typingNames=Object.keys(typing)
+    .filter(k=>k.replace(/_/g," ")!==activeEngineer&&typing[k]===true)
+    .map(k=>k.replace(/_/g," "));
+
+  const fmtTime=at=>new Date(at).toLocaleTimeString("en-ZA",{hour:"2-digit",minute:"2-digit"});
+  const colors=["#00C896","#0EA5E9","#8B5CF6","#EC4899","#F59E0B"];
+  const colorFor=name=>colors[Math.abs([...name].reduce((a,c)=>a+c.charCodeAt(0),0))%colors.length];
+
+  if(!activeEngineer||activeEngineer==="Unassigned"){
+    return(
+      <div style={{padding:24,textAlign:"center",color:"var(--text4)"}}>
+        <div style={{fontSize:28,marginBottom:10}}>💬</div>
+        <div style={{fontSize:13,fontWeight:600,color:"var(--text3)",marginBottom:6}}>Select your engineer profile</div>
+        <div style={{fontSize:12,color:"var(--text4)"}}>Go to the assignment dropdown to set your name and join the live chat.</div>
+      </div>
+    );
+  }
+
+  return(
+    <div className="chat-panel">
+      {/* Header bar */}
+      <div className="chat-engineer-bar">
+        <div className="chat-avatar" style={{background:`${colorFor(activeEngineer)}20`,borderColor:`${colorFor(activeEngineer)}50`,color:colorFor(activeEngineer)}}>
+          {activeEngineer[0].toUpperCase()}
+        </div>
+        <div>
+          <div style={{fontSize:11,fontWeight:700,color:"var(--text)"}}>{activeEngineer}</div>
+          <div style={{fontSize:9,color:AC,fontFamily:"'IBM Plex Mono',monospace",textTransform:"uppercase",letterSpacing:"0.06em"}}>● Online · {ticket.ref}</div>
+        </div>
+        <div style={{marginLeft:"auto",fontSize:10,color:"var(--text4)"}}>
+          {msgs.filter(m=>m.type!=="system").length} messages
+        </div>
+      </div>
+
+      {/* Messages */}
+      <div className="chat-messages">
+        {msgs.length===0&&(
+          <div className="chat-sys-msg" style={{marginTop:16,maxWidth:260}}>
+            Team chat for {ticket.ref} · Start the conversation
+          </div>
+        )}
+        {msgs.map((m,i)=>{
+          if(m.type==="system") return(
+            <div key={m.id||i} className="chat-sys-msg">{m.text}</div>
+          );
+          const isMe=m.from===activeEngineer;
+          const clr=colorFor(m.from||"?");
+          return(
+            <div key={m.id||i} className={`chat-msg${isMe?" mine":""}`}>
+              {!isMe&&(
+                <div className="chat-avatar" style={{background:`${clr}18`,borderColor:`${clr}40`,color:clr}}>
+                  {(m.from||"?")[0].toUpperCase()}
+                </div>
+              )}
+              <div style={{maxWidth:"84%"}}>
+                {!isMe&&<div style={{fontSize:9,fontWeight:700,color:clr,marginBottom:2,textTransform:"uppercase",letterSpacing:"0.05em"}}>{m.from}</div>}
+                <div className="chat-bubble">{m.text}</div>
+                <div className={`chat-meta`}>
+                  <span>{fmtTime(m.at)}</span>
+                  {!isMe&&ticket.phone&&(
+                    <button className="wa-fwd-btn" onClick={()=>onWaForward&&onWaForward(ticket,m.text)}>
+                      💬 WA
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          );
+        })}
+        <div ref={endRef}/>
+      </div>
+
+      {/* Typing indicator */}
+      <div className="typing-bar">
+        {typingNames.length>0&&`✍️ ${typingNames.join(", ")} ${typingNames.length===1?"is":"are"} typing…`}
+      </div>
+
+      {/* Input bar */}
+      <div className="chat-input-bar">
+        <textarea
+          className="chat-textarea"
+          rows={2}
+          value={input}
+          onChange={e=>{setInput(e.target.value);handleTyping();}}
+          onKeyDown={e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();send();}}}
+          placeholder={`Message team… (Enter to send, Shift+Enter for newline)`}
+          disabled={sending}
+        />
+        <button
+          className="btn btn-primary btn-sm"
+          style={{alignSelf:"flex-end",padding:"8px 14px",minWidth:56}}
+          onClick={send}
+          disabled={sending||!input.trim()}
+        >
+          {sending?"…":"↑ Send"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* ════════════════════════════════════════════════════
    TICKET FORM
 ════════════════════════════════════════════════════ */
 function TicketForm({mode,onSubmit,saving,theme,toggleTheme}){
@@ -854,7 +1067,6 @@ function TicketForm({mode,onSubmit,saving,theme,toggleTheme}){
 
   return(
     <div style={{minHeight:"100vh",background:"var(--bg)"}}>
-      {/* Header */}
       <header className="portal-header">
         <div className="portal-header-inner">
           <div style={{display:"flex",alignItems:"center",gap:10}}>
@@ -870,8 +1082,6 @@ function TicketForm({mode,onSubmit,saving,theme,toggleTheme}){
           </div>
         </div>
       </header>
-
-      {/* Quick links */}
       <div className="ql-bar">
         <div className="ql-inner">
           <span style={{fontSize:10,color:"var(--text4)",fontWeight:700,textTransform:"uppercase",letterSpacing:"0.08em"}}>Quick Links:</span>
@@ -898,7 +1108,6 @@ function TicketForm({mode,onSubmit,saving,theme,toggleTheme}){
           </p>
         </div>
 
-        {/* AnyDesk / Zoho callouts */}
         {!isEng&&(
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:24}}>
             <div style={{background:"var(--bg2)",border:"1px solid var(--border)",borderRadius:10,padding:"12px 16px",display:"flex",alignItems:"center",gap:12}}>
@@ -917,7 +1126,6 @@ function TicketForm({mode,onSubmit,saving,theme,toggleTheme}){
           </div>
         )}
 
-        {/* Step indicator */}
         <div style={{display:"flex",alignItems:"center",gap:0,marginBottom:24}}>
           {["Service","Details","Review"].map((s,i)=>(
             <React.Fragment key={i}>
@@ -930,7 +1138,6 @@ function TicketForm({mode,onSubmit,saving,theme,toggleTheme}){
           ))}
         </div>
 
-        {/* Step 1 */}
         {step===1&&(
           <div className="card fu">
             <div className="card-header"><div className="card-title">What type of support is needed?</div></div>
@@ -960,7 +1167,6 @@ function TicketForm({mode,onSubmit,saving,theme,toggleTheme}){
           </div>
         )}
 
-        {/* Step 2 */}
         {step===2&&(
           <div style={{display:"flex",flexDirection:"column",gap:14}} className="fu">
             {isEng&&(
@@ -1003,94 +1209,117 @@ function TicketForm({mode,onSubmit,saving,theme,toggleTheme}){
                     <Field l="Serial Number"><input {...fi} value={f.serialNumber} onChange={e=>set("serialNumber",e.target.value)} placeholder="SN-XXXXXXX"/></Field>
                     <Field l="OS / Version"><input {...fi} value={f.operatingSystem} onChange={e=>set("operatingSystem",e.target.value)} placeholder="Windows 11 Pro…"/></Field>
                     <Field l="Warranty" span><div className="radio-chips">{WARR.map(w=><div key={w} className={`chip${f.warrantyStatus===w?" active":""}`} onClick={()=>set("warrantyStatus",w)}>{w}</div>)}</div></Field>
+                    <Field l="Condition" span><div className="radio-chips">{COND.map(c=><div key={c} className={`chip${f.conditionOnArrival===c?" active":""}`} onClick={()=>set("conditionOnArrival",c)}>{c}</div>)}</div></Field>
+                    <Field l="Physical Damage" span><input {...fi} value={f.physicalDamage} onChange={e=>set("physicalDamage",e.target.value)} placeholder="Describe any damage…"/></Field>
+                    <Field l="Accessories" span><input {...fi} value={f.accessories} onChange={e=>set("accessories",e.target.value)} placeholder="Charger, bag, mouse…"/></Field>
+                    <Field l="Device Password" span><input {...fi} value={f.devicePassword} onChange={e=>set("devicePassword",e.target.value)} placeholder="PIN / password (optional)"/></Field>
                   </div>
                 </div>
               </div>
             )}
             <div className="card">
-              <div className="card-header"><div className="card-title">Problem Details</div></div>
+              <div className="card-header"><div className="card-title">{svc==="device"?"Problem Description":"Issue Details"}</div></div>
               <div className="card-body">
                 <div className="form-grid">
-                  {svc==="device"?(
-                    <>
-                      <Field l="Problem Description *" e={err.problemDescription} span><textarea {...fi} value={f.problemDescription} onChange={e=>set("problemDescription",e.target.value)} placeholder="Describe the fault — error messages, symptoms…"/></Field>
-                      <Field l="Accessories Supplied" span><input {...fi} value={f.accessories} onChange={e=>set("accessories",e.target.value)} placeholder="Charger, mouse — or 'None'"/></Field>
-                      <Field l="Urgency"><select {...fi} value={f.urgency} onChange={e=>set("urgency",e.target.value)}>{URG.map(u=><option key={u}>{u}</option>)}</select></Field>
-                      <Field l="Condition on Arrival"><select {...fi} value={f.conditionOnArrival} onChange={e=>set("conditionOnArrival",e.target.value)}>{COND.map(c=><option key={c}>{c}</option>)}</select></Field>
-                      <Field l="Physical Damage"><input {...fi} value={f.physicalDamage} onChange={e=>set("physicalDamage",e.target.value)} placeholder="'None' or describe damage"/></Field>
-                      <Field l="Device Password"><input {...fi} value={f.devicePassword} onChange={e=>set("devicePassword",e.target.value)} placeholder="Leave blank if not needed"/></Field>
-                      <Field l="Photos (max 5)" span>
-                        <div className="photo-drop" onDrop={onDrop} onDragOver={e=>e.preventDefault()} onClick={()=>fRef.current&&fRef.current.click()}>
-                          <input ref={fRef} type="file" accept="image/*" multiple onChange={addPhotos}/>
-                          {photos.length===0?(<><div style={{fontSize:26,marginBottom:6}}>📷</div><div style={{fontSize:13,color:"var(--text3)"}}>Drag &amp; drop or click to browse</div></>):(
-                            <div className="photo-grid">{photos.map((p,i)=><div key={i} className="photo-thumb"><img src={p.src} alt=""/><button className="photo-rm" onClick={ev=>{ev.stopPropagation();setPhotos(ph=>ph.filter((_,j)=>j!==i));}}>×</button></div>)}{photos.length<5&&<div style={{width:72,height:72,border:"2px dashed var(--border2)",borderRadius:7,display:"flex",alignItems:"center",justifyContent:"center",color:"var(--text4)",fontSize:22}}>+</div>}</div>
-                          )}
-                        </div>
-                      </Field>
+                  {svc==="device"
+                    ?<Field l="Problem Description *" e={err.problemDescription} span><textarea {...fi} value={f.problemDescription} onChange={e=>set("problemDescription",e.target.value)} placeholder="Describe the issue in detail…" style={{minHeight:80}}/></Field>
+                    :<>
+                      <Field l="Issue Title *" e={err.issueTitle} span><input {...fi} value={f.issueTitle} onChange={e=>set("issueTitle",e.target.value)} placeholder="e.g. Email not syncing on Outlook"/></Field>
+                      <Field l="Detailed Description" span><textarea {...fi} value={f.issueDetail} onChange={e=>set("issueDetail",e.target.value)} placeholder="Steps to reproduce, error messages…" style={{minHeight:80}}/></Field>
                     </>
-                  ):(
-                    <>
-                      <Field l="Issue Title *" e={err.issueTitle} span><input {...fi} value={f.issueTitle} onChange={e=>set("issueTitle",e.target.value)} placeholder="e.g. Laptop won't turn on…"/></Field>
-                      <Field l="More Details" span><textarea {...fi} value={f.issueDetail} onChange={e=>set("issueDetail",e.target.value)} placeholder="Error messages, anything helpful…"/></Field>
-                    </>
+                  }
+                  <Field l="Priority">
+                    <div className="radio-chips">{PRIS.map(p=><div key={p} className={`chip${f.priority===p?" active":""}`} onClick={()=>set("priority",p)}>{p}</div>)}</div>
+                  </Field>
+                  <Field l="Urgency">
+                    <div className="radio-chips">{URG.map(u=><div key={u} className={`chip${f.urgency===u?" active":""}`} onClick={()=>set("urgency",u)}>{u}</div>)}</div>
+                  </Field>
+                  {!isEng&&(
+                    <Field l="Preferred Contact" span>
+                      <div className="radio-chips">
+                        {[["whatsapp","💬 WhatsApp"],["email","✉️ Email"],["phone","📞 Call"]].map(([v,l])=>(
+                          <div key={v} className={`chip${f.contactMethod===v?" active":""}`} onClick={()=>set("contactMethod",v)}>{l}</div>
+                        ))}
+                      </div>
+                    </Field>
                   )}
-                  <Field l="Priority"><select {...fi} value={f.priority} onChange={e=>set("priority",e.target.value)}>{PRIS.map(p=><option key={p}>{p}</option>)}</select></Field>
-                  {!isEng&&<Field l="Preferred Contact">
-                    <div className="radio-chips">
-                      {[{v:"whatsapp",l:"📱 WhatsApp"},{v:"email",l:"✉️ Email"},{v:"both",l:"🔔 Both"}].map(o=>(
-                        <div key={o.v} className={`chip${f.contactMethod===o.v?" active":""}`} onClick={()=>set("contactMethod",o.v)}>{o.l}</div>
-                      ))}
+                  {svc==="device"&&(
+                    <div className="form-field span2">
+                      <Lbl c="Photos (optional — up to 5)"/>
+                      <div className="photo-drop" onClick={()=>fRef.current.click()} onDragOver={e=>{e.preventDefault();e.currentTarget.classList.add("over");}} onDragLeave={e=>e.currentTarget.classList.remove("over")} onDrop={e=>{e.currentTarget.classList.remove("over");onDrop(e);}}>
+                        <input type="file" ref={fRef} accept="image/*" multiple onChange={addPhotos}/>
+                        {photos.length===0?<span style={{fontSize:12,color:"var(--text4)"}}>Drag &amp; drop or click to upload device photos</span>:(
+                          <div className="photo-grid">
+                            {photos.map((p,i)=>(
+                              <div key={i} className="photo-thumb">
+                                <img src={p.src} alt={p.name}/>
+                                <button className="photo-rm" onClick={e=>{e.stopPropagation();setPhotos(ps=>ps.filter((_,j)=>j!==i));}}>✕</button>
+                              </div>
+                            ))}
+                            {photos.length<5&&<div style={{width:72,height:72,border:"1px dashed var(--border2)",borderRadius:7,display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,color:"var(--text4)",cursor:"pointer"}}>+</div>}
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </Field>}
+                  )}
                 </div>
               </div>
             </div>
-            {svc==="device"&&!isEng&&(
-              <div className="card" style={{border:`1px solid ${err.authorized?"rgba(248,113,113,0.3)":"var(--border)"}`}}>
+            {!isEng&&svc==="device"&&(
+              <div className="card">
                 <div className="card-body">
-                  <div style={{background:"var(--bg3)",borderRadius:8,padding:12,marginBottom:12,border:"1px solid var(--border)"}}>
-                    <p style={{fontSize:12,color:"var(--text3)",lineHeight:1.7}}>I authorize <strong style={{color:"var(--text)"}}>{CFG.bizName}</strong> to diagnose and repair the device. I am responsible for data backup.</p>
-                  </div>
-                  <label style={{display:"flex",alignItems:"flex-start",gap:10,cursor:"pointer"}} onClick={()=>set("authorized",!f.authorized)}>
-                    <div style={{width:20,height:20,borderRadius:5,border:`2px solid ${f.authorized?AC:"var(--border2)"}`,background:f.authorized?AC:"transparent",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,marginTop:1,transition:"all 0.2s"}}>{f.authorized&&<span style={{color:"#050810",fontSize:13,fontWeight:700}}>✓</span>}</div>
-                    <span style={{fontSize:13,color:"var(--text2)",lineHeight:1.6}}>I agree to the authorization &amp; terms of service.</span>
+                  <label style={{display:"flex",gap:10,cursor:"pointer",alignItems:"flex-start"}}>
+                    <div style={{width:18,height:18,borderRadius:4,border:`2px solid ${f.authorized?"#00C896":"var(--border2)"}`,background:f.authorized?"#00C896":"transparent",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,marginTop:1,transition:"all 0.2s"}} onClick={()=>set("authorized",!f.authorized)}>
+                      {f.authorized&&<span style={{color:"#050810",fontSize:11,fontWeight:700}}>✓</span>}
+                    </div>
+                    <div>
+                      <div style={{fontSize:13,color:"var(--text)",fontWeight:600,marginBottom:2}}>I authorise {CFG.bizName} to diagnose and assess my device *</div>
+                      <div style={{fontSize:11,color:"var(--text3)"}}>A quotation will be provided before any repair work begins.</div>
+                    </div>
                   </label>
-                  {err.authorized&&<div className="field-error" style={{marginTop:8}}>{err.authorized}</div>}
+                  {err.authorized&&<div style={{color:"#F87171",fontSize:11,marginTop:8}}>{err.authorized}</div>}
                 </div>
               </div>
             )}
-            <div style={{display:"flex",justifyContent:"space-between",gap:10}}>
-              <button className="btn btn-secondary" onClick={()=>{setErr({});setStep(1);}}>← Back</button>
-              <button className="btn btn-primary" onClick={()=>{if(validate())setStep(3);}}>Review Ticket →</button>
-            </div>
+            {step===2&&(
+              <div style={{display:"flex",gap:10,justifyContent:"space-between"}}>
+                <button className="btn btn-secondary" onClick={()=>setStep(1)}>← Back</button>
+                <button className="btn btn-primary" onClick={()=>{if(validate())setStep(3);}} disabled={saving}>Review →</button>
+              </div>
+            )}
           </div>
         )}
 
-        {/* Step 3 */}
         {step===3&&(
-          <div style={{display:"flex",flexDirection:"column",gap:14}} className="fu">
-            <div className="card">
-              <div className="card-header"><div className="card-title">Ticket Summary</div><button className="btn btn-ghost btn-sm" onClick={()=>setStep(2)}>Edit</button></div>
-              <div>
-                {[["Service",SVCS.find(s=>s.id===svc)?.label],["Name",f.clientName],["Phone",f.phone],f.email&&["Email",f.email],f.company&&["Company",f.company],f.address&&["Address",f.address],f.preferredDate&&["Preferred",`${f.preferredDate} ${f.preferredTime}`],f.deviceType&&["Device",`${f.manufacturer} ${f.modelNumber} (${f.deviceType})`],f.serialNumber&&["Serial",f.serialNumber],["Issue",f.issueTitle||f.problemDescription||"—"],f.issueDetail&&["Details",f.issueDetail],["Priority",f.priority],!isEng&&["Contact via",f.contactMethod],isEng&&["Assigned to",f.assignedEngineer]].filter(Boolean).map(([l,v],i)=>(
-                  <div key={i} className="detail-row" style={{padding:"8px 20px"}}><div className="detail-key">{l}</div><div className="detail-val">{v}</div></div>
-                ))}
-              </div>
-            </div>
-            <div className="card">
-              <div className="card-header"><div className="card-title">📱 WhatsApp Preview</div><span style={{fontSize:11,color:"var(--text3)"}}>Sent on submit</span></div>
+          <div className="fu">
+            <div className="card" style={{marginBottom:14}}>
+              <div className="card-header"><div className="card-title">📋 Review & Confirm</div></div>
               <div className="card-body">
-                <div style={{fontSize:11,fontWeight:700,color:AC,textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:8}}>→ Confirmation to Customer</div>
-                <div className="wa-preview"><div className="wa-bubble">{buildCustomerMsg(previewTicket)}</div></div>
-              </div>
-            </div>
-            <div style={{display:"flex",gap:10,justifyContent:"space-between",flexWrap:"wrap"}}>
-              <button className="btn btn-secondary" onClick={()=>setStep(2)}>← Back</button>
-              <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
-                <a href={waUrl(f.phone,buildCustomerMsg(previewTicket))} target="_blank" rel="noreferrer" className="btn btn-wa">💬 Preview WA</a>
-                <button className="btn btn-primary" onClick={handleSubmit} disabled={saving} style={{minWidth:200}}>
-                  {saving?"⏳ Saving…":"🚀 Submit & Send WhatsApp"}
-                </button>
+                <div style={{marginBottom:16}}>
+                  <div style={{fontSize:10,fontWeight:700,color:"var(--text4)",textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:10}}>WhatsApp Preview — Customer Confirmation</div>
+                  <div className="wa-preview"><div className="wa-bubble">{buildCustomerMsg(previewTicket)}</div></div>
+                </div>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,fontSize:12,marginBottom:16}}>
+                  {[
+                    ["Name",f.clientName],["Phone",f.phone],
+                    f.email&&["Email",f.email],f.company&&["Company",f.company],
+                    ["Service",SVCS.find(s=>s.id===svc)?.label],["Priority",f.priority],
+                    svc==="device"&&f.manufacturer&&["Device",`${f.manufacturer} ${f.modelNumber}`],
+                    svc==="device"&&["Issue",f.problemDescription],
+                    svc!=="device"&&["Issue",f.issueTitle],
+                  ].filter(Boolean).map(([k,v],i)=>(
+                    <div key={i} style={{padding:"6px 8px",background:"var(--bg3)",borderRadius:6}}>
+                      <div style={{fontSize:9,fontWeight:700,color:"var(--text4)",textTransform:"uppercase",marginBottom:2}}>{k}</div>
+                      <div style={{color:"var(--text2)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{v||"—"}</div>
+                    </div>
+                  ))}
+                </div>
+                <div style={{display:"flex",gap:10,justifyContent:"space-between"}}>
+                  <button className="btn btn-secondary" onClick={()=>setStep(2)}>← Edit</button>
+                  <button className="btn btn-primary" onClick={handleSubmit} disabled={saving}>
+                    {saving?"Creating ticket…":"✓ Submit Ticket"}
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -1155,13 +1384,47 @@ function Admin({tickets,loading,authed,onAuth,onUpdate,onAddNote,onBack,onNewTic
   const [note,setNote]=useState(""); const [eqRef,setEqRef]=useState("");
   const [saving,setSaving]=useState(false);
   const [activeTab,setActiveTab]=useState("tickets");
+  const [detailTab,setDetailTab]=useState("overview"); // ← NEW: overview | chat | notes | actions
+
+  /* ── NEW: engineer identity & presence ── */
+  const [activeEngineer,setActiveEngineer]=useState("Unassigned");
+  const [onlineEngineers,setOnlineEngineers]=useState({});
+  const [chatCounts,setChatCounts]=useState({}); // ticketRef → message count
+
+  /* ── NEW: track chat unread per ticket ── */
+  const [lastRead,setLastRead]=useState({}); // ticketRef → timestamp when chat tab last opened
 
   // Modals
-  const [statusModal,setStatusModal]=useState(null); // {ticket, newStatus}
+  const [statusModal,setStatusModal]=useState(null);
   const [partsModal,setPartsModal]=useState(null);
   const [historyModal,setHistoryModal]=useState(null);
   const [fixesModal,setFixesModal]=useState(false);
   const [followUpModal,setFollowUpModal]=useState(false);
+
+  /* ── NEW: Subscribe to presence from RTDB ── */
+  useEffect(()=>{
+    if(!authed) return;
+    const ref=rtdb.ref("presence");
+    const handler=snap=>setOnlineEngineers(snap.val()||{});
+    ref.on("value",handler);
+    return()=>ref.off("value",handler);
+  },[authed]);
+
+  /* ── NEW: Subscribe to chat message counts (lightweight) ── */
+  useEffect(()=>{
+    if(!authed||!tickets.length) return;
+    const unsubs=[];
+    tickets.forEach(t=>{
+      const ref=chatRef(t.ref);
+      const handler=snap=>{
+        const count=snap.numChildren();
+        setChatCounts(prev=>({...prev,[t.ref]:count}));
+      };
+      ref.on("value",handler);
+      unsubs.push(()=>ref.off("value",handler));
+    });
+    return()=>unsubs.forEach(u=>u());
+  },[authed,tickets.length]);
 
   const tryLogin=()=>{if(pw===CFG.adminPw)onAuth();else setPwErr("Incorrect password");};
 
@@ -1193,7 +1456,20 @@ function Admin({tickets,loading,authed,onAuth,onUpdate,onAddNote,onBack,onNewTic
   const counts=Object.keys(ST).reduce((a,k)=>{a[k]=tickets.filter(t=>t.status===k).length;return a;},{});
   const overdueCount=tickets.filter(t=>{const info=getSLAInfo(t);return info&&info.status==="breach";}).length;
 
-  // Status update — open modal if notification needed
+  /* ── NEW: count online engineers ── */
+  const onlineList=Object.entries(onlineEngineers)
+    .filter(([,v])=>v&&v.online)
+    .map(([k,v])=>({name:k.replace(/_/g," "),...v}));
+
+  /* ── NEW: unread chat count for selected ticket ── */
+  const chatUnread=(ref)=>{
+    const total=chatCounts[ref]||0;
+    const read=lastRead[ref]||0;
+    return total>0&&read===0?total:0; // simple: show count until user opens chat tab
+  };
+
+  const totalChatActivity=Object.values(chatCounts).reduce((a,c)=>a+c,0);
+
   const doStatusClick=(ticket,newStatus)=>{
     if(NOTIFY_STATUSES.includes(newStatus)){
       setStatusModal({ticket,newStatus});
@@ -1208,13 +1484,35 @@ function Admin({tickets,loading,authed,onAuth,onUpdate,onAddNote,onBack,onNewTic
     if(statement.trim()){
       await onAddNote(ticket.ref,`[Status → ${ST[newStatus]?.l}] ${statement}`,"engineer-note","");
     }
+    // NEW: post system message to chat
+    try{await sendSysMsg(ticket.ref,`Status updated to "${ST[newStatus]?.l}" by ${activeEngineer}${statement?` · ${statement.slice(0,80)}`:""}`)}catch(e){}
     setStatusModal(null);
   };
 
   const doNote=async()=>{if(!note.trim())return;setSaving(true);await onAddNote(sel,note.trim());setNote("");setSaving(false);};
   const doQuote=async()=>{setSaving(true);await onUpdate(sel,{quotationRef:eqRef});setSaving(false);};
-  const doAssign=async(eng)=>{ await onUpdate(tk.ref,{assignedEngineer:eng}); };
+  const doAssign=async(eng)=>{
+    await onUpdate(tk.ref,{assignedEngineer:eng});
+    // NEW: if the active engineer changes, update their presence
+    if(eng!=="Unassigned") setActiveEngineer(eng);
+    // NEW: log to chat
+    try{await sendSysMsg(tk.ref,`Assigned to ${eng}`)}catch(e){}
+  };
   const doSaveParts=async(parts)=>{setSaving(true);await onUpdate(partsModal.ref,{parts});setPartsModal(null);setSaving(false);};
+
+  /* ── NEW: WA forward handler for chat messages ── */
+  const handleWaForward=(ticket,msgText)=>{
+    const url=waUrl(ticket.phone,
+      `📋 *${ticket.ref}* — Update from ${CFG.bizName}\n\n${msgText}\n\n_Reply to this message with your reference number to respond._`
+    );
+    window.open(url,"_blank");
+  };
+
+  /* ── NEW: open chat tab and mark as read ── */
+  const openChatTab=()=>{
+    setDetailTab("chat");
+    if(sel) setLastRead(prev=>({...prev,[sel]:Date.now()}));
+  };
 
   return(
     <div className="main-layout">
@@ -1225,7 +1523,7 @@ function Admin({tickets,loading,authed,onAuth,onUpdate,onAddNote,onBack,onNewTic
       {fixesModal&&<KnownFixesModal onInsert={txt=>setNote(n=>n?n+"\n\n"+txt:txt)} onClose={()=>setFixesModal(false)}/>}
       {followUpModal&&<FollowUpModal tickets={tickets} onClose={()=>setFollowUpModal(false)}/>}
 
-      {/* Sidebar */}
+      {/* ── SIDEBAR ── */}
       <div className="sidebar">
         <div className="sidebar-logo">
           <div className="brand">
@@ -1239,6 +1537,38 @@ function Admin({tickets,loading,authed,onAuth,onUpdate,onAddNote,onBack,onNewTic
             <button className={`nav-item${activeTab==="tickets"?" active":""}`} onClick={()=>setActiveTab("tickets")}><span className="ni">🎫</span>All Tickets{tickets.length>0&&<span className="badge">{tickets.length}</span>}</button>
             <button className={`nav-item${activeTab==="new"?" active":""}`} onClick={()=>setActiveTab("new")}><span className="ni">✏️</span>Log New Ticket</button>
           </div>
+
+          {/* ── NEW: Live Chat nav section ── */}
+          <div className="nav-section">
+            <div className="nav-label">Live Chat</div>
+            <div className="nav-item" style={{cursor:"default"}}>
+              <span className="ni">💬</span>
+              <span style={{flex:1}}>Team Chat</span>
+              {totalChatActivity>0&&<span style={{fontFamily:"'IBM Plex Mono',monospace",fontSize:11,color:AC}}>{totalChatActivity}</span>}
+            </div>
+            {/* Online engineers */}
+            <div style={{padding:"4px 8px 6px"}}>
+              <div style={{fontSize:9,fontWeight:700,color:"var(--text4)",textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:5,paddingLeft:4}}>Online Now</div>
+              {onlineList.length===0&&(
+                <div style={{fontSize:10,color:"var(--text4)",padding:"4px 8px"}}>No engineers online</div>
+              )}
+              {onlineList.map(e=>(
+                <div key={e.name} className="presence-row">
+                  <div className="presence-online-dot"/>
+                  <span className="presence-name">{e.name}</span>
+                  {e.ticket&&<span style={{fontSize:9,color:AC,fontFamily:"'IBM Plex Mono',monospace",marginLeft:"auto"}}>{e.ticket}</span>}
+                </div>
+              ))}
+            </div>
+            {/* My engineer identity */}
+            <div style={{padding:"4px 10px 2px"}}>
+              <div style={{fontSize:9,fontWeight:700,color:"var(--text4)",textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:4}}>Your Identity</div>
+              <select className="field-input" style={{fontSize:11,padding:"5px 8px"}} value={activeEngineer} onChange={e=>setActiveEngineer(e.target.value)}>
+                {ENGINEERS.map(eng=><option key={eng}>{eng}</option>)}
+              </select>
+            </div>
+          </div>
+
           <div className="nav-section">
             <div className="nav-label">Status Filter</div>
             <button className={`nav-item${fSt==="all"?" active":""}`} onClick={()=>setFSt("all")}><span className="ni">📋</span>All<span style={{marginLeft:"auto",fontFamily:"'IBM Plex Mono',monospace",fontSize:11,color:"var(--text3)"}}>{tickets.length}</span></button>
@@ -1267,13 +1597,13 @@ function Admin({tickets,loading,authed,onAuth,onUpdate,onAddNote,onBack,onNewTic
         <div className="sidebar-bottom">
           <div className="status-pill">
             <div className="status-dot"/>
-            <span className="status-text">Live · Firebase</span>
+            <span className="status-text">Live · Firebase RTDB</span>
             <span style={{marginLeft:"auto",fontFamily:"'IBM Plex Mono',monospace",fontSize:10,color:"var(--text3)"}}>{tickets.length} tickets</span>
           </div>
         </div>
       </div>
 
-      {/* Content */}
+      {/* ── CONTENT AREA ── */}
       <div className="content-area">
         <div className="topbar">
           <div className="topbar-left">
@@ -1282,6 +1612,13 @@ function Admin({tickets,loading,authed,onAuth,onUpdate,onAddNote,onBack,onNewTic
           </div>
           <div className="topbar-right">
             {overdueCount>0&&<span style={{background:"rgba(239,68,68,0.1)",border:"1px solid rgba(239,68,68,0.3)",color:"#F87171",fontSize:11,fontWeight:700,padding:"4px 10px",borderRadius:6,animation:"blink 1.5s infinite"}}>⚠️ {overdueCount} SLA Breach{overdueCount>1?"es":""}</span>}
+            {/* NEW: online engineer indicator */}
+            {onlineList.length>0&&(
+              <div style={{display:"flex",alignItems:"center",gap:5,background:"rgba(0,200,150,0.08)",border:"1px solid rgba(0,200,150,0.2)",borderRadius:20,padding:"4px 10px"}}>
+                <div className="presence-online-dot" style={{width:6,height:6}}/>
+                <span style={{fontSize:11,fontWeight:600,color:AC}}>{onlineList.length} online</span>
+              </div>
+            )}
             <a href={CFG.zoho} target="_blank" rel="noreferrer" className="btn btn-secondary btn-sm">📊 Zoho</a>
             <button className="btn btn-primary btn-sm" onClick={()=>setActiveTab("new")}>+ New Ticket</button>
           </div>
@@ -1295,7 +1632,7 @@ function Admin({tickets,loading,authed,onAuth,onUpdate,onAddNote,onBack,onNewTic
 
         {activeTab==="tickets"&&(
           <div style={{flex:1,display:"flex",minHeight:0,overflow:"hidden"}} className="admin-body">
-            {/* Table pane */}
+            {/* ── TABLE PANE ── */}
             <div style={{flex:1,overflow:"hidden",display:"flex",flexDirection:"column"}}>
               <div style={{padding:"16px 20px 0"}}>
                 <div className="stats-row">
@@ -1337,23 +1674,40 @@ function Admin({tickets,loading,authed,onAuth,onUpdate,onAddNote,onBack,onNewTic
                           <th>Priority</th>
                           <th>Status</th>
                           <th>Engineer</th>
+                          <th>Chat</th>
                           <th>Date</th>
                         </tr>
                       </thead>
                       <tbody>
-                        {filtered.map(t=>(
-                          <tr key={t.ref} onClick={()=>setSel(sel===t.ref?null:t.ref)} style={{cursor:"pointer"}} className={sel===t.ref?"selected":""}>
-                            <td><span className="mono" style={{color:AC}}>{t.ref}</span>{t.quotationRef&&<span style={{marginLeft:6,fontSize:9,fontWeight:700,color:AC2,background:"rgba(14,165,233,0.1)",border:"1px solid rgba(14,165,233,0.2)",borderRadius:4,padding:"1px 5px"}}>QUO</span>}</td>
-                            <td><div style={{fontSize:13,fontWeight:600,color:"var(--text)"}}>{t.clientName||t.name||"—"}</div><div style={{fontSize:11,color:"var(--text3)"}}>{t.phone||""}</div></td>
-                            <td>{SVCS.find(s=>s.id===t.serviceType)?.icon} <span style={{fontSize:12}}>{SVCS.find(s=>s.id===t.serviceType)?.label||t.serviceType}</span></td>
-                            <td style={{maxWidth:200,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{t.issueTitle||t.problemDescription||"—"}</td>
-                            <td><SLABadge ticket={t}/></td>
-                            <td><span style={{fontSize:11,fontWeight:600,color:t.priority==="Urgent"?"#EF4444":t.priority==="High"?"#F59E0B":"var(--text3)"}}>{t.priority}</span></td>
-                            <td><StatusBadge s={t.status}/></td>
-                            <td><span style={{fontSize:11,color:t.assignedEngineer&&t.assignedEngineer!=="Unassigned"?AC:"var(--text3)"}}>{t.assignedEngineer||"Unassigned"}</span></td>
-                            <td className="mono" style={{fontSize:11}}>{new Date(t.createdAt).toLocaleDateString("en-ZA")}</td>
-                          </tr>
-                        ))}
+                        {filtered.map(t=>{
+                          const msgCount=chatCounts[t.ref]||0;
+                          const unread=chatUnread(t.ref);
+                          return(
+                            <tr key={t.ref} onClick={()=>{setSel(sel===t.ref?null:t.ref);setDetailTab("overview");}} style={{cursor:"pointer"}} className={sel===t.ref?"selected":""}>
+                              <td>
+                                <span className="mono" style={{color:AC}}>{t.ref}</span>
+                                {t.quotationRef&&<span style={{marginLeft:6,fontSize:9,fontWeight:700,color:AC2,background:"rgba(14,165,233,0.1)",border:"1px solid rgba(14,165,233,0.2)",borderRadius:4,padding:"1px 5px"}}>QUO</span>}
+                              </td>
+                              <td><div style={{fontSize:13,fontWeight:600,color:"var(--text)"}}>{t.clientName||t.name||"—"}</div><div style={{fontSize:11,color:"var(--text3)"}}>{t.phone||""}</div></td>
+                              <td>{SVCS.find(s=>s.id===t.serviceType)?.icon} <span style={{fontSize:12}}>{SVCS.find(s=>s.id===t.serviceType)?.label||t.serviceType}</span></td>
+                              <td style={{maxWidth:200,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{t.issueTitle||t.problemDescription||"—"}</td>
+                              <td><SLABadge ticket={t}/></td>
+                              <td><span style={{fontSize:11,fontWeight:600,color:t.priority==="Urgent"?"#EF4444":t.priority==="High"?"#F59E0B":"var(--text3)"}}>{t.priority}</span></td>
+                              <td><StatusBadge s={t.status}/></td>
+                              <td><span style={{fontSize:11,color:t.assignedEngineer&&t.assignedEngineer!=="Unassigned"?AC:"var(--text3)"}}>{t.assignedEngineer||"Unassigned"}</span></td>
+                              {/* NEW: chat activity column */}
+                              <td>
+                                {msgCount>0?(
+                                  <span style={{display:"inline-flex",alignItems:"center",gap:4,fontSize:10,fontWeight:700,color:unread>0?"#EF4444":AC,fontFamily:"'IBM Plex Mono',monospace"}}>
+                                    {unread>0&&<span className="chat-unread-dot"/>}
+                                    💬 {msgCount}
+                                  </span>
+                                ):<span style={{fontSize:11,color:"var(--text4)"}}>—</span>}
+                              </td>
+                              <td className="mono" style={{fontSize:11}}>{new Date(t.createdAt).toLocaleDateString("en-ZA")}</td>
+                            </tr>
+                          );
+                        })}
                       </tbody>
                     </table>
                   )}
@@ -1361,10 +1715,11 @@ function Admin({tickets,loading,authed,onAuth,onUpdate,onAddNote,onBack,onNewTic
               </div>
             </div>
 
-            {/* Detail Panel */}
+            {/* ── DETAIL PANEL ── */}
             <div className={`detail-panel${tk?"":" hidden"}`}>
               {tk&&(
                 <>
+                  {/* Panel header */}
                   <div className="detail-header">
                     <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",gap:10}}>
                       <div>
@@ -1380,129 +1735,203 @@ function Admin({tickets,loading,authed,onAuth,onUpdate,onAddNote,onBack,onNewTic
                     </div>
                   </div>
 
-                  <div className="detail-body">
-                    {/* Status Update */}
-                    <div style={{marginBottom:16}}>
-                      <div style={{fontSize:10,fontWeight:700,color:"var(--text4)",textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:8}}>Update Status</div>
-                      <div style={{fontSize:11,color:"var(--text3)",marginBottom:6}}>
-                        {NOTIFY_STATUSES.includes("resolved")&&<span style={{color:AC,fontWeight:600}}>★ Marked statuses notify the client via WhatsApp</span>}
+                  {/* ── NEW: Tab bar ── */}
+                  <div className="detail-tabs">
+                    <button className={`detail-tab${detailTab==="overview"?" active":""}`} onClick={()=>setDetailTab("overview")}>
+                      📋 Overview
+                    </button>
+                    <button className={`detail-tab${detailTab==="chat"?" active":""}`} onClick={openChatTab}>
+                      💬 Chat
+                      {(chatCounts[tk.ref]||0)>0&&<span className="detail-tab-new">{chatCounts[tk.ref]}</span>}
+                    </button>
+                    <button className={`detail-tab${detailTab==="notes"?" active":""}`} onClick={()=>setDetailTab("notes")}>
+                      📝 Notes
+                      {(tk.notes||[]).length>0&&<span style={{fontSize:9,color:"var(--text4)",marginLeft:3}}>({(tk.notes||[]).length})</span>}
+                    </button>
+                    <button className={`detail-tab${detailTab==="actions"?" active":""}`} onClick={()=>setDetailTab("actions")}>
+                      ⚡ Actions
+                    </button>
+                  </div>
+
+                  {/* ── TAB: OVERVIEW ── */}
+                  {detailTab==="overview"&&(
+                    <div className="detail-body">
+                      {/* Status Update */}
+                      <div style={{marginBottom:16}}>
+                        <div style={{fontSize:10,fontWeight:700,color:"var(--text4)",textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:8}}>Update Status</div>
+                        <div style={{fontSize:11,color:"var(--text3)",marginBottom:6}}>
+                          <span style={{color:AC,fontWeight:600}}>★ Marked statuses notify the client via WhatsApp</span>
+                        </div>
+                        <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
+                          {Object.entries(ST).map(([k,v])=>(
+                            <button key={k} onClick={()=>doStatusClick(tk,k)}
+                              style={{border:`1px solid ${v.c}`,borderRadius:6,padding:"4px 9px",fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"inherit",background:tk.status===k?v.c:"transparent",color:tk.status===k?"#050810":v.c,transition:"all 0.15s",position:"relative"}}>
+                              {NOTIFY_STATUSES.includes(k)&&<span style={{position:"absolute",top:-4,right:-4,width:8,height:8,borderRadius:"50%",background:"#00C896",border:"1px solid var(--card)"}}/>}
+                              {v.l}
+                            </button>
+                          ))}
+                        </div>
+                        <div style={{fontSize:10,color:"var(--text4)",marginTop:6}}>● Green dot = client notification sent</div>
                       </div>
-                      <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
-                        {Object.entries(ST).map(([k,v])=>(
-                          <button key={k} onClick={()=>doStatusClick(tk,k)}
-                            style={{border:`1px solid ${v.c}`,borderRadius:6,padding:"4px 9px",fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"inherit",background:tk.status===k?v.c:"transparent",color:tk.status===k?"#050810":v.c,transition:"all 0.15s",position:"relative"}}>
-                            {NOTIFY_STATUSES.includes(k)&&<span style={{position:"absolute",top:-4,right:-4,width:8,height:8,borderRadius:"50%",background:"#00C896",border:"1px solid var(--card)"}}/>}
-                            {v.l}
-                          </button>
-                        ))}
+
+                      <div className="divider"/>
+
+                      {/* Engineer Assignment */}
+                      <div style={{marginBottom:16}}>
+                        <div style={{fontSize:10,fontWeight:700,color:"var(--text4)",textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:6}}>Assigned Engineer</div>
+                        <select className="field-input" style={{fontSize:12}} value={tk.assignedEngineer||"Unassigned"} onChange={e=>doAssign(e.target.value)}>
+                          {ENGINEERS.map(eng=><option key={eng}>{eng}</option>)}
+                        </select>
                       </div>
-                      <div style={{fontSize:10,color:"var(--text4)",marginTop:6}}>● Green dot = client notification sent</div>
-                    </div>
 
-                    <div className="divider"/>
+                      <div className="divider"/>
 
-                    {/* Engineer Assignment */}
-                    <div style={{marginBottom:16}}>
-                      <div style={{fontSize:10,fontWeight:700,color:"var(--text4)",textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:6}}>Assigned Engineer</div>
-                      <select className="field-input" style={{fontSize:12}} value={tk.assignedEngineer||"Unassigned"} onChange={e=>doAssign(e.target.value)}>
-                        {ENGINEERS.map(eng=><option key={eng}>{eng}</option>)}
-                      </select>
-                    </div>
+                      {/* Ticket Details */}
+                      <div style={{fontSize:10,fontWeight:700,color:"var(--text4)",textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:8}}>Ticket Details</div>
+                      {[
+                        ["Service",SVCS.find(s=>s.id===tk.serviceType)?.label],
+                        ["Logged by",tk.loggedBy==="engineer"?`Engineer: ${tk.engineerName||""}`: "Customer (self)"],
+                        tk.company&&["Company",tk.company],
+                        ["Priority",tk.priority],
+                        tk.deviceType&&["Device",`${tk.manufacturer||""} ${tk.modelNumber||""} (${tk.deviceType})`],
+                        tk.serialNumber&&["Serial",tk.serialNumber],
+                        tk.operatingSystem&&["OS",tk.operatingSystem],
+                        tk.warrantyStatus&&["Warranty",tk.warrantyStatus],
+                        tk.address&&["Address",tk.address],
+                        tk.preferredDate&&["Preferred",`${tk.preferredDate} ${tk.preferredTime}`],
+                        ["Submitted",new Date(tk.createdAt).toLocaleString("en-ZA")],
+                        tk.quotationRef&&["Quotation",tk.quotationRef],
+                      ].filter(Boolean).map(([l,v],i)=>(
+                        <div key={i} className="detail-row"><div className="detail-key">{l}</div><div className="detail-val">{v}</div></div>
+                      ))}
 
-                    <div className="divider"/>
+                      <div className="divider"/>
 
-                    {/* Details */}
-                    <div style={{fontSize:10,fontWeight:700,color:"var(--text4)",textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:8}}>Ticket Details</div>
-                    {[
-                      ["Service",SVCS.find(s=>s.id===tk.serviceType)?.label],
-                      ["Logged by",tk.loggedBy==="engineer"?`Engineer: ${tk.engineerName||""}`: "Customer (self)"],
-                      tk.company&&["Company",tk.company],
-                      ["Priority",tk.priority],
-                      tk.deviceType&&["Device",`${tk.manufacturer||""} ${tk.modelNumber||""} (${tk.deviceType})`],
-                      tk.serialNumber&&["Serial",tk.serialNumber],
-                      tk.operatingSystem&&["OS",tk.operatingSystem],
-                      tk.warrantyStatus&&["Warranty",tk.warrantyStatus],
-                      tk.address&&["Address",tk.address],
-                      tk.preferredDate&&["Preferred",`${tk.preferredDate} ${tk.preferredTime}`],
-                      ["Submitted",new Date(tk.createdAt).toLocaleString("en-ZA")],
-                      tk.quotationRef&&["Quotation",tk.quotationRef],
-                    ].filter(Boolean).map(([l,v],i)=>(
-                      <div key={i} className="detail-row"><div className="detail-key">{l}</div><div className="detail-val">{v}</div></div>
-                    ))}
-
-                    <div className="divider"/>
-
-                    {/* Issue */}
-                    <div style={{fontSize:10,fontWeight:700,color:"var(--text4)",textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:8}}>Issue</div>
-                    <div style={{background:"var(--bg)",borderRadius:8,padding:"10px 12px",border:"1px solid var(--border)",marginBottom:8}}>
-                      <p style={{fontSize:13,fontWeight:600,color:"var(--text)",marginBottom:tk.issueDetail||tk.problemDescription?6:0}}>{tk.issueTitle||tk.problemDescription||"—"}</p>
-                      {tk.issueDetail&&<p style={{fontSize:12,color:"var(--text3)",lineHeight:1.6}}>{tk.issueDetail}</p>}
-                      {tk.accessories&&<p style={{fontSize:11,color:"var(--text3)",marginTop:5}}>🎒 {tk.accessories}</p>}
-                      {tk.physicalDamage&&<p style={{fontSize:11,color:"var(--text3)",marginTop:3}}>💥 {tk.physicalDamage}</p>}
-                      {tk.devicePassword&&<p style={{fontSize:11,color:"var(--text3)",marginTop:3}}>🔑 {tk.devicePassword}</p>}
-                      {tk.conditionOnArrival&&<p style={{fontSize:11,color:"var(--text3)",marginTop:3}}>🔍 {tk.conditionOnArrival}</p>}
-                      {tk.urgency&&<p style={{fontSize:11,color:"var(--text3)",marginTop:3}}>⚡ {tk.urgency}</p>}
-                      {tk.engineerNote&&<p style={{fontSize:11,color:AC2,marginTop:5,borderTop:"1px solid var(--border)",paddingTop:5}}>📝 Engineer: {tk.engineerNote}</p>}
-                    </div>
-
-                    <div className="divider"/>
-
-                    {/* Parts */}
-                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
-                      <div style={{fontSize:10,fontWeight:700,color:"var(--text4)",textTransform:"uppercase",letterSpacing:"0.08em"}}>Parts / Inventory</div>
-                      <button className="btn btn-secondary btn-sm" onClick={()=>setPartsModal(tk)}>🔩 Manage</button>
-                    </div>
-                    {(tk.parts||[]).length===0&&<div style={{fontSize:12,color:"var(--text4)",marginBottom:8}}>No parts added.</div>}
-                    {(tk.parts||[]).map((p,i)=>(
-                      <div key={i} className="part-row">
-                        <div className="part-name">{p.name}</div>
-                        <div className="part-qty">×{p.qty}</div>
-                        <span className="part-status" style={{background:p.status==="arrived"?"rgba(16,185,129,0.1)":"rgba(245,158,11,0.1)",color:p.status==="arrived"?"#10B981":"#F59E0B"}}>{p.status}</span>
+                      {/* Issue */}
+                      <div style={{fontSize:10,fontWeight:700,color:"var(--text4)",textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:8}}>Issue</div>
+                      <div style={{background:"var(--bg)",borderRadius:8,padding:"10px 12px",border:"1px solid var(--border)",marginBottom:8}}>
+                        <p style={{fontSize:13,fontWeight:600,color:"var(--text)",marginBottom:tk.issueDetail||tk.problemDescription?6:0}}>{tk.issueTitle||tk.problemDescription||"—"}</p>
+                        {tk.issueDetail&&<p style={{fontSize:12,color:"var(--text3)",lineHeight:1.6}}>{tk.issueDetail}</p>}
+                        {tk.accessories&&<p style={{fontSize:11,color:"var(--text3)",marginTop:5}}>🎒 {tk.accessories}</p>}
+                        {tk.physicalDamage&&<p style={{fontSize:11,color:"var(--text3)",marginTop:3}}>💥 {tk.physicalDamage}</p>}
+                        {tk.devicePassword&&<p style={{fontSize:11,color:"var(--text3)",marginTop:3}}>🔑 {tk.devicePassword}</p>}
+                        {tk.conditionOnArrival&&<p style={{fontSize:11,color:"var(--text3)",marginTop:3}}>🔍 {tk.conditionOnArrival}</p>}
+                        {tk.urgency&&<p style={{fontSize:11,color:"var(--text3)",marginTop:3}}>⚡ {tk.urgency}</p>}
+                        {tk.engineerNote&&<p style={{fontSize:11,color:AC2,marginTop:5,borderTop:"1px solid var(--border)",paddingTop:5}}>📝 Engineer: {tk.engineerNote}</p>}
                       </div>
-                    ))}
 
-                    <div className="divider"/>
+                      <div className="divider"/>
 
-                    {/* Quotation */}
-                    <div style={{fontSize:10,fontWeight:700,color:"var(--text4)",textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:8}}>Link Quotation</div>
-                    <div style={{display:"flex",gap:6,marginBottom:4}}>
-                      <input className="field-input" style={{flex:1,fontSize:12}} value={eqRef} onChange={e=>setEqRef(e.target.value)} placeholder="QUO-2025-001"/>
-                      <button className="btn btn-primary btn-sm" onClick={doQuote} disabled={saving}>{saving?"…":"Link"}</button>
-                    </div>
-                    {tk.quotationRef&&<div style={{fontSize:11,color:AC,marginBottom:8}}>✓ {tk.quotationRef}</div>}
-
-                    <div className="divider"/>
-
-                    {/* Quick Contact */}
-                    <div style={{fontSize:10,fontWeight:700,color:"var(--text4)",textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:8}}>Quick Actions</div>
-                    <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:8}}>
-                      <a href={waUrl(tk.phone,buildCustomerMsg(tk))} target="_blank" rel="noreferrer" className="btn btn-wa btn-sm">💬 WA Customer</a>
-                      <a href={waUrl(CFG.wa,buildBusinessMsg(tk))} target="_blank" rel="noreferrer" className="btn btn-sm" style={{background:"rgba(14,165,233,0.1)",border:"1px solid rgba(14,165,233,0.2)",color:AC2}}>📲 WA Business</a>
-                      {tk.email&&<a href={`mailto:${tk.email}?subject=Re: Ticket ${tk.ref}`} className="btn btn-email btn-sm">✉️ Email</a>}
-                      <button className="btn btn-pdf btn-sm" onClick={()=>generateJobCard(tk)}>🖨️ Job Card PDF</button>
-                      <button className="btn btn-secondary btn-sm" onClick={()=>setHistoryModal(tk)}>👤 Client History</button>
-                    </div>
-
-                    <div className="divider"/>
-
-                    {/* Notes */}
-                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
-                      <div style={{fontSize:10,fontWeight:700,color:"var(--text4)",textTransform:"uppercase",letterSpacing:"0.08em"}}>Internal Notes</div>
-                      <button className="btn btn-ghost btn-sm" style={{fontSize:11}} onClick={()=>setFixesModal(true)}>💡 Known Fixes</button>
-                    </div>
-                    <div style={{maxHeight:180,overflowY:"auto",marginBottom:8}}>
-                      {(!tk.notes||tk.notes.length===0)&&<p style={{fontSize:12,color:"var(--text4)"}}>No notes yet.</p>}
-                      {(tk.notes||[]).map((n,i)=>(
-                        <div key={i} className="note-item" style={{borderLeft:`3px solid ${n.type==="engineer-note"?AC:"var(--border2)"}`}}>
-                          {n.type==="engineer-note"&&<div style={{fontSize:9,fontWeight:700,color:AC,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:3}}>Engineer Note</div>}
-                          <div className="note-text">{n.txt}</div>
-                          <div className="note-meta">{new Date(n.at).toLocaleString("en-ZA")}</div>
+                      {/* Parts */}
+                      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
+                        <div style={{fontSize:10,fontWeight:700,color:"var(--text4)",textTransform:"uppercase",letterSpacing:"0.08em"}}>Parts / Inventory</div>
+                        <button className="btn btn-secondary btn-sm" onClick={()=>setPartsModal(tk)}>🔩 Manage</button>
+                      </div>
+                      {(tk.parts||[]).length===0&&<div style={{fontSize:12,color:"var(--text4)",marginBottom:8}}>No parts added.</div>}
+                      {(tk.parts||[]).map((p,i)=>(
+                        <div key={i} className="part-row">
+                          <div className="part-name">{p.name}</div>
+                          <div className="part-qty">×{p.qty}</div>
+                          <span className="part-status" style={{background:p.status==="arrived"?"rgba(16,185,129,0.1)":"rgba(245,158,11,0.1)",color:p.status==="arrived"?"#10B981":"#F59E0B"}}>{p.status}</span>
                         </div>
                       ))}
+
+                      <div className="divider"/>
+
+                      {/* Quotation */}
+                      <div style={{fontSize:10,fontWeight:700,color:"var(--text4)",textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:8}}>Link Quotation</div>
+                      <div style={{display:"flex",gap:6,marginBottom:4}}>
+                        <input className="field-input" style={{flex:1,fontSize:12}} value={eqRef} onChange={e=>setEqRef(e.target.value)} placeholder="QUO-2025-001"/>
+                        <button className="btn btn-primary btn-sm" onClick={doQuote} disabled={saving}>{saving?"…":"Link"}</button>
+                      </div>
+                      {tk.quotationRef&&<div style={{fontSize:11,color:AC,marginBottom:8}}>✓ {tk.quotationRef}</div>}
                     </div>
-                    <textarea className="field-input" style={{minHeight:60,fontSize:12,lineHeight:1.5,marginBottom:6,width:"100%"}} value={note} onChange={e=>setNote(e.target.value)} placeholder="Add update, action taken, parts ordered…"/>
-                    <button className="btn btn-primary btn-sm" onClick={doNote} disabled={saving}>{saving?"Saving…":"Add Note"}</button>
-                  </div>
+                  )}
+
+                  {/* ── TAB: LIVE CHAT (NEW) ── */}
+                  {detailTab==="chat"&&(
+                    <div style={{flex:1,display:"flex",flexDirection:"column",minHeight:0,height:"calc(100vh - 200px)"}}>
+                      <TicketChat
+                        ticket={tk}
+                        activeEngineer={activeEngineer}
+                        onWaForward={handleWaForward}
+                      />
+                    </div>
+                  )}
+
+                  {/* ── TAB: NOTES ── */}
+                  {detailTab==="notes"&&(
+                    <div className="detail-body">
+                      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
+                        <div style={{fontSize:13,fontWeight:700,color:"var(--text)"}}>Internal Notes</div>
+                        <button className="btn btn-ghost btn-sm" style={{fontSize:11}} onClick={()=>setFixesModal(true)}>💡 Known Fixes</button>
+                      </div>
+                      <div style={{maxHeight:320,overflowY:"auto",marginBottom:12}}>
+                        {(!tk.notes||tk.notes.length===0)&&<p style={{fontSize:12,color:"var(--text4)"}}>No notes yet.</p>}
+                        {(tk.notes||[]).map((n,i)=>(
+                          <div key={i} className="note-item" style={{borderLeft:`3px solid ${n.type==="engineer-note"?AC:"var(--border2)"}`}}>
+                            {n.type==="engineer-note"&&<div style={{fontSize:9,fontWeight:700,color:AC,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:3}}>Engineer Note</div>}
+                            <div className="note-text">{n.txt}</div>
+                            <div className="note-meta">{new Date(n.at).toLocaleString("en-ZA")}</div>
+                          </div>
+                        ))}
+                      </div>
+                      <textarea className="field-input" style={{minHeight:60,fontSize:12,lineHeight:1.5,marginBottom:6,width:"100%"}} value={note} onChange={e=>setNote(e.target.value)} placeholder="Add update, action taken, parts ordered…"/>
+                      <button className="btn btn-primary btn-sm" onClick={doNote} disabled={saving}>{saving?"Saving…":"Add Note"}</button>
+                    </div>
+                  )}
+
+                  {/* ── TAB: QUICK ACTIONS (NEW) ── */}
+                  {detailTab==="actions"&&(
+                    <div className="detail-body">
+                      {/* WhatsApp Smart Sync */}
+                      <div style={{marginBottom:16}}>
+                        <div style={{fontSize:10,fontWeight:700,color:"var(--text4)",textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:10}}>
+                          💬 WhatsApp Smart Sync
+                        </div>
+                        <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:8}}>
+                          <a href={waUrl(tk.phone,buildCustomerMsg(tk))} target="_blank" rel="noreferrer" className="btn btn-wa btn-sm">💬 Ticket Confirm</a>
+                          <a href={waUrl(CFG.wa,buildBusinessMsg(tk))} target="_blank" rel="noreferrer" className="btn btn-sm" style={{background:"rgba(14,165,233,0.1)",border:"1px solid rgba(14,165,233,0.2)",color:AC2}}>📲 Notify Business</a>
+                          {tk.email&&<a href={`mailto:${tk.email}?subject=Re: Ticket ${tk.ref}`} className="btn btn-email btn-sm">✉️ Email Client</a>}
+                        </div>
+                        {/* Status-based WA messages */}
+                        <div style={{fontSize:10,fontWeight:700,color:"var(--text4)",textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:6,marginTop:12}}>Quick Status WA Messages</div>
+                        <div style={{display:"flex",flexDirection:"column",gap:5}}>
+                          {NOTIFY_STATUSES.map(s=>(
+                            <a key={s} href={waUrl(tk.phone,buildStatusUpdateMsg(tk,s,"See update below."))} target="_blank" rel="noreferrer"
+                              style={{display:"flex",alignItems:"center",gap:8,padding:"8px 10px",borderRadius:8,border:`1px solid ${ST[s]?.c||"var(--border)"}20`,background:`${ST[s]?.c||"var(--bg)"}10`,fontSize:11,fontWeight:600,color:ST[s]?.c||"var(--text2)",textDecoration:"none"}}>
+                              <span style={{fontSize:14}}>{{resolved:"✅",closed:"🔒",awaiting:"📦","in-progress":"🔧"}[s]||"📋"}</span>
+                              Send "{ST[s]?.l}" WA Update
+                            </a>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="divider"/>
+
+                      {/* Document Actions */}
+                      <div style={{fontSize:10,fontWeight:700,color:"var(--text4)",textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:10}}>Documents & History</div>
+                      <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:8}}>
+                        <button className="btn btn-pdf btn-sm" onClick={()=>generateJobCard(tk)}>🖨️ Job Card PDF</button>
+                        <button className="btn btn-secondary btn-sm" onClick={()=>setHistoryModal(tk)}>👤 Client History</button>
+                        <button className="btn btn-secondary btn-sm" onClick={()=>setPartsModal(tk)}>🔩 Manage Parts</button>
+                        <button className="btn btn-ghost btn-sm" style={{fontSize:11}} onClick={()=>setFixesModal(true)}>💡 Known Fixes</button>
+                      </div>
+
+                      <div className="divider"/>
+
+                      {/* Chat to WA bridge */}
+                      <div style={{fontSize:10,fontWeight:700,color:"var(--text4)",textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:10}}>
+                        🔗 Chat → WhatsApp Bridge
+                      </div>
+                      <div style={{background:"var(--bg3)",border:"1px solid var(--border)",borderRadius:8,padding:"10px 12px",marginBottom:8,fontSize:12,color:"var(--text3)",lineHeight:1.6}}>
+                        Open the <strong style={{color:AC}}>💬 Chat</strong> tab and tap the <span style={{fontFamily:"'IBM Plex Mono',monospace",fontSize:10,background:"rgba(37,211,102,0.12)",color:"#25D366",padding:"1px 5px",borderRadius:4}}>💬 WA</span> button next to any message to instantly forward it to the client on WhatsApp.
+                      </div>
+                      <button className="btn btn-primary btn-sm" onClick={openChatTab} style={{width:"100%"}}>
+                        Open Team Chat →
+                      </button>
+                    </div>
+                  )}
                 </>
               )}
               {!tk&&(
@@ -1556,6 +1985,8 @@ function Root(){
       const ref=makeTktRef(num);
       const ticket={...form,ref,ticketNumber:num,status:"open",createdAt:ts(),updatedAt:ts(),notes:[],quotationRef:"",parts:[],assignedEngineer:form.assignedEngineer||"Unassigned"};
       await db.collection("tickets").doc(ref).set(ticket);
+      // NEW: post opening system message to RTDB chat
+      try{await sendSysMsg(ref,`Ticket ${ref} created — ${SVCS.find(s=>s.id===form.serviceType)?.label||form.serviceType}`);}catch(e){}
       setLastTicket(ticket);
       if(view==="admin")showToast(`Ticket ${ref} created ✓`);
       else setView("success");
