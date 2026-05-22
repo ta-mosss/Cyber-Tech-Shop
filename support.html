@@ -152,6 +152,127 @@ body.light .theme-toggle::after{left:19px;}
   .portal-header-inner{padding:0 12px;}
 }
 
+
+/* ===== MOBILE-FIRST OPTIMIZATION PACK ===== */
+@media (max-width:768px){
+
+  .portal-main{
+    padding:16px 12px 48px !important;
+  }
+
+  .portal-header-inner{
+    height:auto !important;
+    min-height:58px;
+    padding:10px 12px !important;
+    gap:10px;
+  }
+
+  .support-cards,
+  .review-grid,
+  .form-grid{
+    grid-template-columns:1fr !important;
+  }
+
+  .hero-title{
+    font-size:22px !important;
+    line-height:1.25 !important;
+  }
+
+  .card{
+    border-radius:14px;
+  }
+
+  .card-body{
+    padding:14px !important;
+  }
+
+  .card-header{
+    padding:14px !important;
+  }
+
+  .btn,
+  .btn-sm,
+  .btn-primary,
+  .btn-secondary,
+  .btn-wa,
+  .btn-email{
+    width:100%;
+    min-height:44px;
+  }
+
+  .radio-chips{
+    gap:6px;
+  }
+
+  .chip{
+    flex:1 1 calc(50% - 6px);
+    text-align:center;
+    min-height:40px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  .ql-inner{
+    overflow-x:auto;
+    flex-wrap:nowrap;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+  }
+
+  .ql-inner::-webkit-scrollbar{
+    display:none;
+  }
+
+  .ql-tag{
+    flex-shrink:0;
+  }
+
+  .photo-thumb img{
+    width:64px;
+    height:64px;
+  }
+
+  .wa-bubble{
+    font-size:11px;
+    overflow-wrap:anywhere;
+  }
+
+  .header-actions a{
+    display:none !important;
+  }
+
+  input.field-input,
+  select.field-input,
+  textarea.field-input{
+    font-size:16px !important; /* prevents iOS zoom */
+  }
+}
+
+@media (max-width:480px){
+
+  .ticket-steps{
+    overflow-x:auto;
+    padding-bottom:4px;
+  }
+
+  .ticket-steps span{
+    font-size:10px !important;
+  }
+
+  .chip{
+    flex:1 1 100%;
+  }
+
+  .portal-main{
+    padding:12px 10px 40px !important;
+  }
+
+  .card{
+    border-radius:12px;
+  }
+}
+
 </style>
 </head>
 <body class="dark">
