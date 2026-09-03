@@ -1,0 +1,24 @@
+[
+  {
+    "product_id": "123",
+    "name": "Wireless Headphones Pro",
+    "description": "Noise-cancelling, 40h battery",
+    "price_usd": 199.99,
+    "currency": "USD",
+    "image_urls": "https://example.com/headphones.jpg",
+    "category": "Audio",
+    "availability": "in_stock",
+    "sku": "WH-1000XM5"
+  },
+  {
+    "product_id": "456",
+    "name": "Smart Watch Series 8",
+    "description": "GPS, Heart rate monitor",
+    "price_usd": 399.00,
+    "currency": "USD",
+    "image_urls": "https://example.com/watch.jpg",
+    "category": "Wearables",
+    "availability": "limited",
+    "sku": "SW-S8"
+  }
+]
