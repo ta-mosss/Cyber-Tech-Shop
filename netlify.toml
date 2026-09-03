@@ -1,0 +1,13 @@
+[build]
+  command = "npm run build"
+  functions = "netlify/functions"
+  publish = "out"
+
+[build.environment]
+  NODE_VERSION = "18"
+
+# Redirect all /api/* to Netlify Functions (if using pages/api)
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
