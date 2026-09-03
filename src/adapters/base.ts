@@ -1,0 +1,25 @@
+export interface VendorConfig {
+  id: string;
+  name: string;
+  sourceType: 'json' | 'csv' | 'rest';
+  sourceUrl: string;
+  auth?: { type: 'apiKey' | 'bearer'; token: string };
+  mapping: {
+    id: string;
+    title: string;
+    description: string;
+    price: string;
+    currency?: string;
+    images: string;
+    category: string;
+    stockStatus: string;
+    sku: string;
+    lastUpdated?: string;
+  };
+  currencyConversion?: { from: string; to: string; rate: number };
+}
+
+export interface IVendorAdapter {
+  readonly vendorId: string;
+  fetch(): Promise<Product[]>;
+}
